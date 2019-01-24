@@ -29,7 +29,7 @@ class Login extends Component {
     username:'',
     password:'',
     open: false,
-    rememberMe: false
+    remember_me: false
     }
   }
 
@@ -68,14 +68,14 @@ class Login extends Component {
               }}
               />
             <br/>
-            <label htmlFor="rememberMe">Remember me</label>
+            <label htmlFor="remember_me">Remember me</label>
             <Checkbox type="checkbox"
-              id="rememberMe"
-              ref="rememberMe" 
+              id="remember_me"
+              ref="remember_me" 
               label="Remember Me"
-              onChange={this.toggleRememberMe} 
-              /><br/>
-            <Button 
+              onChange={(event) => this.setState({remember_me:event.target.checked})} 
+              defaultChecked /><br/>
+            <Button  
               className="login-button"
               variant="contained" 
               color="primary" 
@@ -89,7 +89,7 @@ class Login extends Component {
       <Footer/>
       </div>
     );
-  }
+    }
 
   /**
    * API call to verify if given logs are valid
@@ -98,8 +98,8 @@ class Login extends Component {
     var self = this;
     var payload={
       "username":this.state.username,
-      "password":this.state.password//,
-      //"rememberMe":this.state.rememberMe
+      "password":this.state.password,
+      "remember_me":this.state.remember_me
     }
     // We call the API
     axios({

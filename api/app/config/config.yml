@@ -43,8 +43,8 @@ twig:
 doctrine:
     dbal:
         driver: pdo_mysql
-        host: 'localhost'
-        dbname: 'project_management_system'
+        host: localhost
+        dbname: project_management_system
         user: 'rhysw2018' #user: 'admin_pms'
         password: '5d4tt23Q' #password: 'afA5m0@6'
         charset: UTF8
