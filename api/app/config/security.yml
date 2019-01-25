@@ -45,13 +45,13 @@ security:
                 password_parameter:       password
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
                 failure_handler:          lexik_jwt_authentication.handler.authentication_failure
-            logout:
-                invalidate_session: false
             remember_me:
                 secret:   '%kernel.secret%'
                 lifetime: 604800 # 1 week in seconds
                 path:     ^/
-            #logout: true
+                #logout: true
+            logout:
+                invalidate_session: false
 
         api:
             pattern:   ^/
