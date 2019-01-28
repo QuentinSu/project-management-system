@@ -72,7 +72,7 @@ class AdminDashboard extends Component {
             <MuiThemeProvider theme={whiteTheme} >
               <Button variant="contained" color='primary' size="small" className='advanced-but-dashboard' onClick={() => {this.setState(window.location.href = '/admin/advanced');}}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
-                prout
+                Admin
                 {/* {this.props.location.pathname} */}
               </Button>
 
