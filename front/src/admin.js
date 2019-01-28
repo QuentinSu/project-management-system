@@ -1,8 +1,13 @@
 import React, {Component} from 'react';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import StarIcon from '@material-ui/icons/Star';
+import { Link, NavLink } from 'react-router-dom'
 import AppBar from 'material-ui/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
 import Projects from './project.js';
 import Testimonials from './testimonial.js'
 import PropTypes from 'prop-types';
@@ -13,6 +18,8 @@ import Footer from './footer.js';
 // import MailIcon from '@material-ui/icons/Mail';
 import Notifications from './notification.js';
 import {UserMenu} from './user.js';
+
+const whiteTheme = createMuiTheme({ palette: { primary: {main: '#ffffff'}, secondary: {main: '#f44336'} } });
 
 /**
  * React component that represents a tab with a particular style
@@ -47,6 +54,7 @@ class AdminDashboard extends Component {
     this.setState({ tabValue });
   };
 
+
   /**
    * Rendering function
    */
@@ -61,6 +69,14 @@ class AdminDashboard extends Component {
             <AppBar position="static">
             <img className='logo-dashboard' alt='logo RW' src={process.env.PUBLIC_URL + '/rw.png'}/>
             <Notifications/>
+            <MuiThemeProvider theme={whiteTheme} >
+              <Button variant="contained" color='primary' size="small" className='advanced-but-dashboard' onClick={() => {this.setState(window.location.href = '/admin/advanced');}}>
+                {/* if on advanced : button to return classical; else button to go advanced mode */}
+                prout
+                {/* {this.props.location.pathname} */}
+              </Button>
+
+            </MuiThemeProvider>
             <UserMenu username={localStorage.getItem('username')}/>
             <Tabs className='dashboard-tabs' value={this.state.tabValue} onChange={this.handleChange}>
                 <Tab label="Projects" />
