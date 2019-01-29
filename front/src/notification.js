@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'; 
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
@@ -24,7 +24,7 @@ import { UserMenu } from './user';
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
-const whiteTheme = createMuiTheme({ palette: { primary: {main: '#FFFFFF'}, secondary: {main: '#f44336'} } })
+const whiteTheme = createMuiTheme({ palette: { primary: {main: '#FFFFFF'}, secondary: {main: '#f44336'} } });
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -208,7 +208,7 @@ export default class Notifications extends Component {
                         Delete all
                     </Button>
                 </Toolbar>
-                </AppBar>
+                </AppBar>   
                 <List style={{marginTop:'64px'}}>
                 {mappedNotifications}
                 <ListSubheader className='completed-notification-folder-separator'>Completed</ListSubheader>

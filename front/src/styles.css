@@ -161,10 +161,18 @@
 
 
 .logo-dashboard {
-	max-width: 200px;
+	max-width: 300px;
 	margin-top: 20px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.advanced-but-dashboard {
+	margin: auto;
+	position: absolute !important;
+	top:30px;
+	right:180px;
+	size: small;
 }
 
 .dashboard-tabs {

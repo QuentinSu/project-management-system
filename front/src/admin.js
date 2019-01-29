@@ -1,18 +1,32 @@
 import React, {Component} from 'react';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import StarIcon from '@material-ui/icons/Star';
+import { Link, NavLink } from 'react-router-dom';
 import AppBar from 'material-ui/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
 import Projects from './project.js';
-import Testimonials from './testimonial.js'
+import Testimonials from './testimonial.js';
+import Companies from './company.js';
+import Reminders from './reminder.js';
+import Servers from './server.js';
+import Marketing from './marketing.js';
 import PropTypes from 'prop-types';
-import Users from './user.js'
+import Users from './user.js';
 import Footer from './footer.js';
 // import Button from '@material-ui/core/Button';
 // import Badge from '@material-ui/core/Badge';
 // import MailIcon from '@material-ui/icons/Mail';
 import Notifications from './notification.js';
 import {UserMenu} from './user.js';
+
+const whiteTheme = createMuiTheme({ palette: { primary: {main: '#ffffff'}, secondary: {main: '#f44336'} } });
+var advanced;
+{ window.location.href.includes('advanced') 
+  ? advanced = false
+  : advanced = true};
 
 /**
  * React component that represents a tab with a particular style
@@ -47,6 +61,7 @@ class AdminDashboard extends Component {
     this.setState({ tabValue });
   };
 
+
   /**
    * Rendering function
    */
@@ -61,16 +76,38 @@ class AdminDashboard extends Component {
             <AppBar position="static">
             <img className='logo-dashboard' alt='logo RW' src={process.env.PUBLIC_URL + '/rw.png'}/>
             <Notifications/>
+            <MuiThemeProvider theme={whiteTheme} >
+              <Button variant="contained" color='primary' size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '/admin') : this.setState(window.location.href = '/admin/advanced') }}>
+                {/* if on advanced : button to return classical; else button to go advanced mode */}
+                { advanced
+                  ? <text>Advanced</text>
+                  : <text>Classic</text>
+                }
+              </Button>
+            </MuiThemeProvider>
             <UserMenu username={localStorage.getItem('username')}/>
-            <Tabs className='dashboard-tabs' value={this.state.tabValue} onChange={this.handleChange}>
-                <Tab label="Projects" />
-                <Tab label="Users" />
-                <Tab label="Testimonials" />
-            </Tabs>
-            </AppBar>
-            {this.state.tabValue === 0 && <TabContainer><Projects/></TabContainer>}
-            {this.state.tabValue === 1 && <TabContainer><Users/></TabContainer>}
-            {this.state.tabValue === 2 && <TabContainer><Testimonials/></TabContainer>}
+              {/* If you are in class view, we show projects/users/testimaniols, else advanced admin view (clients, reminders, ...) */}
+              { advanced ? (
+                <Tabs className='dashboard-tabs' value={this.state.tabValue} onChange={this.handleChange}>
+                  <Tab label="Projects" />
+                  <Tab label="Users" />
+                  <Tab label="Testimonials" />  
+                </Tabs>
+              ) : (
+                <Tabs className='dashboard-tabs' value={this.state.tabValue} onChange={this.handleChange}>
+                  <Tab label="Clients" />
+                  <Tab label="Reminders" />
+                  <Tab label="Servers" />
+                  <Tab label="Marketing" />
+                </Tabs>
+              )}
+              </AppBar>
+              
+              {(this.state.tabValue === 0) && <TabContainer> {advanced ? <Projects/> : <Companies/>}</TabContainer>}
+              {(this.state.tabValue === 1) && <TabContainer>{advanced ? <Users/> : <Reminders/>}</TabContainer>}
+              {(this.state.tabValue === 2) && <TabContainer>{advanced ? <Testimonials/> : <Servers/>}</TabContainer>}
+              {(this.state.tabValue === 3) && <TabContainer><Marketing/></TabContainer>}
+            
             <Footer/>
         </div>
     );

@@ -10,10 +10,16 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Checkbox } from '@material-ui/core';
+import Cookies from 'universal-cookie'
+import { array } from 'prop-types';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
+const cookies = new Cookies();
+var rmbMe = false;
+var previousSession = cookies.get("remember_me");
 
 /**
  * Login component logs the user, stores its token in local storage and redirects to admin / client page
@@ -26,27 +32,35 @@ class Login extends Component {
   constructor(props){
     super(props);
     this.state={
-    username:'',
+    username:'',  
     password:'',
     open: false,
     remember_me: false
-    }
+    };
   }
 
   /**
    * Render method
    */
-  render() {
+  render() {  
+    if(previousSession) {
+      this.checkLogs(null);
+    }
     return (
       <div>
       <Dialog open={this.state.open}>
-        <DialogTitle>Invalid credentials</DialogTitle>
+        <DialogTitle>{!previousSession && <p>Invalid credentials</p>}{previousSession && <p>Already log in. Work in progress.</p>}</DialogTitle>
+        {!previousSession &&
         <DialogActions>
             <Button onClick={() => {this.setState({open:false})}} color="primary">
                 Retry
             </Button>
-        </DialogActions>
+        </DialogActions>}
       </Dialog>
+      {/* <Dialog open={this.state.open}>
+        <DialogTitle>Already log in. Connection in progress</DialogTitle>
+          <CircularProgress/>
+      </Dialog> */}
       <Card className='login-form'>
         <CardMedia title="Rhys Welsh Logo" className="logo-login">
           <img src={process.env.PUBLIC_URL + '/rw.png'}/>
@@ -73,13 +87,14 @@ class Login extends Component {
               id="remember_me"
               ref="remember_me" 
               label="Remember Me"
-              onChange={(event) => this.setState({remember_me:event.target.checked})} 
-              defaultChecked /><br/>
+              checked={this.state.remember_me} 
+              value={this.state.remember_me} 
+              onChange={(event) => this.setState({remember_me:event.target.checked})} /><br/>
             <Button  
               className="login-button"
               variant="contained" 
               color="primary" 
-              label="Submit" 
+              label="Submit"
               primary={true} 
               onClick={(event) => this.checkLogs(event)}>
               Login
@@ -89,13 +104,14 @@ class Login extends Component {
       <Footer/>
       </div>
     );
-    }
+  }
 
   /**
    * API call to verify if given logs are valid
    */
   checkLogs(event) {
-    var self = this;
+    var self = this; 
+    rmbMe = this.state.remember_me;
     var payload={
       "username":this.state.username,
       "password":this.state.password,
@@ -125,6 +141,11 @@ class Login extends Component {
             .then(function (response) {
               // If the user is logged
               if(response.status === 200){
+                if(rmbMe) {
+                  let d = new Date();
+                  d.setTime(d.getTime() + (60*1000)*(1440*365)); // (60*1000)=1min; 1440=1day. => 1 year
+                  cookies.set("remember_me", rmbMe, {path: "/", expires: d} ); //array[payload, localStorage.getItem('session')]
+                }
                 // If he is and admin, redirect to admin page, else to client page
                 if (response.data.is_admin) {
                   localStorage.setItem('isAdmin', true);

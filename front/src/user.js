@@ -33,10 +33,12 @@ import Chip from '@material-ui/core/Chip';
 import classNames from 'classnames';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
 import NewUserProjectLinkDialog from './newUserProjectLinkDialog.js'
+import Cookies from 'universal-cookie';
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
+const cookies = new Cookies();
 
 export class UserMenu extends React.Component {
     constructor(props) {
@@ -54,8 +56,9 @@ export class UserMenu extends React.Component {
         this.setState({ anchorEl: event.currentTarget });
     };
 
-    logout() {
+    logout(){
         localStorage.clear();
+        cookies.remove("remember_me", { path: '/' });
         window.location.href='/';
     }
 
