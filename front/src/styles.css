@@ -172,7 +172,6 @@
 	position: absolute !important;
 	top:30px;
 	right:180px;
-	size: small;
 }
 
 .dashboard-tabs {
@@ -657,24 +656,24 @@ strong , b { font-weight: bold; }
 	.conatct-top-left p.design-project { padding: 0 15px 25px 0; }
 	.conatct-address { padding: 0 15px 0 0; font-size: 24px; line-height: 36px; }
 	.conatct-address .contact-num .orange-bg { font-size: 36px; }
-	.conatct-form-right h3 { letter-spacing: 2px; font-size: 48px; margin: 0 0 20px 0; }
-	.conatct-form-right { padding: 25px; }
-	.conatct-form-right .ccms_form_element { padding: 0; margin-bottom: 25px; }
-	.conatct-form-right .formResponsive .formHorizontal .rsform-block { margin-bottom: 25px; }
-	.conatct-form-right .formValidation { bottom: -23px; }
-	.conatct-form-right .formResponsive .formHorizontal .rsform-block-type-your-message-here { margin-bottom: 20px !important; }
-	.conatct-form-right .formResponsive .rsform-block-send .rsform-submit-button { height: 78px; background-size: auto 100%; background-position: center center; }
-	.conatct-form-right .formResponsive .rsform-thankyou-button { height: 78px;background-size: auto 100% !important; background-position: center center !important; }
-	.conatct-form-right .formResponsive .formHorizontal .rsform-block-send.rsform-block { margin-bottom: 20px; }	
-	.conatct-form-right .rsform-block-footer-text { text-align: center; }
+	.contact-form-right h3 { letter-spacing: 2px; font-size: 48px; margin: 0 0 20px 0; }
+	.contact-form-right { padding: 25px; }
+	.contact-form-right .ccms_form_element { padding: 0; margin-bottom: 25px; }
+	.contact-form-right .formResponsive .formHorizontal .rsform-block { margin-bottom: 25px; }
+	.contact-form-right .formValidation { bottom: -23px; }
+	.contact-form-right .formResponsive .formHorizontal .rsform-block-type-your-message-here { margin-bottom: 20px !important; }
+	.contact-form-right .formResponsive .rsform-block-send .rsform-submit-button { height: 78px; background-size: auto 100%; background-position: center center; }
+	.contact-form-right .formResponsive .rsform-thankyou-button { height: 78px;background-size: auto 100% !important; background-position: center center !important; }
+	.contact-form-right .formResponsive .formHorizontal .rsform-block-send.rsform-block { margin-bottom: 20px; }	
+	.contact-form-right .rsform-block-footer-text { text-align: center; }
 	.contact-studio img { min-width: 630px; }
-	.conatct-form-right .ccms_form_element textarea { height: 180px; }
-	.conatct-form-right .ccms_form_element input, .conatct-form-right .ccms_form_element textarea, .conatct-form-right .ccms_form_element select { font-size: 22px; }
+	.contact-form-right .ccms_form_element textarea { height: 180px; }
+	.contact-form-right .ccms_form_element input, .contact-form-right .ccms_form_element textarea, .contact-form-right .ccms_form_element select { font-size: 22px; }
 	.contact-studio .appointment-col { right: 40px; }
 	.contact-page .content-box .container { padding: 0 26px; }
 	.contact-studio { margin: 20px 0 0 -26px; }
-	.conatct-form-right .ccms_form_element input[type="submit"] { height: 88px; background-size: auto 100%; background-position: center center; }
-	.conatct-form-right .privacy-msg { font-size: 14px; }
+	.contact-form-right .ccms_form_element input[type="submit"] { height: 88px; background-size: auto 100%; background-position: center center; }
+	.contact-form-right .privacy-msg { font-size: 14px; }
 	.chapel-studios iframe { height: 450px; }
 	.chapel-studios { font-size: 22px; line-height: 32px; }
 	.chapel-studios h3 { font-size: 30px; }
@@ -732,16 +731,16 @@ strong , b { font-weight: bold; }
 	.conatct-top-left h2::after { left: 0; height: 5px; border-radius: 0; }
 	.conatct-address .contact-num .orange-bg { font-size: 32px; padding: 3px 8px 4px 8px; }
 	.contact-studio img { min-width: 100%; }
-	.conatct-form-right { width: 100%; max-width: 100%; margin: 25px 0 0 0; }
+	.contact-form-right { width: 100%; max-width: 100%; margin: 25px 0 0 0; }
 	.contact-studio .appointment-col { right: 0; }
-	.conatct-form-right h3 { font-size: 42px; }
-	.conatct-form-right .privacy-msg { text-align: center; }
+	.contact-form-right h3 { font-size: 42px; }
+	.contact-form-right .privacy-msg { text-align: center; }
 	.contact-left-bottom { width: 100%; }
 	.contact-left-bottom .contact-rhys { left: 0; margin: 15px 0 10px 0; }
 	.chapel-studios { width: 100%; max-width: 100%; margin: 30px 0 30px 0; }
 	.chapel-studios iframe { border: solid 8px #cecece !important; }
 	.contact-left-bottom .need-direction-btn { margin: 10px 0 0 0; }
-	.conatct-form-right .rsform-block-footer-text { text-align: center !important; font-size: 16px; }
+	.contact-form-right .rsform-block-footer-text { text-align: center !important; font-size: 16px; }
 
 }
 
@@ -814,31 +813,31 @@ strong , b { font-weight: bold; }
 	.conatct-address .col-12 + .col-12 {  margin-top: 6px; }
 	.contact-studio { margin: 20px 0 0 -20px; }
 	.contact-studio .appointment-col { bottom: -8px; }
-	.conatct-form-right h3 { font-size: 28px; letter-spacing: 1px; }
-	.conatct-form-right { float: none; display: inline-block; margin: 25px -20px 0; width: auto; max-width: none; border-radius: 0; padding: 20px 20px 10px 20px; }
-	.conatct-form-right .ccms_form_element input, .conatct-form-right .ccms_form_element textarea, .conatct-form-right .ccms_form_element select { font-size: 18px; height: 42px; }
-	.conatct-form-right .ccms_form_element { margin-bottom: 15px; }	
-	.conatct-form-right .ccms_form_element textarea { height: 160px; }
-	.conatct-form-right .ccms_form_element.cfdiv_textarea { margin-bottom: 6px; }
-	.conatct-form-right .ccms_form_element label { font-size: 16px; margin: 0 0 12px 0; }
-	.conatct-form-right .ccms_form_element input[type="submit"] { height: 60px; width: 100%; }
+	.contact-form-right h3 { font-size: 28px; letter-spacing: 1px; }
+	.contact-form-right { float: none; display: inline-block; margin: 25px -20px 0; width: auto; max-width: none; border-radius: 0; padding: 20px 20px 10px 20px; }
+	.contact-form-right .ccms_form_element input, .contact-form-right .ccms_form_element textarea, .contact-form-right .ccms_form_element select { font-size: 18px; height: 42px; }
+	.contact-form-right .ccms_form_element { margin-bottom: 15px; }	
+	.contact-form-right .ccms_form_element textarea { height: 160px; }
+	.contact-form-right .ccms_form_element.cfdiv_textarea { margin-bottom: 6px; }
+	.contact-form-right .ccms_form_element label { font-size: 16px; margin: 0 0 12px 0; }
+	.contact-form-right .ccms_form_element input[type="submit"] { height: 60px; width: 100%; }
 	.chapel-studios { font-size: 18px; line-height: 26px; margin: 20px 0 0 0; }
 	.chapel-studios p { padding: 4px 0; }
 	.chapel-studios h3 { letter-spacing: 2px; font-size: 22px; }
 	.chapel-studios iframe { border: solid 4px #cecece !important; height: 300px; border-radius: 4px; }
 
-	.conatct-form-right .formResponsive textarea, .conatct-form-right .formResponsive input[type="text"], .conatct-form-right .formResponsive input[type="number"], .conatct-form-right .formResponsive input[type="email"], .conatct-form-right .formResponsive input[type="tel"], .conatct-form-right .formResponsive input[type="url"], .conatct-form-right .formResponsive input[type="password"], .conatct-form-right .formResponsive select { font-size: 18px; height: 42px; }
-	.conatct-form-right .rsform-block .selectedOption { font-size: 18px; height: 42px; padding: 8px 14px !important; }
-	.conatct-form-right .rsform-block .scrollableList ul { width: 100%; }
-	.conatct-form-right .rsform-block .scrollableList ul li { font-size: 16px; padding: 5px 15px !important; }
-	.conatct-form-right .rsform-block-what-service-do-you-require .formBody::after, .conatct-form-right .rsform-block-how-did-you-find-us .formBody::after, .conatct-form-right .rsform-block-please-select-if-you-wish-to-be-contacted-with-marketing-material .formBody::after { width: 42px; height: 42px; }
-	.conatct-form-right .formResponsive textarea { height: 160px; }
-	.conatct-form-right .formResponsive .formHorizontal .rsform-block-type-your-message-here { margin-bottom: 15px !important; }
-	.conatct-form-right .formResponsive .rsform-block-send .rsform-submit-button { height: 60px; width: 100%; }
-	.conatct-form-right .formResponsive .rsform-thankyou-button { height: 60px; width: 100%; }
-	.conatct-form-right .formResponsive strong.formRequired { right: -15px;font-size: 12px; top: 12px; }
-	.conatct-form-right #g-recaptcha-42 { transform: scale(0.80) !important; -webkit-transform:scale(0.80) !important; transform-origin: 0 0 0 !important; -webkit-transform-origin:0 0 !important; }
-	.conatct-form-right .rsform-block-captcha-field { width: 250px !important; height: 62px; }
+	.contact-form-right .formResponsive textarea, .contact-form-right .formResponsive input[type="text"], .contact-form-right .formResponsive input[type="number"], .contact-form-right .formResponsive input[type="email"], .contact-form-right .formResponsive input[type="tel"], .contact-form-right .formResponsive input[type="url"], .contact-form-right .formResponsive input[type="password"], .contact-form-right .formResponsive select { font-size: 18px; height: 42px; }
+	.contact-form-right .rsform-block .selectedOption { font-size: 18px; height: 42px; padding: 8px 14px !important; }
+	.contact-form-right .rsform-block .scrollableList ul { width: 100%; }
+	.contact-form-right .rsform-block .scrollableList ul li { font-size: 16px; padding: 5px 15px !important; }
+	.contact-form-right .rsform-block-what-service-do-you-require .formBody::after, .contact-form-right .rsform-block-how-did-you-find-us .formBody::after, .contact-form-right .rsform-block-please-select-if-you-wish-to-be-contacted-with-marketing-material .formBody::after { width: 42px; height: 42px; }
+	.contact-form-right .formResponsive textarea { height: 160px; }
+	.contact-form-right .formResponsive .formHorizontal .rsform-block-type-your-message-here { margin-bottom: 15px !important; }
+	.contact-form-right .formResponsive .rsform-block-send .rsform-submit-button { height: 60px; width: 100%; }
+	.contact-form-right .formResponsive .rsform-thankyou-button { height: 60px; width: 100%; }
+	.contact-form-right .formResponsive strong.formRequired { right: -15px;font-size: 12px; top: 12px; }
+	.contact-form-right #g-recaptcha-42 { transform: scale(0.80) !important; -webkit-transform:scale(0.80) !important; transform-origin: 0 0 0 !important; -webkit-transform-origin:0 0 !important; }
+	.contact-form-right .rsform-block-captcha-field { width: 250px !important; height: 62px; }
 }
 @media(max-width:639px) {
 	.slider-text h2 { font-size: 20px; }

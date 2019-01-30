@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use AppBundle\Entity\User;
 use JMS\Serializer\Annotation as JMSSerializer;
@@ -71,6 +73,16 @@ class Project
      */
     private $fileTicketId;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $goLiveDate;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Reminder", mappedBy="project", orphanRemoval=true)
+     */
+    private $reminders;
+
 
     /**
      * Constructor
@@ -78,6 +90,7 @@ class Project
     public function __construct() {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
         $this->checklists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->reminders = new ArrayCollection();
     }
 
 
@@ -213,6 +226,49 @@ class Project
     public function getUsers()
     {
         return $this->users;
+    }
+
+    public function getGoLiveDate(): ?\DateTimeInterface
+    {
+        return $this->goLiveDate;
+    }
+
+    public function setGoLiveDate(?\DateTimeInterface $goLiveDate): self
+    {
+        $this->goLiveDate = $goLiveDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reminder[]
+     */
+    public function getReminders(): Collection
+    {
+        return $this->reminders;
+    }
+
+    public function addReminder(Reminder $reminder): self
+    {
+        if (!$this->reminders->contains($reminder)) {
+            $this->reminders[] = $reminder;
+            $reminder->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReminder(Reminder $reminder): self
+    {
+        if ($this->reminders->contains($reminder)) {
+            $this->reminders->removeElement($reminder);
+            // set the owning side to null (unless already changed)
+            if ($reminder->getProject() === $this) {
+                $reminder->setProject(null);
+            }
+        }
+
+        return $this;
     }
 }
 

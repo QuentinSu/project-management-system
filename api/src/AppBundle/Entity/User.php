@@ -46,6 +46,11 @@ class User extends BaseUser
      */
     private $projects;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Company", inversedBy="users")
+     */
+    private $company;
+
     public function __construct()
     {
         parent::__construct();
@@ -80,5 +85,17 @@ class User extends BaseUser
     {
         $project->deleteUser($this);
         $this->projects->removeElement($project);
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): self
+    {
+        $this->company = $company;
+
+        return $this;
     }
 }
