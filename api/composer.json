@@ -13,7 +13,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "AppBundle\\": "src/AppBundle"
         },
         "files": [
             "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
@@ -23,6 +24,8 @@
         "php": ">=5.5.9",
         "ext-pdo_mysql": "^7.2",
         "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/doctrine-migrations-bundle": "^2.0",
+        "doctrine/migrations": "^2.0",
         "doctrine/orm": "^2.5",
         "friendsofsymfony/rest-bundle": "^2.3",
         "friendsofsymfony/user-bundle": "~2.0@dev",
@@ -42,6 +45,7 @@
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
+        "symfony/maker-bundle": "^1.11",
         "symfony/phpunit-bridge": "^4.1",
         "symfony/profiler-pack": "^1.0",
         "symfony/web-server-bundle": "^4.2"

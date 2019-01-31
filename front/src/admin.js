@@ -22,7 +22,22 @@ import Footer from './footer.js';
 import Notifications from './notification.js';
 import {UserMenu} from './user.js';
 
-const whiteTheme = createMuiTheme({ palette: { primary: {main: '#ffffff'}, secondary: {main: '#f44336'} } });
+const whiteTheme = createMuiTheme(
+  {overrides: 
+    {MuiButton: 
+      {text: 
+        { borderColor:'#f44336',
+          background: 'linear-gradient(45deg, white 30%, #c9c9c9 90%)',
+          color: 'black',
+        },
+      },
+    }, 
+  typography: 
+    {useNextVariants: true }
+  },
+  // { palette: { primary: {main: '#ffffff'} }, secondary: {main: '#f44336'}}
+);
+
 var advanced;
 { window.location.href.includes('advanced') 
   ? advanced = false
@@ -74,10 +89,10 @@ class AdminDashboard extends Component {
     return (
         <div className='Tabs'>
             <AppBar position="static">
-            <img className='logo-dashboard' alt='logo RW' src={process.env.PUBLIC_URL + '/rw.png'}/>
+            <img className='logo-dashboard' alt='logo RW' src={process.env.PUBLIC_URL + '/rw.png'} onClick={() => {this.setState(window.location.href = '/admin')}}/>
             <Notifications/>
             <MuiThemeProvider theme={whiteTheme} >
-              <Button variant="contained" color='primary' size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '/admin') : this.setState(window.location.href = '/admin/advanced') }}>
+              <Button  size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '/admin') : this.setState(window.location.href = '/admin/advanced') }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 { advanced
                   ? <text>Advanced</text>
