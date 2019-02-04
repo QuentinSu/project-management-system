@@ -70,4 +70,5 @@ security:
         - { path: ^/project$,         role: IS_AUTHENTICATED_FULLY }
         - { path: ^/profile$,         role: IS_AUTHENTICATED_FULLY }
         - { path: ^/testimonial$,         role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/company$,         role: IS_AUTHENTICATED_FULLY }
         - { path: ^/notification$,         role: IS_AUTHENTICATED_FULLY }

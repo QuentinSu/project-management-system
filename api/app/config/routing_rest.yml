@@ -2,6 +2,9 @@ login:
     type: rest
     resource: AppBundle\Controller\RestLoginController
 
+login/advanced:
+    type: rest
+    resource: AppBundle\Controller\RestLoginController
 
 password_management:
     type: rest
@@ -17,17 +20,41 @@ registration:
     type: rest
     resource: AppBundle\Controller\RestRegistrationController
 
+
 project:
     type: rest
     resource: AppBundle\Controller\ProjectController
+
+
+company:
+    type: rest
+    resource: AppBundle\Controller\CompanyController
+
+
+reminder:
+    type: rest
+    resource: AppBundle\Controller\ReminderController
+
+
+server:
+    type: rest
+    resource: AppBundle\Controller\ServerController
+
+
+server_reminder:
+    type: rest
+    resource: AppBundle\Controller\ServerReminderController
+
 
 checklist:
     type: rest
     resource: AppBundle\Controller\ChecklistController
 
+
 ticket:
     type: rest
     resource: AppBundle\Controller\SupportTicketController
+
 
 testimonial:
     type: rest

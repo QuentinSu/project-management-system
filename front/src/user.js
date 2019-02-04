@@ -421,6 +421,18 @@ class User extends Component {
         }
     }
 
+    switchAdvancedStatus() {
+        if (this.state.roles.includes('ROLE_ADVANCED')) {
+            let newRoles = this.state.roles.slice();
+            newRoles.splice(newRoles.indexOf('ROLE_ADVANCED'), 2);
+            this.setState({roles: newRoles}); 
+        } else {
+            let newRoles = this.state.roles.slice();
+            newRoles.push('ROLE_ADVANCED');
+            this.setState({roles: newRoles}); 
+        }
+    }
+
     saveUser () {
         var self = this;
         axios({
@@ -460,6 +472,7 @@ class User extends Component {
         var date = new Date(this.state.lastlogin);
         var parsedDate = date.toLocaleString('en-GB', { timeZone: 'UTC' });
         var isAdmin = this.state.roles.length > 1;
+        var isAdvanced = this.state.roles.length > 2;
 
         let mappedProjects = this.state.projects.map((project)=>{
             return  <Project key={project.id}
@@ -534,6 +547,15 @@ class User extends Component {
                                 </List>
                             
                         </Card>
+                        <ListItem>
+                            <ListItemText primary='Advanced' />
+                            <ListItemSecondaryAction>
+                            <Switch
+                                checked={this.state.roles.includes('ROLE_ADVANCED')}
+                                onChange = {() => this.switchAdvancedStatus()}
+                            />
+                            </ListItemSecondaryAction>
+                        </ListItem>
                         <ListItem>
                             <Button 
                                 size="small"

@@ -5,6 +5,9 @@
     margin: auto;
 	margin-top: 30px;
 	margin-bottom: 20px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ffffff;
 }
 
 .logo-login {
@@ -165,6 +168,12 @@
 	margin-top: 20px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.advanced-but {
+	position: absolute; /* postulat de départ */
+  top: 50%; left: 50%; /* à 50%/50% du parent référent */
+  transform: translate(-50%); /* décalage de 50% de sa propre taille */
 }
 
 .advanced-but-dashboard {
@@ -369,6 +378,12 @@
     margin: 10px;
     padding: 3px;
 }
+
+.company-card {
+    margin: 10px;
+    padding: 3px;
+}
+
 
 .user-frame {
 	color: white;
@@ -875,3 +890,5 @@ strong , b { font-weight: bold; }
 	.chapel-studios h3 { letter-spacing: 1px; font-size: 20px; }
 	.conatct-address .labe-col { min-width: 70px; }
 }
+
+.mainlog { background: #000000 !important }

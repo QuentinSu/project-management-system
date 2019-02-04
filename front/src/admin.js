@@ -91,15 +91,16 @@ class AdminDashboard extends Component {
             <AppBar position="static">
             <img className='logo-dashboard' alt='logo RW' src={process.env.PUBLIC_URL + '/rw.png'} onClick={() => {this.setState(window.location.href = '/admin')}}/>
             <Notifications/>
+            {localStorage.getItem('isAdvanced') &&
             <MuiThemeProvider theme={whiteTheme} >
               <Button  size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '/admin') : this.setState(window.location.href = '/admin/advanced') }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 { advanced
-                  ? <text>Advanced</text>
-                  : <text>Classic</text>
+                  ? 'Switch to advanced'
+                  : 'Switch to classic'
                 }
               </Button>
-            </MuiThemeProvider>
+            </MuiThemeProvider>}
             <UserMenu username={localStorage.getItem('username')}/>
               {/* If you are in class view, we show projects/users/testimaniols, else advanced admin view (clients, reminders, ...) */}
               { advanced ? (

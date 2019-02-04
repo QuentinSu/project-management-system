@@ -67,6 +67,11 @@ class User extends BaseUser
         return in_array('ROLE_ADMIN', $this->roles);
     }
 
+    public function isAdvanced()
+    {
+        return in_array('ROLE_ADVANCED', $this->roles);
+    }
+
     public function addProject(Project $project)
     {
         $isAlreadyThere = false;

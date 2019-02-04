@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations\RouteResource;
 
 /**
  * @RouteResource("login", pluralize=false)
+ * @RouteResource("login/advanced", pluralize=false)
  */
 class RestLoginController extends RestServiceController implements ClassResourceInterface
 {

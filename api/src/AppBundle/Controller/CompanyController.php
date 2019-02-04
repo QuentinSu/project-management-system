@@ -29,7 +29,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-
+/**
+ * @RouteResource("company", pluralize=false)
+ */
 class CompanyController extends Controller
 {
     // /**
@@ -42,93 +44,90 @@ class CompanyController extends Controller
     //     ]);
     // }
 
-    //  /**
-    //  * @Get("/company")
-    //  * 
-    //  */
-    // public function getAction()
-    // {
-    //     return $this->getDoctrine()->getRepository('AppBundle:company')->findAll();
-    // }
+     /**
+     * @Get("/company")
+     * 
+     */
+    public function getAction()
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Company')->findAll();
+    }
 
-    // /**
-    //  * @Post("/company")
-    //  */
-    // public function postAction(Request $request)
-    // { 
-    //   $data = new company($this->getUser());
-    //   $name = $request->get
-    //   $description = $request->get('description');
-    //   $author = $request->get('author');
+    /**
+     * @Post("/company")
+     */
+    public function postAction(Request $request)
+    { 
+      $data = new Company();
+      $name = $request->get('name');
+      $description = $request->get('description');
+      $phone = $request->get('phone');
 
-    // if( empty($description) || empty($author) )
-    // {
-    //   return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
-    // } 
-    //   $data->setName($description);
-    //   $data->setAuthor($author);
-    //   $em = $this->getDoctrine()->getManager();
-    //   $em->persist($data);
-    //   $em->flush();
-    //   $this->notify('company added');
-    //   return new View("company Added Successfully", Response::HTTP_OK);
-    // }
+        if( empty($description) || empty($name) )
+        {
+        return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
+        } 
+      $data->setName($name);
+      $data->setDescription($description);
+      $data->setPhone($phone);
+      $em = $this->getDoctrine()->getManager();
+      $em->persist($data);
+      $em->flush();
+    //   $this->notify('Company added');
+      return new View("Company Added Successfully", Response::HTTP_OK);
+    }
 
-    // /** 
-    // * @Put("/company/{id}")
-    // */
-    // public function updateAction($id,Request $request)
-    // { 
+    /** 
+    * @Put("/company/{id}")
+    */
+    public function updateAction($id,Request $request)
+    { 
 
-    //     $company = $this->getDoctrine()->getRepository('AppBundle:company')->find($id);
-    //     if (empty($company)) {
-    //         return new View("company not found", Response::HTTP_NOT_FOUND);
-    //     } 
+        $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
+        if (empty($company)) {
+            return new View("company not found", Response::HTTP_NOT_FOUND);
+        } 
 
-    //     // Admin restriction for this view
-    //     if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
-    //         return new View("not allowed", Response::HTTP_FORBIDDEN);
-    //     }
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
         
-    //     $description = $request->get('description');
-    //     $author = $request->get('author');
+        $description = $request->get('description');
+        $name = $request->get('name');
 
-    //     $dbm = $this->getDoctrine()->getManager();
+        $dbm = $this->getDoctrine()->getManager();
 
-    //     !empty($description) ? $company->setDescription($description) : 0;
-    //     !empty($author) ? $company->setAuthor($author) : 0;
+        !empty($description) ? $company->setDescription($description) : 0;
+        !empty($name) ? $company->setName($name) : 0;
 
-    //     $dbm->flush();
+        $dbm->flush();
 
-    //     $this->notify('company n°'.$company->getId().' modified');
+        // $this->notify('Company ID'.$company->getId().' modified');
 
-    //     return new View("company Updated Successfully", Response::HTTP_OK);;
-    // }
+        return new View("Company Updated Successfully", Response::HTTP_OK);;
+    }
 
-    // /**
-    //  * @Delete("/company/{id}")
-    //  */
-    // public function deleteAction($id)
-    // {
-    //     $company = $this->getDoctrine()->getRepository('AppBundle:company')->find($id);
-    //     if (empty($company)) {
-    //         return new View("company not found", Response::HTTP_NOT_FOUND);
-    //     } 
+    /**
+     * @Delete("/company/{id}")
+     */
+    public function deleteAction($id)
+    {
+        $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
+        if (empty($company)) {
+            return new View("Company not found", Response::HTTP_NOT_FOUND);
+        } 
 
-    //     // Admin restriction for this view
-    //     if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
-    //         return new View("not allowed", Response::HTTP_FORBIDDEN);
-    //     }
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
         
-    //     $this->notify('company n°'.$company->getId().' deleted');
-    //     $dbm = $this->getDoctrine()->getManager();
-    //     $dbm->remove($company);
-    //     $dbm->flush();
+        // $this->notify('Company ID'.$company->getId().' deleted');
+        $dbm = $this->getDoctrine()->getManager();
+        $dbm->remove($company);
+        $dbm->flush();
     
-    //     return new View("deleted successfully", Response::HTTP_OK);
-    // }
-//}
-
-   
-
+        return new View("Deleted successfully", Response::HTTP_OK);
+    }
 }

@@ -19,7 +19,7 @@ var config = require('./config.json');
 const apiBaseUrl = config.apiBaseUrl;
 const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } })
 
-// CLASS TO RENDER ALL THE PROJECTS
+// CLASS TO RENDER ALL THE TESTIMONIALS
 
 class Testimonials extends Component {
     constructor(props){

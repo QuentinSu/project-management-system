@@ -12,7 +12,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Checkbox } from '@material-ui/core';
 import Cookies from 'universal-cookie'
 import { array } from 'prop-types';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 var config = require('./config.json');
 
@@ -20,6 +19,19 @@ const apiBaseUrl = config.apiBaseUrl;
 const cookies = new Cookies();
 var rmbMe = false;
 var previousSession = cookies.get("remember_me");
+var testurl;
+
+
+var advanced;
+{ window.location.href.includes('adv') 
+  ? advanced = true
+  : advanced = false};
+
+function parseGetUrl() { 
+  return window.location.origin;
+}
+
+var testurl=parseGetUrl();
 
 /**
  * Login component logs the user, stores its token in local storage and redirects to admin / client page
@@ -47,7 +59,7 @@ class Login extends Component {
       this.checkLogs(null);
     }
     return (
-      <div>
+      <div className={advanced && "mainlog"}>
       <Dialog open={this.state.open}>
         <DialogTitle>{!previousSession && <p>Invalid credentials</p>}{previousSession && <p>Already log in. Work in progress.</p>}</DialogTitle>
         {!previousSession &&
@@ -61,6 +73,13 @@ class Login extends Component {
         <DialogTitle>Already log in. Connection in progress</DialogTitle>
           <CircularProgress/>
       </Dialog> */}
+      <Button  size="small" variant="contained" color={advanced ? "secondary" : "primary"} className='advanced-but' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '?adv') : this.setState(window.location.href = testurl) }}>
+                {/* if on advanced : button to return classical; else button to go advanced mode */}
+                { advanced
+                  ? 'Switch to classic'
+                  : 'Switch to advanced'
+                }
+      </Button>
       <Card className='login-form'>
         <CardMedia title="Rhys Welsh Logo" className="logo-login">
           <img src={process.env.PUBLIC_URL + '/rw.png'}/>
@@ -150,7 +169,13 @@ class Login extends Component {
                 if (response.data.is_admin) {
                   localStorage.setItem('isAdmin', true);
                   localStorage.setItem('username', response.data.current_username);
-                  window.location.href = 'admin';
+                  if(response.data.is_advanced) {
+                    localStorage.setItem('isAdvanced', true);
+                    if(advanced) {
+                      window.location.href = 'admin/advanced';
+                    }
+                  }
+                  window.location.href = 'admin'; 
                 } else {
                   localStorage.setItem('isAdmin', false);
                   localStorage.setItem('username', response.data.username);

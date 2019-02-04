@@ -56,6 +56,7 @@ class RestProfileController extends RestServiceController implements ClassResour
             }, $users);
             $data['current_username'] = $this->getUser()->getUsername();
             $data['is_admin'] = $this->getUser()->isAdmin();
+            $data['is_advanced'] = $this->getUser()->isAdvanced();
             return $data;    
         } else if ($this->getUser()) {
             $data = array(
@@ -63,6 +64,7 @@ class RestProfileController extends RestServiceController implements ClassResour
                 'roles' => $this->getUser()->getRoles(),
             );
             $data['is_admin'] = $this->getUser()->isAdmin();
+            $data['is_advanced'] = $this->getUser()->isAdvanced();
             return $data;
         } else {
             throw new AccessDeniedHttpException();

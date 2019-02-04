@@ -83,7 +83,6 @@ class Project
      */
     private $reminders;
 
-
     /**
      * Constructor
      */

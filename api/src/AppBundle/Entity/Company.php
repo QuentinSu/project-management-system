@@ -5,8 +5,12 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMSSerializer;
+use AppBundle\Entity\User;
 
 /**
+ * Company
+ * @ORM\Table(name="company")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CompanyRepository")
  */
 class Company
@@ -34,6 +38,7 @@ class Company
     private $phone;
 
     /**
+     * @var date
      * @ORM\Column(type="datetime")
      */
     private $dateCreation;
@@ -46,6 +51,8 @@ class Company
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        // we set up "created"+"modified"
+        $this->setDateCreation(new \DateTime());
     }
 
     public function getId(): ?int
@@ -89,12 +96,17 @@ class Company
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTimeInterface
+    /**
+     * Get modified date
+     *
+     * @return date
+     */
+    public function getDateCreation()
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): self
+    public function setDateCreation(?date $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
 
