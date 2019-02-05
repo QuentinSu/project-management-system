@@ -14,4 +14,14 @@ namespace AppBundle\Repository;
  */
 class CompanyRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    // public function findDateCreation(int $id)
+    // {
+    //     return $this->getEntityManager()
+    //         ->createQuery(
+    //             'SELECT date_creation FROM AppBundle:Company WHERE id='.$id
+    //         )
+    //         ->getResult();
+    // }
+
 }
