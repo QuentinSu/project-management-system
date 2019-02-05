@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Company;
 use AppBundle\Controller\RestServiceController;
+use AppBundle\Repository\CompanyRepository;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -70,6 +71,7 @@ class CompanyController extends Controller
       $data->setName($name);
       $data->setDescription($description);
       $data->setPhone($phone);
+      $data->setDateCreation(new \DateTime());
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
@@ -95,12 +97,13 @@ class CompanyController extends Controller
         
         $description = $request->get('description');
         $name = $request->get('name');
+        $phone = $request->get('name');
 
         $dbm = $this->getDoctrine()->getManager();
 
         !empty($description) ? $company->setDescription($description) : 0;
         !empty($name) ? $company->setName($name) : 0;
-
+        !empty($phone) ? $company->setPhone($phone) : 0;
         $dbm->flush();
 
         // $this->notify('Company ID'.$company->getId().' modified');

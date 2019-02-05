@@ -208,7 +208,8 @@ class Companies extends Component {
             data: {
                 "description": this.state.description,
                 "name": this.state.name,
-                "phone":this.state.phone
+                "phone":this.state.phone,
+                "dateCreation":this.state.dateCreation
             }
           })
             .then(function (response) {
@@ -253,7 +254,7 @@ class Companies extends Component {
                 defaultValue={this.state.id}
                 label='ID'
             />
-            Date : {this.state.dateCreation} BORDEL
+            Date : {this.state.dateCreation} / {parsedCreation}
             <TextField disabled
                 defaultValue={parsedCreation}
                 value={this.state.dateCreation}            
@@ -271,6 +272,12 @@ class Companies extends Component {
                 multiline
                 defaultValue={this.state.description}
                 label='Description'
+            />
+
+            <TextField fullWidth
+                onChange={event => this.setState({phone:event.target.value})}
+                defaultValue={this.state.phone}
+                label='Phone'
             />
             
             </div>
