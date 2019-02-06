@@ -11,13 +11,41 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+//import Typography from '@material-ui/core/Typography';
+//import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
-const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } })
+//const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } });
+
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth() + 1; //January is 0!
+var yyyy = today.getFullYear();
+var hh = today.getHours();
+var min = today.getMinutes();
+var ss = today.getSeconds();
+
+if (dd < 10) {
+  dd = '0' + dd;
+}
+
+if (mm < 10) {
+  mm = '0' + mm;
+}
+if (hh < 10) {
+    hh = '0' + hh;
+}
+  
+if (min < 10) {
+    min = '0' + min;
+}
+if (ss < 10) {
+    ss = '0' + ss;
+}
+
+var created = yyyy + '-' + mm + '-' + dd +' '+ hh + ":" + min + ":" + ss;
 
 // CLASS TO RENDER ALL THE COMPANIES
 
@@ -31,7 +59,7 @@ class Companies extends Component {
           newName: null,
           newDescription: null,
           newPhone: null,
-          newDateCreation: null
+          newCreation: created
           //users: ????,
       }
     };
@@ -75,6 +103,7 @@ class Companies extends Component {
 
     saveNewCompany() {
         var self = this;
+        console.log("Save new company trigger : "+this.state.newCreation);
         axios({
             method: 'post', //you can set what request you want to be
             url: apiBaseUrl+'company',
@@ -86,7 +115,7 @@ class Companies extends Component {
                 "name": this.state.newName,
                 "description": this.state.newDescription,
                 "phone": this.state.newPhone,
-                "dateCreation": new Date()
+                "creation": this.state.newCreation
             }
           })
             .then(function (response) {
@@ -110,7 +139,7 @@ class Companies extends Component {
                             description={company.description}
                             name={company.name}
                             phone={company.phone}
-                            dateCreation={company.dateCreation}
+                            creation={company.creation}
                             updateCompanies={this.updateCompanies.bind(this)}
                 />     
         })
@@ -191,7 +220,7 @@ class Companies extends Component {
             description: props.description,
             name: props.name,
             phone: props.phone,
-            dateCreation: props.dateCreation,
+            creation: props.creation,
             openDelete: false
         }
     }
@@ -209,12 +238,12 @@ class Companies extends Component {
                 "description": this.state.description,
                 "name": this.state.name,
                 "phone":this.state.phone,
-                "dateCreation":this.state.dateCreation
+                "creation":this.state.creation
             }
           })
             .then(function (response) {
               if(response.status === 200){
-                self.props.updateCompany();
+                self.props.updateCompanies();
               }
             })
             .catch(function (error) {
@@ -242,9 +271,9 @@ class Companies extends Component {
     }
 
     render() {
-        var creation = new Date(this.state.dateCreation);
-        var parsedCreation = creation.toLocaleString('en-GB', { timeZone: 'UTC' });
-       
+        //var dateCreation = new Date(this.state.dateCreation);
+        //var parsedCreation = dateCreation.toLocaleString('en-GB', { timeZone: 'UTC' });
+       console.log(this.state.creation);
         return (
             <Card className='company-card'>
         <div>
@@ -254,10 +283,11 @@ class Companies extends Component {
                 defaultValue={this.state.id}
                 label='ID'
             />
-            Date : {this.state.dateCreation} / {parsedCreation}
+            {/* Date : {this.state.dateCreation} / {parsedCreation} */}
+
             <TextField disabled
-                defaultValue={parsedCreation}
-                value={this.state.dateCreation}            
+                defaultValue={this.state.creation}
+                value={this.state.creation}            
                 label='Creation date'
             />
             

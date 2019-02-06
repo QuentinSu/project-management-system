@@ -63,6 +63,7 @@ class CompanyController extends Controller
       $name = $request->get('name');
       $description = $request->get('description');
       $phone = $request->get('phone');
+      $dateCreation = $request->get('dateCreation'); // to test
 
         if( empty($description) || empty($name) )
         {
@@ -71,7 +72,7 @@ class CompanyController extends Controller
       $data->setName($name);
       $data->setDescription($description);
       $data->setPhone($phone);
-      $data->setDateCreation(new \DateTime());
+      $data->setDateCreation($dateCreation);
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
@@ -97,13 +98,16 @@ class CompanyController extends Controller
         
         $description = $request->get('description');
         $name = $request->get('name');
-        $phone = $request->get('name');
+        $phone = $request->get('phone');
+        $dateCreation = $request->get('dateCreation');
 
         $dbm = $this->getDoctrine()->getManager();
 
         !empty($description) ? $company->setDescription($description) : 0;
         !empty($name) ? $company->setName($name) : 0;
         !empty($phone) ? $company->setPhone($phone) : 0;
+        !empty($dateCreation) ? $company->setDateCreation($dateCreation) : 0;
+
         $dbm->flush();
 
         // $this->notify('Company ID'.$company->getId().' modified');

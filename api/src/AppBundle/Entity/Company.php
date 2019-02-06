@@ -5,8 +5,9 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMSSerializer;
+use AppBundle\Entity\date;
 use AppBundle\Entity\User;
+use JMS\Serializer\Annotation as JMSSerializer;
 
 /**
  * Company
@@ -38,8 +39,7 @@ class Company
     private $phone;
 
     /**
-     * @var date
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="string", name="dateCreation", nullable=true)
      */
     private $dateCreation;
 
@@ -48,11 +48,18 @@ class Company
      */
     private $users;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $creation;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+
         // we set up "created"+"modified"
-        $this->setDateCreation(new \DateTime());
+        $date = new \DateTime();
+        $this->setCreation($date->format('Y-m-d H:i:s'));
     }
 
     public function getId(): ?int
@@ -96,17 +103,12 @@ class Company
         return $this;
     }
 
-    /**
-     * Get modified date
-     *
-     * @return date
-     */
-    public function getDateCreation()
+    public function getDateCreation(): ?string
     {
-        return $this->dateCreation;
+        return (string) $this->dateCreation;
     }
 
-    public function setDateCreation(?date $dateCreation): self
+    public function setDateCreation(?string $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
 
@@ -140,6 +142,18 @@ class Company
                 $user->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreation(): ?string
+    {
+        return $this->creation;
+    }
+
+    public function setCreation(string $creation): self
+    {
+        $this->creation = $creation;
 
         return $this;
     }

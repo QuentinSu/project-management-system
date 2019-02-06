@@ -93,7 +93,7 @@ class AdminDashboard extends Component {
             <Notifications/>
             {localStorage.getItem('isAdvanced') &&
             <MuiThemeProvider theme={whiteTheme} >
-              <Button  size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '/admin') : this.setState(window.location.href = '/admin/advanced') }}>
+              <Button  size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 { advanced
                   ? 'Switch to advanced'
