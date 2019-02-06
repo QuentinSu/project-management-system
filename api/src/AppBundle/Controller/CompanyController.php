@@ -63,7 +63,7 @@ class CompanyController extends Controller
       $name = $request->get('name');
       $description = $request->get('description');
       $phone = $request->get('phone');
-      $dateCreation = $request->get('dateCreation'); // to test
+      $creation = $request->get('creation'); // to test
 
         if( empty($description) || empty($name) )
         {
@@ -72,7 +72,7 @@ class CompanyController extends Controller
       $data->setName($name);
       $data->setDescription($description);
       $data->setPhone($phone);
-      $data->setDateCreation($dateCreation);
+      $data->setCreation($creation);
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
@@ -99,14 +99,14 @@ class CompanyController extends Controller
         $description = $request->get('description');
         $name = $request->get('name');
         $phone = $request->get('phone');
-        $dateCreation = $request->get('dateCreation');
+        $creation = $request->get('creation');
 
         $dbm = $this->getDoctrine()->getManager();
 
         !empty($description) ? $company->setDescription($description) : 0;
         !empty($name) ? $company->setName($name) : 0;
         !empty($phone) ? $company->setPhone($phone) : 0;
-        !empty($dateCreation) ? $company->setDateCreation($dateCreation) : 0;
+        !empty($creation) ? $company->setCreation($creation) : 0;
 
         $dbm->flush();
 

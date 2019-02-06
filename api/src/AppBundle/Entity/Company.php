@@ -41,7 +41,7 @@ class Company
     /**
      * @ORM\Column(type="string", name="dateCreation", nullable=true)
      */
-    private $dateCreation;
+    private $dateCreation;  // deprecated but imposssible to remove (metadata issue...)
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\user", mappedBy="company")
@@ -102,12 +102,12 @@ class Company
 
         return $this;
     }
-
-    public function getDateCreation(): ?string
+    // deprecated but imposssible to remove (metadata issue...)
+    public function getDateCreation(): ?string  
     {
         return (string) $this->dateCreation;
     }
-
+    // deprecated but imposssible to remove (metadata issue...)
     public function setDateCreation(?string $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
