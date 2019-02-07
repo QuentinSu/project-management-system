@@ -39,6 +39,7 @@ var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
 const cookies = new Cookies();
+var lascompanies;
 
 export class UserMenu extends React.Component {
     constructor(props) {
@@ -369,15 +370,41 @@ export class NewUserDialog extends React.Component {
     );
 }
 
+function Company(props) {
+    return (
+        <div>
+        <ListItem fullWidth key={props.companyId}> 
+            <ListItemText>
+                <Typography>
+                    {props.name}
+                </Typography>
+            </ListItemText>
+            <ListItemSecondaryAction>
+                <Button className='button-remove-company'
+                    size='small'
+                    onClick={() => props.removeCompanyLink(props.companyId)} 
+                    color="secondary" >
+                        <RemoveIcon />
+                        Company
+                </Button>
+            </ListItemSecondaryAction>
+        </ListItem>
+        <Divider/>
+        </div>
+    );
+}
+
 class User extends Component {
     constructor(props){
         super(props);
         this.state={
+            companies: [],
             id: props.id,
             username: props.username,
             email: props.email,
             enabled: props.enabled,
             lastlogin: props.lastlogin,
+            company: props.company,
             roles: props.roles,
             projects: props.projects,
             tabValue: 0,
@@ -451,6 +478,37 @@ class User extends Component {
         });
     }
 
+    handleChange = name => value => {
+        this.setState({
+          [name]: value,
+        });
+    };
+
+    listCompanies () {
+        var self = this;
+        axios({
+            method: 'get', //you can set what request you want to be
+            url: apiBaseUrl+'company',
+            headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+            }
+        })
+            .then(function (response) {
+            if(response.status === 200){
+                var newCompanies = response.data.map(company=>({
+                    value: company.id,
+                    label: company.name
+                }));
+                console.log(newCompanies);
+                self.setState({companies:newCompanies});
+            // self.setState({companies:newCompanies});
+            }
+            })
+            .catch(function (error) {
+            });
+    }
+
     removeProjectLink(projectId) {
         var self = this;
         axios({
@@ -473,6 +531,27 @@ class User extends Component {
         var parsedDate = date.toLocaleString('en-GB', { timeZone: 'UTC' });
         var isAdmin = this.state.roles.length > 1;
         var isAdvanced = this.state.roles.length > 2;
+        var currentCompanyName;
+        
+        if(this.state.company != undefined) {
+            currentCompanyName = this.state.company.name;
+        }
+
+        var onceChargeList = false;
+        var listOfCompanies;
+        var mappedComp;
+        if(!onceChargeList && (this.state.companies != undefined)) {
+            this.listCompanies();
+            listOfCompanies = this.state.companies;
+            
+        // mappedComp = this.state.companies.map((comp)=>{
+        //     return  <Company key={comp.id}
+        //                     companyId={comp.id}
+        //                     name={comp.name}
+        //             />
+        //}) 
+            onceChargeList = true;
+        }
 
         let mappedProjects = this.state.projects.map((project)=>{
             return  <Project key={project.id}
@@ -483,8 +562,10 @@ class User extends Component {
                     />
         })
 
+
         return (<ExpansionPanel hidden={this.props.hidden}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    
                     <Typography color="textSecondary">
                         Username: 
                     </Typography>
@@ -511,6 +592,21 @@ class User extends Component {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                     <List className="user-details">
+                        <ListItem>
+                            {/* {mappedComp} */}
+                            <TextField
+                                defaultValue='No comp. added'
+                                value={listOfCompanies}
+                                label='List of companies'
+                            />
+                        </ListItem>
+                        <ListItem>
+                            <TextField
+                                defaultValue=''
+                                value={currentCompanyName}
+                                label='Company'
+                            />
+                        </ListItem>
                         <ListItem>
                             <TextField
                                 defaultValue={this.state.email}
@@ -632,6 +728,7 @@ class Users extends Component {
                             enabled={user.enabled}
                             lastlogin={user.lastLogin}
                             roles={user.roles}
+                            company={user.company}
                             projects = {user.projects}
                             hidden = {user.hidden ? user.hidden : false}
                             handleUsersChange={this.handleUsersChange.bind(this)}

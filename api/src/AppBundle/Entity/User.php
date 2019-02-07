@@ -47,7 +47,7 @@ class User extends BaseUser
     private $projects;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Company", inversedBy="users")
+     * @ORM\ManyToOne(targetEntity="Company", inversedBy="users")
      */
     private $company;
 

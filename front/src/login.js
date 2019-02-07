@@ -19,8 +19,6 @@ const apiBaseUrl = config.apiBaseUrl;
 const cookies = new Cookies();
 var rmbMe = false;
 var previousSession = cookies.get("remember_me");
-var testurl;
-
 
 var advanced;
 { window.location.href.includes('adv') 
@@ -160,6 +158,7 @@ class Login extends Component {
             .then(function (response) {
               // If the user is logged
               if(response.status === 200){
+                // remember me cookie
                 if(rmbMe) {
                   let d = new Date();
                   d.setTime(d.getTime() + (60*1000)*(1440*365)); // (60*1000)=1min; 1440=1day. => 1 year
@@ -173,9 +172,13 @@ class Login extends Component {
                     localStorage.setItem('isAdvanced', true);
                     if(advanced) {
                       window.location.href = 'admin/advanced';
+                    } else {
+                      window.location.href = 'admin';
                     }
+                  } else {
+                    localStorage.setItem('isAdvanced', false);
+                    window.location.href = 'admin';
                   }
-                  window.location.href = 'admin'; 
                 } else {
                   localStorage.setItem('isAdmin', false);
                   localStorage.setItem('username', response.data.username);

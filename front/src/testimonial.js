@@ -118,7 +118,6 @@ class Testimonials extends Component {
                 </Button>
                 </MuiThemeProvider>
               </div>
-            var status = null
           } else {
             var button = 
             <Button onClick={() => this.setState({ open: true })} color="primary" className='new-button'>

@@ -51,6 +51,7 @@ class RestProfileController extends RestServiceController implements ClassResour
                     'enabled' => $userData->isEnabled(),
                     'lastLogin' => $userData->getLastLogin(),
                     'roles' => $userData->getRoles(),
+                    'company' => $userData->getCompany(),
                     'projects' => $userData->getProjects()
                 );
             }, $users);
@@ -89,6 +90,7 @@ class RestProfileController extends RestServiceController implements ClassResour
                 'enabled' => $user->isEnabled(),
                 'lastLogin' => $user->getLastLogin(),
                 'roles' => $user->getRoles(),
+                'company' => $user->getCompany(),
                 'projects' => $user->getProjects()
             );
         } else if ($user !== $this->getUser()) {
@@ -101,6 +103,7 @@ class RestProfileController extends RestServiceController implements ClassResour
             'enabled' => $user->isEnabled(),
             'lastLogin' => $user->getLastLogin(),
             'roles' => $user->getRoles(),
+            'company' => $user->getCompany(),
             'projects' => $user->getProjects()
         );
     }
