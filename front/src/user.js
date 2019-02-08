@@ -394,8 +394,10 @@ function Company(props) {
 }
 
 class User extends Component {
+ 
     constructor(props){
         super(props);
+        this.onceChargeList = false;
         this.state={
             companies: [],
             id: props.id,
@@ -499,7 +501,6 @@ class User extends Component {
                     value: company.id,
                     label: company.name
                 }));
-                console.log(newCompanies);
                 self.setState({companies:newCompanies});
             // self.setState({companies:newCompanies});
             }
@@ -533,23 +534,23 @@ class User extends Component {
         var currentCompanyName;
         
         if(this.state.company != undefined) {
+            console.log(this.state.company.name);
             currentCompanyName = this.state.company.name;
         }
 
-        var onceChargeList = false;
         var listOfCompanies;
         var mappedComp;
-        if(!onceChargeList && (this.state.companies != undefined)) {
+
+        if(!this.onceChargeList) {
             this.listCompanies();
+            this.onceChargeList = true;
+        }
+        if(this.state.companies != undefined) {
             listOfCompanies = this.state.companies;
-            
+            console.log(listOfCompanies);
             mappedComp = this.state.companies.map((comp)=>{
-                return  <Company key={comp.id}
-                                companyId={comp.id}
-                                name={comp.name}
-                        />
+                return <option key={comp.value} value={comp.value}>{comp.label}</option>
             }) 
-            onceChargeList = true;
         }
 
         let mappedProjects = this.state.projects.map((project)=>{
@@ -590,16 +591,14 @@ class User extends Component {
                     </Typography>
                     </ExpansionPanelSummary>
                     <p></p>
-                    {mappedComp}
                     <ExpansionPanelDetails>
                     <List className="user-details">
-                        <ListItem>
-                            <TextField
-                                defaultValue='No comp. added'
-                                value={listOfCompanies}
-                                label='List of companies'
-                            />
-                        </ListItem>
+                        <Select label='listCompanies'
+                            onChange={this.handleMultiChange}
+                            defaultValue={this.state.companyId}
+                            className="form-control">
+                            { this.onceChargeList && mappedComp}
+                        </Select>
                         <ListItem>
                             <TextField
                                 defaultValue=''
