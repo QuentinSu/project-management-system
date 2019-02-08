@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import StarIcon from '@material-ui/icons/Star';
+import StarIcon from '@material-ui/icons/StarRounded';
+import StarHalf from '@material-ui/icons/StarHalfRounded'
 import { Link, NavLink } from 'react-router-dom';
 import AppBar from 'material-ui/AppBar';
 import Typography from '@material-ui/core/Typography';
@@ -95,10 +96,16 @@ class AdminDashboard extends Component {
             <MuiThemeProvider theme={whiteTheme} >
               <Button  size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
+                <div id='advanced-but-dashboard-long-text'>
                 { advanced
                   ? 'Switch to advanced'
                   : 'Switch to classic'
-                }
+                }</div>
+                <div id='advanced-but-dashboard-short-text' >
+                { advanced
+                  ? <StarHalf />
+                  : <StarIcon />
+                }</div>
               </Button>
             </MuiThemeProvider>}
             <UserMenu username={localStorage.getItem('username')}/>

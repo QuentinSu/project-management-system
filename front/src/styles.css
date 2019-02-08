@@ -429,12 +429,40 @@
 	background: linear-gradient(#fff 94%, #a2cf6e);
 }
 
+#advanced-but-dashboard-long-text {
+	display: block;
+}
+#advanced-but-dashboard-short-text {
+	display: none;
+}
+
+@media(max-width: 1000px) {
+	.advanced-but-dashboard {
+			left:0;
+	}
+}
+
 @media(max-width: 750px) {
 	.notification-button {
 		position: absolute !important;
 		top:20px;
 		left:0px;
 		width: 50px !important;
+	}
+
+	.advanced-but-dashboard {
+		position: absolute !important;
+		top:60px;
+		left:0px;
+		width: 50px !important;
+	}
+
+	#advanced-but-dashboard-long-text {
+		display: none;
+	}
+
+	#advanced-but-dashboard-short-text {
+		display: block;
 	}
 
 	.user-frame {

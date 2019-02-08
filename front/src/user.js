@@ -39,7 +39,6 @@ var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
 const cookies = new Cookies();
-var lascompanies;
 
 export class UserMenu extends React.Component {
     constructor(props) {
@@ -544,12 +543,12 @@ class User extends Component {
             this.listCompanies();
             listOfCompanies = this.state.companies;
             
-        // mappedComp = this.state.companies.map((comp)=>{
-        //     return  <Company key={comp.id}
-        //                     companyId={comp.id}
-        //                     name={comp.name}
-        //             />
-        //}) 
+            mappedComp = this.state.companies.map((comp)=>{
+                return  <Company key={comp.id}
+                                companyId={comp.id}
+                                name={comp.name}
+                        />
+            }) 
             onceChargeList = true;
         }
 
@@ -590,10 +589,11 @@ class User extends Component {
                         {isAdmin ? 'Admin' : 'User'}
                     </Typography>
                     </ExpansionPanelSummary>
+                    <p></p>
+                    {mappedComp}
                     <ExpansionPanelDetails>
                     <List className="user-details">
                         <ListItem>
-                            {/* {mappedComp} */}
                             <TextField
                                 defaultValue='No comp. added'
                                 value={listOfCompanies}
