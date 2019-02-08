@@ -435,6 +435,12 @@
 	right:100px;
 }
 
+.company-logo {
+	height: 150px;
+	width: 150px;
+	display:block;
+}
+
 .completed-notification-folder {
 	background-color: #a2cf6e !important;
 }

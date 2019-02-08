@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import Card from '@material-ui/core/Card';
+import CardMedia from '@material-ui/core/CardMedia';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -12,6 +13,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dropzone from 'react-dropzone';
+
 
 //import Typography from '@material-ui/core/Typography';
 //import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
@@ -227,6 +229,26 @@ class Companies extends Component {
         }
     }
 
+    onDrop(files) {
+        var self = this;
+        files.forEach(function(file) {
+            const data = new FormData();
+            data.append('upload', file);
+            var headers = {
+                Authorization: 'Bearer ' + localStorage.getItem('session'),
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+            axios.post(apiBaseUrl+'company/'+self.props.id+'/file', data, {headers:headers})
+                .then(function (response) {
+                    // self.props.handleProjectChange('modifyTicketFiles');
+                    // self.setState({open:true});
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+    }
+
     saveCompany() {
         var self = this;
         axios({
@@ -272,14 +294,43 @@ class Companies extends Component {
             });
     }
 
+    getUrlFile(path) {
+        var self = this;
+        axios({
+            method: 'get', //you can set what request you want to be
+            url: apiBaseUrl+'company/'+this.state.id+'/file/'+path,
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('session'),
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          })
+            .then(function (response) {
+              if(response.status === 200){
+                // self.setState({ openDelete: false });
+                // self.props.updateCompanies();
+                return response.data;
+              }
+            })
+            .catch(function (error) {
+            });
+    }
+
+
     render() {
         //var dateCreation = new Date(this.state.dateCreation);
         //var parsedCreation = dateCreation.toLocaleString('en-GB', { timeZone: 'UTC' });
        console.log(this.state.creation);
+       var logoUrl = './company_logo/'+this.state.name.trim()+'.jpg';
+
         return (
             <Card className='company-card'>
         <div>
-        
+            <img src={this.state.name=='Rhys Welsh' && require('./company_logo/'+this.state.name.replace(/\s/g,'')) } />
+            {/* <CardMedia
+                className='company-logo'
+                src={this.getUrlFile(logoUrl)}
+                title="Company Logo"
+            /> */}
             <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
                 <p>Drop file or click to upload (max: 10M)</p>
             </Dropzone>

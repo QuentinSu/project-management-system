@@ -152,6 +152,8 @@ class CompanyController extends Controller
          $file = $request->files->get('upload');
          $status = array('status' => "success","fileUploaded" => false);
  
+         $nameStored = str_replace(' ', '', $company->getName()).'.'.$file->getClientOriginalExtension();
+         
          // If a file was uploaded
          if(!is_null($file)){
              $isAccepted = in_array(
@@ -165,30 +167,29 @@ class CompanyController extends Controller
              if(!$isAccepted) {
                  return new View("not allowed", Response::HTTP_FORBIDDEN);
              }
-             $path = "./../uploads/logos/";
-             $file->move($path, $file->getClientOriginalName()); // move the file to a path
+             $path = "./../../front/src/company_logo/";
+             $file->move($path, $nameStored); // move the file to a path
              $status = array('status' => "success","fileUploaded" => true);
- 
          }
  
-         // Handle file array for ticket here
+         // Handle file array for company here
          $files = $company->getFiles();
          $files = ($files === null) ? array() : $files;
-         if (!in_array($file->getClientOriginalName(), $files)) {
-             array_push($files, $file->getClientOriginalName());
+         if (!in_array($nameStored, $files)) {
+             array_push($files, $nameStored);
              $company->setFiles($files); 
              $em = $this->getDoctrine()->getManager();
-             $em->persist($ticket);
+             $em->persist($company);
              $em->flush();
          }
  
          //$this->notify('File added on company n°'.$company->getId());
  
-         $subject = "[RWSupport] File uploaded on company: " . $company->getName();
-         $content = "Hi Rhys, file has been uploaded for company: " . $company->getName() . "\nFile name: " . $file->getClientOriginalName();
-         foreach ($this->getParameter('admin_mails') as $mailAddress) {
-             mail($mailAddress,$subject,$content);
-           }    
+        //  $subject = "[RWSupport] File uploaded on company: " . $company->getName();
+        //  $content = "Hi Rhys, file has been uploaded for company: " . $company->getName() . "\nFile name: " . $file->getClientOriginalName();
+        //  foreach ($this->getParameter('admin_mails') as $mailAddress) {
+        //      mail($mailAddress,$subject,$content);
+        //    }    
  
          return $status;
      }
@@ -219,7 +220,7 @@ class CompanyController extends Controller
  
          $this->notify('File deleted on company '.$company->getName());
  
-         $path = './../uploads/'.$request->get('path');
+         $path = './../../front/src/company_logo/'.$request->get('path');
          if (file_exists($path)) {
              unlink($path);
              return array('status' => 'success');
@@ -235,7 +236,7 @@ class CompanyController extends Controller
       */
      public function getFileAction(Request $request, Company $company)
      {
-         $path = './../uploads/'.$request->get('path');
+         $path = './../../front/src/company_logo/'.$request->get('path');
          if (file_exists($path)) {
              return new BinaryFileResponse($path);
          }
