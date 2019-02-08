@@ -11,6 +11,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Dropzone from 'react-dropzone';
+
 //import Typography from '@material-ui/core/Typography';
 //import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
@@ -278,12 +280,9 @@ class Companies extends Component {
             <Card className='company-card'>
         <div>
         
-            <TextField 
-                disabled
-                defaultValue={this.state.id}
-                label='ID'
-            />
-            {/* Date : {this.state.dateCreation} / {parsedCreation} */}
+            <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
+                <p>Drop file or click to upload (max: 10M)</p>
+            </Dropzone>
 
             <TextField disabled
                 defaultValue={this.state.creation}

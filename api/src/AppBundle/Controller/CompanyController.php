@@ -137,4 +137,109 @@ class CompanyController extends Controller
     
         return new View("Deleted successfully", Response::HTTP_OK);
     }
+
+
+    // GESTION OF FILES - for the moment used for company logo!
+    /**
+     * @Post("/company/{company}/file")
+     * 
+     * @ParamConverter("company", class="AppBundle:Company")
+     * 
+     */
+     public function postFileAction(Request $request, Company $company)
+     { 
+         // Handle file here
+         $file = $request->files->get('upload');
+         $status = array('status' => "success","fileUploaded" => false);
+ 
+         // If a file was uploaded
+         if(!is_null($file)){
+             $isAccepted = in_array(
+                 $file->getClientOriginalExtension(),
+                 array(
+                     "gif",
+                     "png", 
+                     "jpg"
+                 )
+             );
+             if(!$isAccepted) {
+                 return new View("not allowed", Response::HTTP_FORBIDDEN);
+             }
+             $path = "./../uploads/logos/";
+             $file->move($path, $file->getClientOriginalName()); // move the file to a path
+             $status = array('status' => "success","fileUploaded" => true);
+ 
+         }
+ 
+         // Handle file array for ticket here
+         $files = $company->getFiles();
+         $files = ($files === null) ? array() : $files;
+         if (!in_array($file->getClientOriginalName(), $files)) {
+             array_push($files, $file->getClientOriginalName());
+             $company->setFiles($files); 
+             $em = $this->getDoctrine()->getManager();
+             $em->persist($ticket);
+             $em->flush();
+         }
+ 
+         //$this->notify('File added on company n°'.$company->getId());
+ 
+         $subject = "[RWSupport] File uploaded on company: " . $company->getName();
+         $content = "Hi Rhys, file has been uploaded for company: " . $company->getName() . "\nFile name: " . $file->getClientOriginalName();
+         foreach ($this->getParameter('admin_mails') as $mailAddress) {
+             mail($mailAddress,$subject,$content);
+           }    
+ 
+         return $status;
+     }
+ 
+     /**
+      * @Delete("/company/{company}/file/{path}")
+      * 
+      * @ParamConverter("company", class="AppBundle:Company")
+      * 
+      */
+     public function deleteFileAction(Request $request, Company $company)
+     {
+ 
+         // Handle file array for ticket here
+         $files = $company->getFiles();
+         $files = ($files === null) ? array() : $files;
+         $newFiles = array();
+         foreach ($files as $file) {
+             if ($file !== $request->get('path')) {
+                 array_push($newFiles, $file);
+             }
+         }
+         $company->setFiles($newFiles);
+ 
+         $em = $this->getDoctrine()->getManager();
+         $em->persist($company);
+         $em->flush();
+ 
+         $this->notify('File deleted on company '.$company->getName());
+ 
+         $path = './../uploads/'.$request->get('path');
+         if (file_exists($path)) {
+             unlink($path);
+             return array('status' => 'success');
+         }
+         return array('status' => 'failed');
+     }
+ 
+     /**
+      * @Get("/company/{company}/file/{path}")
+      * 
+      * @ParamConverter("company", class="AppBundle:Company")
+      * 
+      */
+     public function getFileAction(Request $request, Company $company)
+     {
+         $path = './../uploads/'.$request->get('path');
+         if (file_exists($path)) {
+             return new BinaryFileResponse($path);
+         }
+         return array('status' => 'failed');
+     }
+
 }

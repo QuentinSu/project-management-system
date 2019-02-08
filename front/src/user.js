@@ -24,6 +24,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import Card from '@material-ui/core/Card';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import axios from 'axios';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -398,6 +399,7 @@ class User extends Component {
     constructor(props){
         super(props);
         this.onceChargeList = false;
+        this.selectedCompId;
         this.state={
             companies: [],
             id: props.id,
@@ -466,7 +468,7 @@ class User extends Component {
         axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'profile/'+self.state.id,
-            data: {email:self.state.email, enabled:self.state.enabled, roles:self.state.roles},
+            data: {email:self.state.email, enabled:self.state.enabled, roles:self.state.roles, companyId:self.selectedCompId},
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -484,6 +486,11 @@ class User extends Component {
           [name]: value,
         });
     };
+
+    handleChange = event => {
+        this.setState({ [event.target.label]: event.target.value });
+        this.selectedCompId=event.target.value;
+      };
 
     listCompanies () {
         var self = this;
@@ -532,10 +539,14 @@ class User extends Component {
         var isAdmin = this.state.roles.length > 1;
         var isAdvanced = this.state.roles.length > 2;
         var currentCompanyName;
+        var currentCompanyId;
         
         if(this.state.company != undefined) {
-            console.log(this.state.company.name);
+            console.log(this.state.company.id);
             currentCompanyName = this.state.company.name;
+            currentCompanyId = this.state.company.id;
+        } else {
+            currentCompanyId = -1;
         }
 
         var listOfCompanies;
@@ -544,12 +555,14 @@ class User extends Component {
         if(!this.onceChargeList) {
             this.listCompanies();
             this.onceChargeList = true;
+            this.selectedCompId = currentCompanyId;
+
         }
         if(this.state.companies != undefined) {
             listOfCompanies = this.state.companies;
             console.log(listOfCompanies);
             mappedComp = this.state.companies.map((comp)=>{
-                return <option key={comp.value} value={comp.value}>{comp.label}</option>
+                return <MenuItem value={comp.value}>{comp.label}</MenuItem>
             }) 
         }
 
@@ -565,7 +578,6 @@ class User extends Component {
 
         return (<ExpansionPanel hidden={this.props.hidden}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                    
                     <Typography color="textSecondary">
                         Username: 
                     </Typography>
@@ -590,21 +602,20 @@ class User extends Component {
                         {isAdmin ? 'Admin' : 'User'}
                     </Typography>
                     </ExpansionPanelSummary>
-                    <p></p>
                     <ExpansionPanelDetails>
                     <List className="user-details">
+                        <ListItem>
+                        <InputLabel shrink htmlFor="select-listCompanies">
+                            Company
+                         </InputLabel>
                         <Select label='listCompanies'
-                            onChange={this.handleMultiChange}
-                            defaultValue={this.state.companyId}
-                            className="form-control">
+                            className="select-listCompanies"
+                            onChange={this.handleChange}
+                            value={this.selectedCompId}>
+                            {/* ADD null possibility (to keep user unless the company is deleted *or the user is fired LMAO*) */}
+                            <MenuItem value={-1}><i>No company</i></MenuItem>
                             { this.onceChargeList && mappedComp}
                         </Select>
-                        <ListItem>
-                            <TextField
-                                defaultValue=''
-                                value={currentCompanyName}
-                                label='Company'
-                            />
                         </ListItem>
                         <ListItem>
                             <TextField

@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
+use AppBundle\Entity\Company;
 use AppBundle\Controller\RestServiceController;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations;
@@ -184,15 +185,25 @@ class RestProfileController extends RestServiceController implements ClassResour
         $enabled = $request->get('enabled');
         $email = $request->get('email');
         $roles = $request->get('roles');
+        $companyId = $request->get('companyId');
         $dbm = $this->getDoctrine()->getManager();
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($user->getId());
         if (empty($user)) {
             return new View("User not found", Response::HTTP_NOT_FOUND);
-        } 
+        }
 
         $user->setEnabled($enabled);
         $user->setEmail($email);
         $user->setRoles($roles);
+
+        //check case of no company linked
+        if($companyId != -1) {
+            $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($companyId);
+            $user->setCompany($company);
+        } else {
+            $user->setCompany(null);
+        }
+        
 
         $dbm->flush();
 

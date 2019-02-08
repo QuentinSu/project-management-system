@@ -53,6 +53,11 @@ class Company
      */
     private $creation;
 
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $files = [];
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -154,6 +159,18 @@ class Company
     public function setCreation(string $creation): self
     {
         $this->creation = $creation;
+
+        return $this;
+    }
+
+    public function getFiles(): ?array
+    {
+        return $this->files;
+    }
+
+    public function setFiles(?array $files): self
+    {
+        $this->files = $files;
 
         return $this;
     }

@@ -141,6 +141,20 @@
 	padding-top: 10px;
 }
 
+.dropzone-square {
+	width: 150px !important;
+	height: 150px !important;
+	border: 3px dashed rgb(63, 81, 181);
+    border-radius: 15px;
+    margin-top: 10px;
+	text-align: center;
+	padding-top: 10px;
+}
+
+.dropzone-square:hover {
+	cursor:pointer
+}
+
 .dropzone-checklist {
     width: 100%;
 	height: 30px;
