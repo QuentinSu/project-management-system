@@ -138,11 +138,12 @@ class Companies extends Component {
             });
     }
 
-    filterCompanies(name) {
+    // filter on name & phone
+    filterCompanies(searchString) {
         let newCompanies = this.state.companies.slice();
         console.log('bite');
         newCompanies.map((company)=>{
-            if (company.name.toUpperCase().includes(name.toUpperCase())) {
+            if (company.name.toUpperCase().includes(searchString.toUpperCase()) || company.phone.toUpperCase().includes(searchString.toUpperCase())) {
                 company.hidden = false;
             } else {
                 company.hidden = true;
