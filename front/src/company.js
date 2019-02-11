@@ -252,7 +252,7 @@ class Companies extends Component {
                 </Dialog>
                 <div className='company-header'>
                     <input
-                        placeholder="Search a company"
+                        placeholder="Search (e.g: name, phone)"
                         updateCompanies={this.updateCompanies.bind(this)}
                         onChange={event => this.filterCompanies(event.target.value)}
                     />
@@ -378,46 +378,17 @@ class Companies extends Component {
 
         return (
             <Card className='company-card' hidden={this.props.hidden}>
-            <div>
-            <img className='logo-company' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
-            {/* // <CardMedia
-            //     className='company-logo'
-            //     src={this.getUrlFile(logoUrl)}
-            //     title="Company Logo"
-            // /> */}
-            <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
-                <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
-            </Dropzone>
+            <div className="company-logo">
+                <img className='logo-company' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
 
-            <TextField disabled className='company-creation-date'
-                defaultValue={this.state.creation}
-                value={this.state.creation}            
-                label='Creation date'
-            />
-
+                <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
+                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
+                </Dropzone>
+            <div className='company-details'>
             <TextField className='company-name'
                 onChange={event => this.setState({name:event.target.value})}
                 defaultValue={this.state.name}
                 label='Name'
-            />
-
-            <TextField className='company-phone' 
-                onChange={event => this.setState({phone:event.target.value})}
-                defaultValue={this.state.phone}
-                label='Phone'
-            />
-
-            <TextField className='company-description'
-                onChange={event => this.setState({description:event.target.value})}
-                multiline
-                rows='4'
-                defaultValue={this.state.description}
-                label='Description'
-            />
-            <TextField className='company-status' 
-                onChange={event => this.setState({status:event.target.value})}
-                defaultValue={this.state.status}
-                label='Status'
             />
 
             <TextField className='company-eoy'
@@ -426,9 +397,35 @@ class Companies extends Component {
                 defaultValue={this.state.eoy}   
                 label='EOY'
             />
+
+            <TextField className='company-phone' 
+                onChange={event => this.setState({phone:event.target.value})}
+                defaultValue={this.state.phone}
+                label='Phone'
+            />
+
+            <TextField disabled className='company-creation-date'
+                defaultValue={this.state.creation}
+                value={this.state.creation}            
+                label='Creation date'
+            />
+            </div>
+            <TextField className='company-description'
+                onChange={event => this.setState({description:event.target.value})}
+                multiline
+                rows='4'
+                defaultValue={this.state.description}
+                label='Description'
+            /> 
             </div>
             
             <div className='company-ticket-buttons'>
+                <div className="company-actions">
+                <TextField className='company-status' 
+                    onChange={event => this.setState({status:event.target.value})}
+                    defaultValue={this.state.status}
+                    label='Status'
+                />
                 <Button 
                     className="company-save-button"
                     size="small"
@@ -443,6 +440,7 @@ class Companies extends Component {
                     className='company-delete-button'>
                     <DeleteIcon /> Delete
                 </Button>
+                </div>
                 <Dialog
                     open={this.state.openDelete}
                     aria-labelledby="form-dialog-title"

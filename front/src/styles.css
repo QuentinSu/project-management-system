@@ -84,13 +84,12 @@
 	text-align: center;
 	/* padding-top: 160px; */
 	float:left;
+	left:20px;
 	
 }
 
-
-.company-creation-date {
-	display:right;
-	top:70px
+.company-logo {
+	float:left;
 }
 
 .logo-company {
@@ -100,31 +99,48 @@
 	left:0
 }
 
-.company-name {
+.company-details {
 	float:left;
-	left: 20px;
+	top:0px;
+	height: 150px;
+	width:35%;
+	padding-left:38px;
+	margin-left:30px;
+}
+.company-name {
+	top:15px;
+	font-weight:bold;
+	width:67%
+}
+.company-eoy {
+	top:15px;
+	left:15px;
+}
+.company-phone {
+	top:25px;
+}
+.company-creation-date {
+	top:25px;
+	left: 15px;
 }
 
-.company-phone {
-	float:left;
-	left:30px;
-}
 .company-description {
 	float:left;
-	left: 40px;
-	width: 30%
-}
-.company-ticket-buttons {
-	float:right;
-	right:10px
+	left: 25px;
+	top:0px;
+	height:150px;
+	width: 35%;
+	padding-left:18px;
+	margin-left:10px;
+	border-radius: 25px;
+	border: 1px solid #c9c9c9;
 }
 
-.company-save-button {
-
-	
-}
-.company-delete-button {
-
+.company-actions {
+	float:left;
+	left:50px;
+	top:0px;
+	width: 10%
 }
 
 /** end */
@@ -479,12 +495,6 @@
 	position: absolute !important;
 	top:30px;
 	right:100px;
-}
-
-.company-logo {
-	height: 150px;
-	width: 150px;
-	display:block;
 }
 
 .completed-notification-folder {

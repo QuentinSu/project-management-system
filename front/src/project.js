@@ -801,7 +801,7 @@ class Projects extends Component {
     filterProjects(label) {
         let newProjects = this.state.projects.slice();
         newProjects.map((project)=>{
-            if (project.name.toUpperCase().includes(label.toUpperCase())) {
+            if (project.name.toUpperCase().includes(label.toUpperCase()) || project.type.toUpperCase().includes(label.toUpperCase())) {
                 project.hidden = false;
             } else {
                 project.hidden = true;
@@ -829,7 +829,7 @@ class Projects extends Component {
                 <div className='project-header'>
                     <NewProjectDialog handleProjectsChange={this.handleProjectsChange.bind(this)}/>
                     <input
-                        placeholder="Search a project"
+                        placeholder="Search (e.g: name, project type)"
                         onChange={event => this.filterProjects(event.target.value)}
                     />
                 </div>
