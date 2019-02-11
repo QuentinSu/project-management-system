@@ -63,6 +63,8 @@ class CompanyController extends Controller
       $name = $request->get('name');
       $description = $request->get('description');
       $phone = $request->get('phone');
+      $status = $request->get('status');
+      $eoy = $request->get('eoy');
       $creation = $request->get('creation'); // to test
 
         if( empty($description) || empty($name) )
@@ -73,6 +75,8 @@ class CompanyController extends Controller
       $data->setDescription($description);
       $data->setPhone($phone);
       $data->setCreation($creation);
+      $data->setStatus($status);
+      $data->setEoy($eoy);
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
@@ -100,6 +104,8 @@ class CompanyController extends Controller
         $name = $request->get('name');
         $phone = $request->get('phone');
         $creation = $request->get('creation');
+        $status = $request->get('status');
+        $eoy = $request->get('eoy');
 
         $dbm = $this->getDoctrine()->getManager();
 
@@ -107,6 +113,8 @@ class CompanyController extends Controller
         !empty($name) ? $company->setName($name) : 0;
         !empty($phone) ? $company->setPhone($phone) : 0;
         !empty($creation) ? $company->setCreation($creation) : 0;
+        !empty($status) ? $company->setStatus($status) : 1;
+        !empty($eoy) ? $company->setEoy($eoy) : date("Y").'-12-31';
 
         $dbm->flush();
 
@@ -152,14 +160,13 @@ class CompanyController extends Controller
          $file = $request->files->get('upload');
          $status = array('status' => "success","fileUploaded" => false);
  
-         $nameStored = str_replace(' ', '', $company->getName()).'.'.$file->getClientOriginalExtension();
+         $nameStored = str_replace(' ', '', $company->getName());//.'.'.$file->getClientOriginalExtension();
          
          // If a file was uploaded
          if(!is_null($file)){
              $isAccepted = in_array(
                  $file->getClientOriginalExtension(),
                  array(
-                     "gif",
                      "png", 
                      "jpg"
                  )
@@ -167,7 +174,7 @@ class CompanyController extends Controller
              if(!$isAccepted) {
                  return new View("not allowed", Response::HTTP_FORBIDDEN);
              }
-             $path = "./../../front/src/company_logo/";
+             $path = "./../../front/public/company_logo/";
              $file->move($path, $nameStored); // move the file to a path
              $status = array('status' => "success","fileUploaded" => true);
          }
@@ -220,7 +227,7 @@ class CompanyController extends Controller
  
          $this->notify('File deleted on company '.$company->getName());
  
-         $path = './../../front/src/company_logo/'.$request->get('path');
+         $path = "./../../front/public/company_logo/".$request->get('path');
          if (file_exists($path)) {
              unlink($path);
              return array('status' => 'success');
@@ -236,7 +243,7 @@ class CompanyController extends Controller
       */
      public function getFileAction(Request $request, Company $company)
      {
-         $path = './../../front/src/company_logo/'.$request->get('path');
+         $path = "./../../front/public/company_logo/".$request->get('path');
          if (file_exists($path)) {
              return new BinaryFileResponse($path);
          }

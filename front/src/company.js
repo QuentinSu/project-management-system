@@ -63,10 +63,13 @@ class Companies extends Component {
           newName: null,
           newDescription: null,
           newPhone: null,
-          newCreation: created
+          newCreation: created,
+          newStatus: true,
+          newEoy: null
           //users: ????,
       }
     };
+    
     updateCompanies() {
         var self = this;
         axios({
@@ -86,6 +89,7 @@ class Companies extends Component {
             .catch(function (error) {
             });
     }
+
     componentDidMount() {
         var self = this;
         axios({
@@ -119,7 +123,9 @@ class Companies extends Component {
                 "name": this.state.newName,
                 "description": this.state.newDescription,
                 "phone": this.state.newPhone,
-                "creation": this.state.newCreation
+                "creation": this.state.newCreation,
+                "status": this.state.newStatus,
+                "eoy": this.state.newEoy
             }
           })
             .then(function (response) {
@@ -130,6 +136,19 @@ class Companies extends Component {
             })
             .catch(function (error) {
             });
+    }
+
+    filterCompanies(name) {
+        let newCompanies = this.state.companies.slice();
+        console.log('bite');
+        newCompanies.map((company)=>{
+            if (company.name.toUpperCase().includes(name.toUpperCase())) {
+                company.hidden = false;
+            } else {
+                company.hidden = true;
+            }
+        })
+        this.setState({companies: newCompanies}); 
     }
 
     render(){
@@ -144,6 +163,9 @@ class Companies extends Component {
                             name={company.name}
                             phone={company.phone}
                             creation={company.creation}
+                            status={company.status}
+                            eoy={company.eoy}
+                            hidden={company.hidden ? company.hidden : false}
                             updateCompanies={this.updateCompanies.bind(this)}
                 />     
         })
@@ -176,6 +198,7 @@ class Companies extends Component {
                         onChange = {(event) => this.setState({newName:event.target.value})}
                         fullWidth
                     />
+
                     <TextField
                         style={{height:'175px'}}
                         multiline
@@ -186,6 +209,7 @@ class Companies extends Component {
                         onChange = {(event) => this.setState({newDescription:event.target.value})}
                         fullWidth
                     />
+
                     <TextField
                         margin="dense"
                         id="phone"
@@ -194,6 +218,24 @@ class Companies extends Component {
                         onChange = {(event) => this.setState({newPhone:event.target.value})}
                         fullWidth
                     />
+
+                    <TextField
+                        margin="dense"
+                        id="eoy"
+                        label="EOY"
+                        type="date"
+                        defaultValue={new Date().getFullYear()+"-12-31"}
+                        onChange = {(event) => this.setState({newEoy:event.target.value})} 
+                    />
+
+                    <TextField disabled
+                        margin="dense"
+                        id="status"
+                        label="Status"
+                        defaultValue={true}
+                        onChange = {(event) => this.setState({newStatus:event.target.value})}
+                    />
+
                     </DialogContent>
                     <DialogActions>
                     <Button onClick={() => this.setState({ open: false })} color="primary">
@@ -207,6 +249,13 @@ class Companies extends Component {
                     </Button>
                     </DialogActions>
                 </Dialog>
+                <div className='company-header'>
+                    <input
+                        placeholder="Search a company"
+                        updateCompanies={this.updateCompanies.bind(this)}
+                        onChange={event => this.filterCompanies(event.target.value)}
+                    />
+                </div>
                 <p></p>
                 {mappedCompanies}
             </div>
@@ -225,6 +274,8 @@ class Companies extends Component {
             name: props.name,
             phone: props.phone,
             creation: props.creation,
+            status: props.status,
+            eoy: props.eoy,
             openDelete: false
         }
     }
@@ -262,7 +313,9 @@ class Companies extends Component {
                 "description": this.state.description,
                 "name": this.state.name,
                 "phone":this.state.phone,
-                "creation":this.state.creation
+                "creation":this.state.creation,
+                "status": this.state.status,
+                "eoy": this.state.eoy
             }
           })
             .then(function (response) {
@@ -319,52 +372,64 @@ class Companies extends Component {
     render() {
         //var dateCreation = new Date(this.state.dateCreation);
         //var parsedCreation = dateCreation.toLocaleString('en-GB', { timeZone: 'UTC' });
-       console.log(this.state.creation);
-       var logoUrl = './company_logo/'+this.state.name.trim()+'.jpg';
+        
+       var logoUrl = this.state.name.replace(/\s/g,'');
 
         return (
-            <Card className='company-card'>
-        <div>
-            <img src={this.state.name=='Rhys Welsh' && require('./company_logo/'+this.state.name.replace(/\s/g,'')) } />
-            {/* <CardMedia
-                className='company-logo'
-                src={this.getUrlFile(logoUrl)}
-                title="Company Logo"
-            /> */}
+            <Card className='company-card' hidden={this.props.hidden}>
+            <div>
+            <img className='logo-company' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
+            {/* // <CardMedia
+            //     className='company-logo'
+            //     src={this.getUrlFile(logoUrl)}
+            //     title="Company Logo"
+            // /> */}
             <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
-                <p>Drop file or click to upload (max: 10M)</p>
+                <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
             </Dropzone>
 
-            <TextField disabled
+            <TextField disabled className='company-creation-date'
                 defaultValue={this.state.creation}
                 value={this.state.creation}            
                 label='Creation date'
             />
-            
-            <TextField fullWidth
+
+            <TextField className='company-name'
                 onChange={event => this.setState({name:event.target.value})}
                 defaultValue={this.state.name}
                 label='Name'
             />
-                
-            <TextField fullWidth
-                onChange={event => this.setState({description:event.target.value})}
-                multiline
-                defaultValue={this.state.description}
-                label='Description'
-            />
 
-            <TextField fullWidth
+            <TextField className='company-phone' 
                 onChange={event => this.setState({phone:event.target.value})}
                 defaultValue={this.state.phone}
                 label='Phone'
             />
-            
+
+            <TextField className='company-description'
+                onChange={event => this.setState({description:event.target.value})}
+                multiline
+                rows='4'
+                defaultValue={this.state.description}
+                label='Description'
+            />
+            <TextField className='company-status' 
+                onChange={event => this.setState({status:event.target.value})}
+                defaultValue={this.state.status}
+                label='Status'
+            />
+
+            <TextField className='company-eoy'
+                type='date'
+                onChange={event => this.setState({eoy:event.target.value})}
+                defaultValue={this.state.eoy}   
+                label='EOY'
+            />
             </div>
             
-            <div className='ticket-buttons'>
+            <div className='company-ticket-buttons'>
                 <Button 
-                    className="save-button"
+                    className="company-save-button"
                     size="small"
                     color="primary" 
                     onClick={() => this.saveCompany()}>
@@ -374,7 +439,7 @@ class Companies extends Component {
                     onClick={() => this.setState({ openDelete: true })} 
                     size="small"
                     color="secondary" 
-                    className='delete-button'>
+                    className='company-delete-button'>
                     <DeleteIcon /> Delete
                 </Button>
                 <Dialog

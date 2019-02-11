@@ -58,6 +58,16 @@ class Company
      */
     private $files = [];
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $eoy;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -171,6 +181,30 @@ class Company
     public function setFiles(?array $files): self
     {
         $this->files = $files;
+
+        return $this;
+    }
+
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(bool $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getEoy(): ?string
+    {
+        return $this->eoy;
+    }
+
+    public function setEoy(?string $eoy): self
+    {
+        $this->eoy = $eoy;
 
         return $this;
     }
