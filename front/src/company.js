@@ -418,7 +418,9 @@ class Companies extends Component {
                 label='Description'
             /> 
             </div>
-            
+            <div className='company-users'>
+                {/* TODO : add newCompanyUserLinkDialog.js */}
+            </div>
             <div className='company-ticket-buttons'>
                 <div className="company-actions">
                 <TextField className='company-status' 

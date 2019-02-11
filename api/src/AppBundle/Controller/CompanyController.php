@@ -84,6 +84,40 @@ class CompanyController extends Controller
       return new View("Company Added Successfully", Response::HTTP_OK);
     }
 
+
+    /**
+     * @Put("/company/{id}/user/{id_user})
+     */
+    public function addCompanyUser($id, $id_user, Request $request){
+        $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
+        if (empty($company)) {
+            return new View("company not found", Response::HTTP_NOT_FOUND);
+        } 
+
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id_user);
+        if (empty($user)) {
+            return new View("user not found", Response::HTTP_NOT_FOUND);
+        } 
+
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
+
+
+        $dbm = $this->getDoctrine()->getManager();
+
+        !empty($user) ? $user->setCompany($company) : NULL;
+
+        $dbm->flush();
+
+        // $this->notify('Company ID'.$company->getId().' modified');
+
+        return new View("Company Updated Successfully", Response::HTTP_OK);
+
+        
+    }
+
     /** 
     * @Put("/company/{id}")
     */
@@ -120,7 +154,7 @@ class CompanyController extends Controller
 
         // $this->notify('Company ID'.$company->getId().' modified');
 
-        return new View("Company Updated Successfully", Response::HTTP_OK);;
+        return new View("Company Updated Successfully", Response::HTTP_OK);
     }
 
     /**
