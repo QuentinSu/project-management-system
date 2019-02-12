@@ -141,8 +141,9 @@ class CompanyController extends Controller
         !empty($name) ? $company->setName($name) : 0;
         !empty($phone) ? $company->setPhone($phone) : 0;
         !empty($creation) ? $company->setCreation($creation) : 0;
-        !empty($status) ? $company->setStatus($status) : 1;
         !empty($eoy) ? $company->setEoy($eoy) : date("Y").'-12-31';
+
+        $company->setStatus($status);
 
         $dbm->flush();
 

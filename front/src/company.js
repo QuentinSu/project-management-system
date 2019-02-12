@@ -4,6 +4,8 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
@@ -329,7 +331,7 @@ class Companies extends Component {
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'profile/'+userId,
             data: {
-                companyId: -1
+                'companyId': -1
             },
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
@@ -337,7 +339,7 @@ class Companies extends Component {
             }
         }).then(function (response) {
             if(response.status === 200){
-                self.handleUserChange();
+                self.handleCompanyChange();
             }
         }).catch(function (error) {
         });
@@ -366,6 +368,7 @@ class Companies extends Component {
 
     saveCompany() {
         var self = this;
+        console.log('Status:'+this.state.status)
         axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'company/'+this.state.id,
@@ -518,11 +521,14 @@ class Companies extends Component {
                 />
             </div>
             <div className='company-actions'>
-                <TextField className='company-status' 
+
+            <FormControlLabel control={<Switch checked={this.state.status}
+                                onChange = {(event) => this.setState({status:!this.state.status})} />} label="Active" />
+                {/* <TextField className='company-status' 
                     onChange={event => this.setState({status:event.target.value})}
                     defaultValue={this.state.status}
                     label='Status'
-                />
+                /> */}
                 <Button 
                     className="company-save-button"
                     size="small"
