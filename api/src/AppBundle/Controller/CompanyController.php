@@ -49,16 +49,14 @@ class CompanyController extends Controller
      * @Get("/company")
      * 
      */
-    public function getAction()
-    {
+    public function getAction() {
         return $this->getDoctrine()->getRepository('AppBundle:Company')->findAll();
     }
 
     /**
      * @Post("/company")
      */
-    public function postAction(Request $request)
-    { 
+    public function postAction(Request $request) { 
       $data = new Company();
       $name = $request->get('name');
       $description = $request->get('description');
@@ -67,9 +65,8 @@ class CompanyController extends Controller
       $eoy = $request->get('eoy');
       $creation = $request->get('creation'); // to test
 
-        if( empty($description) || empty($name) )
-        {
-        return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
+        if( empty($description) || empty($name) ) {
+            return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
         } 
       $data->setName($name);
       $data->setDescription($description);
@@ -84,10 +81,9 @@ class CompanyController extends Controller
       return new View("Company Added Successfully", Response::HTTP_OK);
     }
 
-
-    /**
-     * @Put("/company/{id}/user/{id_user})
-     */
+    /** 
+    * @Put("/company/{id}/user/{id_user}")
+    */
     public function addCompanyUser($id, $id_user, Request $request){
         $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
         if (empty($company)) {
@@ -103,18 +99,16 @@ class CompanyController extends Controller
         if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
             return new View("not allowed", Response::HTTP_FORBIDDEN);
         }
-
-
+        
         $dbm = $this->getDoctrine()->getManager();
 
-        !empty($user) ? $user->setCompany($company) : NULL;
+        !empty($company) ? $company->addUser($user) : NULL;
 
         $dbm->flush();
 
         // $this->notify('Company ID'.$company->getId().' modified');
 
         return new View("Company Updated Successfully", Response::HTTP_OK);
-
         
     }
 

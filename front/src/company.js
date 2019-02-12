@@ -1,6 +1,15 @@
 import React, {Component} from 'react';
 import Button from '@material-ui/core/Button';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import RemoveIcon from '@material-ui/icons/Remove';
 import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -13,6 +22,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dropzone from 'react-dropzone';
+import NewCompanyUserLinkDialog from './newCompanyUserLinkDialog.js';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
 
 
 //import Typography from '@material-ui/core/Typography';
@@ -69,6 +81,10 @@ class Companies extends Component {
           //users: ????,
       }
     };
+
+    handleCompaniesChange() {
+        this.componentDidMount();
+    }
     
     updateCompanies() {
         var self = this;
@@ -166,6 +182,7 @@ class Companies extends Component {
                             creation={company.creation}
                             status={company.status}
                             eoy={company.eoy}
+                            users={company.users}
                             hidden={company.hidden ? company.hidden : false}
                             updateCompanies={this.updateCompanies.bind(this)}
                 />     
@@ -266,6 +283,30 @@ class Companies extends Component {
 
   export default Companies;
 
+  function User(props) {
+    return (
+        <div>
+        <ListItem fullWidth key={props.userId}> 
+            <ListItemText>
+                <Typography>
+                    {props.username}
+                </Typography>
+            </ListItemText>
+            <ListItemSecondaryAction>
+                <Button className='button-remove-project'
+                    size='small'
+                    onClick={() => props.removeUserLink(props.userId)} 
+                    color="secondary" >
+                        <RemoveIcon />
+                        User
+                </Button>
+            </ListItemSecondaryAction>
+        </ListItem>
+        <Divider/>
+        </div>
+    );
+}
+
   class Company extends Component {
     constructor(props){
         super(props);
@@ -277,9 +318,31 @@ class Companies extends Component {
             creation: props.creation,
             status: props.status,
             eoy: props.eoy,
+            users: props.users,
             openDelete: false
         }
     }
+
+    removeUserLink(userId) {
+        var self = this;
+        axios({
+            method: 'put', //you can set what request you want to be
+            url: apiBaseUrl+'profile/'+userId,
+            data: {
+                companyId: -1
+            },
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('session'),
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+        }).then(function (response) {
+            if(response.status === 200){
+                self.handleUserChange();
+            }
+        }).catch(function (error) {
+        });
+    }
+
 
     onDrop(files) {
         var self = this;
@@ -348,6 +411,27 @@ class Companies extends Component {
             });
     }
 
+    handleCompanyChange(type, data) {
+        var self = this;
+        axios({
+            method: 'get', //you can set what request you want to be
+            url: apiBaseUrl+'company/'+this.state.id,
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('session'),
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          })
+            .then(function (response) {
+              if(response.status === 200){
+                var newUsers = response.data.users;
+                self.setState({users:newUsers});
+              }
+            })
+            .catch(function (error) {
+            });
+        this.props.handleCompaniesChange();
+    }
+
     getUrlFile(path) {
         var self = this;
         axios({
@@ -376,53 +460,64 @@ class Companies extends Component {
         
        var logoUrl = this.state.name.replace(/\s/g,'');
 
+       let mappedUsers = this.state.users.map((user)=>{
+        return  <User   key={user.id}
+                        userId={user.id}
+                        username={user.username}
+                        removeUserLink={this.removeUserLink.bind(this)}
+                        
+                />
+        })
+
         return (
-            <Card className='company-card' hidden={this.props.hidden}>
+            <div>
+            <ExpansionPanel hidden={this.props.hidden}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            {/* <Card className='company-card' hidden={this.props.hidden}> */}
             <div className="company-logo">
                 <img className='logo-company' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
 
                 <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
                     <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
                 </Dropzone>
+            </div>
             <div className='company-details'>
-            <TextField className='company-name'
-                onChange={event => this.setState({name:event.target.value})}
-                defaultValue={this.state.name}
-                label='Name'
-            />
+                <TextField className='company-name'
+                    onChange={event => this.setState({name:event.target.value})}
+                    defaultValue={this.state.name}
+                    label='Name'
+                />
 
-            <TextField className='company-eoy'
-                type='date'
-                onChange={event => this.setState({eoy:event.target.value})}
-                defaultValue={this.state.eoy}   
-                label='EOY'
-            />
+                <TextField className='company-eoy'
+                    type='date'
+                    onChange={event => this.setState({eoy:event.target.value})}
+                    defaultValue={this.state.eoy}   
+                    label='EOY'
+                />
 
-            <TextField className='company-phone' 
-                onChange={event => this.setState({phone:event.target.value})}
-                defaultValue={this.state.phone}
-                label='Phone'
-            />
+                <TextField className='company-phone' 
+                    onChange={event => this.setState({phone:event.target.value})}
+                    defaultValue={this.state.phone}
+                    label='Phone'
+                />
 
-            <TextField disabled className='company-creation-date'
-                defaultValue={this.state.creation}
-                value={this.state.creation}            
-                label='Creation date'
-            />
+                <TextField disabled className='company-creation-date'
+                    defaultValue={this.state.creation}
+                    value={this.state.creation}            
+                    label='Creation date'
+                />
             </div>
-            <TextField className='company-description'
-                onChange={event => this.setState({description:event.target.value})}
-                multiline
-                rows='4'
-                defaultValue={this.state.description}
-                label='Description'
-            /> 
+            <div className='company-description'>
+                <TextField
+                    className='company-description-text'
+                    onChange={event => this.setState({description:event.target.value})}
+                    multiline
+                    rows='4'
+                    defaultValue={this.state.description}
+                    label='Description'
+                />
             </div>
-            <div className='company-users'>
-                {/* TODO : add newCompanyUserLinkDialog.js */}
-            </div>
-            <div className='company-ticket-buttons'>
-                <div className="company-actions">
+            <div className='company-actions'>
                 <TextField className='company-status' 
                     onChange={event => this.setState({status:event.target.value})}
                     defaultValue={this.state.status}
@@ -442,7 +537,6 @@ class Companies extends Component {
                     className='company-delete-button'>
                     <DeleteIcon /> Delete
                 </Button>
-                </div>
                 <Dialog
                     open={this.state.openDelete}
                     aria-labelledby="form-dialog-title"
@@ -465,8 +559,22 @@ class Companies extends Component {
                         </Button>
                     </DialogActions>
                 </Dialog>
+            </div>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+                <Card fullWidth>
+                    <NewCompanyUserLinkDialog
+                        company={this.state.id}
+                    />
+                    {/* <Divider/> */}
+                    <List fullWidth className="company-user-element">
+                        {mappedUsers}
+                    </List>
+                </Card>
+            </ExpansionPanelDetails>
+        </ExpansionPanel>
+        <br /> 
         </div>
-        </Card>
         );
     }
 

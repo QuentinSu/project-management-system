@@ -76,69 +76,91 @@
 
 /** company element */
 
+.company-logo {
+	display: flex;
+	height:150px;
+	width:300px;
+}
+
+.logo-company {
+	display: flex;
+    flex-wrap: wrap;
+	top:0px;
+	width: 150px;
+	/* height:150px; */
+	left:0
+}
 .dropzone-square {
 	width: 150px !important;
 	height: 150px !important;
 	border: 3px dashed #f44336;
     border-radius: 15px;
 	text-align: center;
+	display:flex;
+	float:right;
 	/* padding-top: 160px; */
-	float:left;
-	left:20px;
-	
-}
-
-.company-logo {
-	float:left;
-}
-
-.logo-company {
-	float:left;
-	top:0px;
-	width: 150px;
-	left:0
+	/* display:inline-block; */	
 }
 
 .company-details {
-	float:left;
+	display: flex;
+    flex-wrap: wrap;
 	top:0px;
 	height: 150px;
-	width:35%;
-	padding-left:38px;
+	max-width:35%;
 	margin-left:30px;
 }
 .company-name {
 	top:15px;
 	font-weight:bold;
-	width:67%
+	width:50%
 }
 .company-eoy {
 	top:15px;
 	left:15px;
+	width:30%
 }
 .company-phone {
-	top:25px;
+	top:10px;
+	width:50%;
 }
 .company-creation-date {
-	top:25px;
-	left: 15px;
+	top:10px;
+	left:15px;
+	width:30%
+}
+.company-user-element {
+	display: flex;
+	flex-wrap: wrap;
+	width:500%;
 }
 
 .company-description {
-	float:left;
-	left: 25px;
+	display: flex;
+    flex-wrap: wrap;
+	margin-left: -60px;
 	top:0px;
 	height:150px;
 	width: 35%;
-	padding-left:18px;
-	margin-left:10px;
-	border-radius: 25px;
+	border-radius: 15px;
 	border: 1px solid #c9c9c9;
 }
 
+.company-description-text {
+	top: 15px;
+	left: 30px;
+	width: 90%;
+	/* right: 30px; */
+}
+
+.lsp {
+	height:2px;
+}
+
 .company-actions {
-	float:left;
-	left:50px;
+	display: flex;
+    flex-wrap: wrap;
+	margin-left:15px !important;
 	top:0px;
 	width: 10%
 }
@@ -524,6 +546,10 @@
 		top:20px;
 		left:0px;
 		width: 50px !important;
+	}
+
+	.company-description {
+		margin-left: 2px;
 	}
 
 	.advanced-but-dashboard {

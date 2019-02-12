@@ -33,6 +33,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class RestProfileController extends RestServiceController implements ClassResourceInterface
 {
+
+
+    /**
+     * @Get("/users")
+     * 
+     */
+    public function getAllUsersRaw() {
+      if ($this->getUser()->isAdmin()) {
+        return $this->getDoctrine()->getRepository('AppBundle:User')->findAll();
+      } 
+    }
+
     /**
      * @Get("/profile")
      *

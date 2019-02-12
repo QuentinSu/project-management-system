@@ -33,7 +33,7 @@ import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import classNames from 'classnames';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
-import NewUserProjectLinkDialog from './newUserProjectLinkDialog.js'
+import NewUserProjectLinkDialog from './newUserProjectLinkDialog.js';
 import Cookies from 'universal-cookie';
 
 var config = require('./config.json');
@@ -732,16 +732,16 @@ class Users extends Component {
     render(){
         let mappedUsers = this.state.users.map((user)=>{
           return <User   key={user.id}
-                            id={user.id}
-                            username={user.username}
-                            email={user.email}
-                            enabled={user.enabled}
-                            lastlogin={user.lastLogin}
-                            roles={user.roles}
-                            company={user.company}
-                            projects = {user.projects}
-                            hidden = {user.hidden ? user.hidden : false}
-                            handleUsersChange={this.handleUsersChange.bind(this)}
+                        id={user.id}
+                        username={user.username}
+                        email={user.email}
+                        enabled={user.enabled}
+                        lastlogin={user.lastLogin}
+                        roles={user.roles}
+                        company={user.company}
+                        projects = {user.projects}
+                        hidden = {user.hidden ? user.hidden : false}
+                        handleUsersChange={this.handleUsersChange.bind(this)}
                 />
                 
         })

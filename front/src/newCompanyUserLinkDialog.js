@@ -18,6 +18,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import User from './user.js';
+
 
 var config = require('./config.json');
 
@@ -190,7 +192,7 @@ class NewCompanyUserLinkDialog extends React.Component {
         var self = this;
         axios({
             method: 'get', //you can set what request you want to be
-            url: apiBaseUrl+'company',
+            url: apiBaseUrl+'users',
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -198,11 +200,13 @@ class NewCompanyUserLinkDialog extends React.Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                var newCompanies = response.data.map(company=>({
-                    value: company.id,
-                    label: company.name
+                var newUsers = response.data.map((user)=>({
+                    value: parseInt(user.id),
+                    label: user.username
                 }));
-                self.setState({companies:newCompanies});
+                //self.setState({users:response.data.users});
+                self.setState({users:newUsers});
+                //this.forceUdpate();
               }
             })
             .catch(function (error) {
@@ -224,7 +228,7 @@ class NewCompanyUserLinkDialog extends React.Component {
         this.state.multi.map(function(choice) {
             axios({
                 method: 'put', //you can set what request you want to be
-                url: apiBaseUrl+'company/'+self.props.user+'/user/'+choice.value,
+                url: apiBaseUrl+'company/'+self.props.company+'/user/'+choice.value,
                 headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('session'),
                 'Content-Type': 'application/json; charset=utf-8'
@@ -232,7 +236,8 @@ class NewCompanyUserLinkDialog extends React.Component {
             }).then(function (response) {
                 if(response.status === 200){
                     self.setState({ open: false });
-                    self.props.handleUserChange();
+                    this.forceUpdate();
+                    //self.props.handleUserChange();
                 }
             }).catch(function (error) {
             });
@@ -251,14 +256,14 @@ class NewCompanyUserLinkDialog extends React.Component {
             <div>
             <Button 
                 onClick={this.handleClickOpen} size="small" color="primary" className='new-button'>
-                    <AddIcon /> Project
+                    <AddIcon /> User
             </Button>     
             <Dialog
                 open={this.state.open}
                 onClose={this.handleClose}
                 aria-labelledby="form-dialog-title"
             >
-                <DialogTitle id="new-project-dialog-title">New project link</DialogTitle>
+                <DialogTitle id="new-project-dialog-title">New user link</DialogTitle>
                 <DialogContent>
                 <div className={classes.root}>
                     <Select
@@ -266,15 +271,15 @@ class NewCompanyUserLinkDialog extends React.Component {
                         styles={selectStyles}
                         textFieldProps={{
                         InputLabelProps: {
-                            label: 'Label',
+                            label: 'Username',
                             shrink: true,
                         },
                         }}
-                        options={this.state.projects}
+                        options={this.state.users}
                         components={components}
                         value={this.state.multi}
                         onChange={this.handleChange('multi')}
-                        placeholder="Select projects"
+                        placeholder="Select users"
                         isMulti
                         classes={classes}
                     />
@@ -297,10 +302,10 @@ class NewCompanyUserLinkDialog extends React.Component {
   }
 
 
-NewUserProjectLinkDialog.propTypes = {
+NewCompanyUserLinkDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
   };
 
 
-export default withStyles(styles, { withTheme: true })(NewUserProjectLinkDialog);
+export default withStyles(styles, { withTheme: true })(NewCompanyUserLinkDialog);
