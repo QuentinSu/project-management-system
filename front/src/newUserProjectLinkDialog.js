@@ -224,7 +224,7 @@ class NewUserProjectLinkDialog extends React.Component {
         this.state.multi.map(function(choice) {
             axios({
                 method: 'put', //you can set what request you want to be
-                url: apiBaseUrl+'/user/'+self.props.user+'/project/'+choice.value,
+                url: apiBaseUrl+'profile/'+self.props.user+'/project/'+choice.value,
                 headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('session'),
                 'Content-Type': 'application/json; charset=utf-8'

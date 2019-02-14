@@ -204,9 +204,10 @@ class RestProfileController extends RestServiceController implements ClassResour
             return new View("User not found", Response::HTTP_NOT_FOUND);
         }
 
-        $user->setEnabled($enabled);
-        $user->setEmail($email);
-        $user->setRoles($roles);
+        if($roles) $user->setRoles($roles);
+        if($enabled) $user->setEnabled($enabled);
+        if($email) $user->setEmail($email);
+        
 
         //check case of no company linked
         if($companyId != -1) {
@@ -219,7 +220,7 @@ class RestProfileController extends RestServiceController implements ClassResour
 
         $dbm->flush();
 
-        $this->notify('User n°'.$user->getId().' modified (e-mail or roles)'); 
+        $this->notify('User n°'.$user->getId().' modified (e-mail or roles or company)'); 
 
         return new View("User Updated Successfully", Response::HTTP_OK);;
     }

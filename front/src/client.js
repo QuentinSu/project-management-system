@@ -3,10 +3,9 @@ import AppBar from 'material-ui/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Projects from './project.js';
 import Testimonials from './testimonial.js'
 import PropTypes from 'prop-types';
-import {Users, UserMenu} from './user.js'
+import {UserMenu} from './user.js'
 import Footer from './footer.js';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
@@ -26,11 +25,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {Ticket} from './project.js';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
+
 import Dropzone from 'react-dropzone'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -68,26 +63,24 @@ function BackToMenu(props) {
 }
 
 class Menu extends Component {
-    constructor(props){
-        super(props);
-    }
+
     render() {
         return (
         <div className='menu'>
             <div className='menu-top'>
                 <Button onClick={() => {this.props.changeTab('project')}}>
-                <img className='menu-button' src={process.env.PUBLIC_URL + '/project.png'}/>
+                <img className='menu-button' alt='project' src={process.env.PUBLIC_URL + '/project.png'}/>
                 </Button>
                 <Button onClick={() => {this.props.changeTab('support')}}>
-                <img className='menu-button' src={process.env.PUBLIC_URL + '/support.png'}/>
+                <img className='menu-button' alt='support' src={process.env.PUBLIC_URL + '/support.png'}/>
                 </Button>
             </div>
             <div className='menu-bottom'>
                 <Button onClick={() => {this.props.changeTab('testimonial')}}>
-                <img className='menu-button' src={process.env.PUBLIC_URL + '/testimonial.png'}/>
+                <img className='menu-button' alt='testimonial' src={process.env.PUBLIC_URL + '/testimonial.png'}/>
                 </Button>
                 <Button onClick={() => {this.props.changeTab('fileupload')}}>
-                <img className='menu-button' src={process.env.PUBLIC_URL + '/fileupload.png'}/>
+                <img className='menu-button' alt='fileUpload' src={process.env.PUBLIC_URL + '/fileupload.png'}/>
                 </Button>
             </div>
         </div>
@@ -96,9 +89,7 @@ class Menu extends Component {
 }
 
 class ProjectProgress extends Component {
-    constructor(props){
-        super(props);
-    }
+
     render() {
         var self = this;
         let mappedChecklists = this.props.project.checklists.map(function(checklist) {
@@ -177,15 +168,13 @@ class ProjectProgress extends Component {
             <div>
             <div className='project-progress'>
                 <BackToMenu changeTab={this.props.changeTab}/>
-                <img className='project-progress-button' src={process.env.PUBLIC_URL + '/project.png'}/> 
-                <div className='project-progress-title'>PROJECT PROGRESS</div>  
+                <img className='project-progress-button'alt='project' src={process.env.PUBLIC_URL + '/project.png'}/> 
+                <div className='project-progress-title' alt='proj. progress'>PROJECT PROGRESS</div>  
             </div> 
             <div className='project-content'>
                 {mappedChecklists}
             </div>
             </div>
-
-
         )
     }
 }

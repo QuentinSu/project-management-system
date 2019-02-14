@@ -236,8 +236,8 @@ class NewCompanyUserLinkDialog extends React.Component {
             }).then(function (response) {
                 if(response.status === 200){
                     self.setState({ open: false });
-                    this.forceUpdate();
-                    //self.props.handleUserChange();
+                    //this.forceUpdate();
+                    self.props.handleCompanyChange();
                 }
             }).catch(function (error) {
             });
@@ -278,6 +278,7 @@ class NewCompanyUserLinkDialog extends React.Component {
                         options={this.state.users}
                         components={components}
                         value={this.state.multi}
+                        autoFocus
                         onChange={this.handleChange('multi')}
                         placeholder="Select users"
                         isMulti

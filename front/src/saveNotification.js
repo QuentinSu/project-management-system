@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import PropTypes from 'prop-types';
 
-// PROJECT SAVE NOTIFICATION
+// PROJECT & COMPANY SAVE NOTIFICATION
 
 const variantIcon = {
     success: CheckCircleIcon
@@ -97,4 +97,24 @@ export default function ProjectSaveNotification(props) {
           />
         </Snackbar>
     )
+}
+
+export function CompanySaveNotification(props) {
+  return (
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={props.open}
+        autoHideDuration={3000}
+        onClose={props.handleClose}
+      >
+        <MySnackbarContentWrapper
+          onClose={props.handleClose}
+          variant="success"
+          message={<span id="message-id">{props.message}</span>}
+        />
+      </Snackbar>
+  )
 }
