@@ -373,7 +373,7 @@
 }
 
 .company-stats {
-	width: 10%;
+	width: 20%;
 	float: right;
 	background:#f44336;
 }
@@ -509,8 +509,6 @@
     margin: 10px;
     padding: 3px;
 }
-
-
 
 .user-frame {
 	color: white;
