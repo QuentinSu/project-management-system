@@ -33,7 +33,7 @@ class Reminder
     private $type;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="string", length=255)
      */
     private $deadline;
 
@@ -78,12 +78,12 @@ class Reminder
         return $this;
     }
 
-    public function getDeadline(): ?\DateTimeInterface
+    public function getDeadline(): ?string
     {
         return $this->deadline;
     }
 
-    public function setDeadline(\DateTimeInterface $deadline): self
+    public function setDeadline(string $deadline): self
     {
         $this->deadline = $deadline;
 
