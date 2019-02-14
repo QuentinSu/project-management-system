@@ -17,7 +17,7 @@ class Reminder
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Project", inversedBy="reminders")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Project", inversedBy="reminders")
      * @ORM\JoinColumn(nullable=false)
      */
     private $project;

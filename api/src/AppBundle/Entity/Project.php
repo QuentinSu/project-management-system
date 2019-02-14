@@ -74,9 +74,14 @@ class Project
     private $fileTicketId;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $goLiveDate;
+
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Reminder", mappedBy="project", orphanRemoval=true)
+     */
+    private $reminder;
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Reminder", mappedBy="project", orphanRemoval=true)
@@ -89,7 +94,7 @@ class Project
     public function __construct() {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
         $this->checklists = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->reminders = new ArrayCollection();
+        //$this->reminder = new ArrayCollection();
     }
 
 
@@ -227,12 +232,12 @@ class Project
         return $this->users;
     }
 
-    public function getGoLiveDate(): ?\DateTimeInterface
+    public function getGoLiveDate(): ?string
     {
         return $this->goLiveDate;
     }
 
-    public function setGoLiveDate(?\DateTimeInterface $goLiveDate): self
+    public function setGoLiveDate(?string $goLiveDate): self
     {
         $this->goLiveDate = $goLiveDate;
 
@@ -240,17 +245,17 @@ class Project
     }
 
     /**
-     * @return Collection|Reminder[]
+     * @return Reminder
      */
-    public function getReminders(): Collection
+    public function getReminder(): Reminder
     {
-        return $this->reminders;
+        return $this->reminder;
     }
 
     public function addReminder(Reminder $reminder): self
     {
-        if (!$this->reminders->contains($reminder)) {
-            $this->reminders[] = $reminder;
+        if (!$this->reminder->contains($reminder)) {
+            $this->reminder = $reminder;
             $reminder->setProject($this);
         }
 
@@ -259,8 +264,8 @@ class Project
 
     public function removeReminder(Reminder $reminder): self
     {
-        if ($this->reminders->contains($reminder)) {
-            $this->reminders->removeElement($reminder);
+        if ($this->reminder->contains($reminder)) {
+            $this->reminder->removeElement($reminder);
             // set the owning side to null (unless already changed)
             if ($reminder->getProject() === $this) {
                 $reminder->setProject(null);

@@ -76,6 +76,7 @@ class ProjectController extends RestServiceController
       $name = $request->get('name');
       $type = $request->get('type');
       $status = $request->get('status');
+      $golivedate = $request->get('golivedate');
 
       // TODO: DO ENUMS VERIF HERE
 
@@ -86,6 +87,7 @@ class ProjectController extends RestServiceController
       $project->setName($name);
       $project->setType($type);
       $project->setStatus($status);
+      $project->setGoLiveDate($golivedate);
       $em = $this->getDoctrine()->getManager();
       $em->persist($project);
 
@@ -120,6 +122,7 @@ class ProjectController extends RestServiceController
       $name = $request->get('name');
       $type = $request->get('type');
       $status = $request->get('status');
+      $golivedate = $request->get('golivedate');
       $dbm = $this->getDoctrine()->getManager();
       $project = $this->getDoctrine()->getRepository('AppBundle:Project')->find($id);
       if (empty($project)) {
@@ -129,6 +132,7 @@ class ProjectController extends RestServiceController
       !empty($name) ? $project->setName($name) : 0;
       !empty($type) ? $project->setType($type) : 0;
       !empty($status) ? $project->setStatus($status) : 0;
+      !empty($golivedate) ? $project->setGoLiveDate($golivedate) : date("Y-m-d");
 
       $dbm->flush();
 

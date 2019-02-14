@@ -96,7 +96,8 @@ export class DeleteProjectDialog extends React.Component {
       open: false,
       name: '',
       type: '',
-      status: ''
+      status: '',
+      golivedate: ''
     };
   
     handleClickOpen = () => {
@@ -108,7 +109,7 @@ export class DeleteProjectDialog extends React.Component {
         axios({
             method: 'post', //you can set what request you want to be
             url: apiBaseUrl+'project',
-            data: {name:this.state.name, type:this.state.type, status:this.state.status},
+            data: {name:this.state.name, type:this.state.type, status:this.state.status, golivedate:this.state.golivedate},
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -121,8 +122,18 @@ export class DeleteProjectDialog extends React.Component {
         }).catch(function (error) {
         });
     }
-  
+    
     render() {
+      var date=new Date();
+      var yearPlusOne = date.getFullYear()+1;
+      var month = date.getMonth()+1;
+      var day = date.getDate();
+      if (month < 10) {
+        month = '0' + month;
+      } 
+      if (day < 10) {
+        day = '0' + day;
+      }
       return (
         <div>
           <Button onClick={this.handleClickOpen} color="primary" className='new-button'>
@@ -156,6 +167,15 @@ export class DeleteProjectDialog extends React.Component {
                 onChange = {(event) => this.setState({type:event.target.value})}
                 fullWidth
               />
+              {console.log(yearPlusOne+'-'+month+'-'+day)}
+              <TextField className='golive'
+                    type='date'
+                    id="golivedate"
+                    name="golivedate"
+                    onChange={event => this.setState({golivedate:event.target.value})}
+                    defaultValue={""+yearPlusOne+"-"+month+"-"+day+""}   
+                    label='Go Live Date'
+                />
               <FormControl required fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select
