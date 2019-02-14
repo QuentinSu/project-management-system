@@ -13,8 +13,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import RemoveIcon from '@material-ui/icons/Remove';
 import axios from 'axios';
+import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -26,6 +26,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dropzone from 'react-dropzone';
 import NewCompanyUserLinkDialog from './newCompanyUserLinkDialog.js';
 import Divider from '@material-ui/core/Divider';
+import CompanySaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
 
 
@@ -33,7 +34,8 @@ import List from '@material-ui/core/List';
 //import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
 var config = require('./config.json');
-
+var nbClients;
+var once = false;
 const apiBaseUrl = config.apiBaseUrl;
 //const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } });
 
@@ -86,6 +88,7 @@ class Companies extends Component {
 
     handleCompaniesChange() {
         this.componentDidMount();
+        this.forceUpdate();
     }
     
     updateCompanies() {
@@ -120,6 +123,10 @@ class Companies extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                if(!once) {
+                    once = true;
+                    nbClients = response.data.length;
+                }
                 self.setState({companies:response.data});
               }
             })
@@ -149,7 +156,8 @@ class Companies extends Component {
             .then(function (response) {
               if(response.status === 200){
                 self.setState({ open: false });
-                self.updateCompanies();
+                self.handleCompaniesChange();
+                this.setState({openSaveNotification: true});
               }
             })
             .catch(function (error) {
@@ -159,12 +167,66 @@ class Companies extends Component {
     // filter on name & phone
     filterCompanies(searchString) {
         let newCompanies = this.state.companies.slice();
-        console.log('bite');
         newCompanies.map((company)=>{
+            //mandatory because of the first passage here
+            if(company.hidden == undefined) {
+                company.hidden = false;
+            }
+            var initialState=company.hidden;
             if (company.name.toUpperCase().includes(searchString.toUpperCase()) || company.phone.toUpperCase().includes(searchString.toUpperCase())) {
+                // if the searchString correspond with company name or phone useless to filter on users
                 company.hidden = false;
             } else {
-                company.hidden = true;
+                // else, we keep visible the company only if filter on users match /!\ test on presence of users on the company
+                if(company.users.length > 0) {
+                    company.users.map((user)=>{
+                        if(user.username.toUpperCase().includes(searchString.toUpperCase())) {
+                            company.hidden = false;
+                        } else {
+                            company.hidden = true;
+                        }
+                        })
+                } else {
+                    company.hidden = true;  
+                }
+            }
+            //si a la base l'item etait caché
+            if(initialState) {
+                // s'il y a eu un changement l'item est apparru donc on incremente
+                if(initialState!==company.hidden) {
+                    nbClients++;
+                }
+            } else {
+                //sinon litem etait visible. En cas de changement on decremente
+                if(initialState!==company.hidden) {
+                    nbClients--;
+                }
+            }
+        })
+        this.setState({companies: newCompanies});
+    }
+
+    filterInactiveCompanies(checkedShowInactive) {
+        let newCompanies = this.state.companies.slice();
+        newCompanies.map((company)=>{
+            if(company.hidden == undefined) {
+                company.hidden = false;
+            }
+            var initialState=company.hidden;
+            if (!company.status) {
+                checkedShowInactive ? company.hidden = false : company.hidden = true;
+            }
+            //si a la base l'item etait caché
+            if(initialState) {
+                // s'il y a eu un changement l'item est apparru donc on incremente
+                if(initialState!==company.hidden) {
+                    nbClients++;
+                }
+            } else {
+                //sinon litem etait visible. En cas de changement on decremente
+                if(initialState!==company.hidden) {
+                    nbClients--;
+                }
             }
         })
         this.setState({companies: newCompanies}); 
@@ -191,11 +253,28 @@ class Companies extends Component {
         })
         
         var button = 
+        <div>
         <Button onClick={() => this.setState({ open: true })} color="primary" className='new-button'>
             <AddIcon />
             company
         </Button>
-
+        <div className='company-header'>
+        <input
+            placeholder="Search (name, phone, username)"
+            updateCompanies={this.updateCompanies.bind(this)}
+            onChange={event =>this.filterCompanies(event.target.value)}
+        />
+        <Paper color="primary" className='company-stats' square={false}>
+            <Typography className='company-stats-nb'>You have <b>{nbClients}</b> clients <i>with this filter</i></Typography>
+        </Paper>
+         <FormControlLabel 
+                    className="company-active-filter"
+                    control={<Switch checked={this.state.checked} defaultChecked={true} onChange={this.onChange} onClick={event => this.filterInactiveCompanies(event.target.checked)}
+                             />} 
+                    label="Show inactive" />
+        </div>
+        <br></br>
+        </div>
         return(
             <div>
                 {button}
@@ -269,13 +348,7 @@ class Companies extends Component {
                     </Button>
                     </DialogActions>
                 </Dialog>
-                <div className='company-header'>
-                    <input
-                        placeholder="Search (e.g: name, phone)"
-                        updateCompanies={this.updateCompanies.bind(this)}
-                        onChange={event => this.filterCompanies(event.target.value)}
-                    />
-                </div>
+
                 <p></p>
                 {mappedCompanies}
             </div>
@@ -321,7 +394,8 @@ class Companies extends Component {
             status: props.status,
             eoy: props.eoy,
             users: props.users,
-            openDelete: false
+            openDelete: false,
+            openSaveNotification: false
         }
     }
 
@@ -339,12 +413,14 @@ class Companies extends Component {
             }
         }).then(function (response) {
             if(response.status === 200){
+                self.props.updateCompanies();
                 self.handleCompanyChange();
+                self.forceUpdate();
+                self.setState({openSaveNotification: true});
             }
         }).catch(function (error) {
         });
     }
-
 
     onDrop(files) {
         var self = this;
@@ -388,6 +464,9 @@ class Companies extends Component {
             .then(function (response) {
               if(response.status === 200){
                 self.props.updateCompanies();
+                self.handleCompanyChange();
+                self.forceUpdate();
+                self.setState({openSaveNotification: true});
               }
             })
             .catch(function (error) {
@@ -412,9 +491,11 @@ class Companies extends Component {
             })
             .catch(function (error) {
             });
+            self.forceUpdate();
     }
 
     handleCompanyChange(type, data) {
+        this.setState({openSaveNotification: true});
         var self = this;
         axios({
             method: 'get', //you can set what request you want to be
@@ -467,7 +548,8 @@ class Companies extends Component {
         return  <User   key={user.id}
                         userId={user.id}
                         username={user.username}
-                        removeUserLink={this.removeUserLink.bind(this)}
+                        handleCompanyChange={this.handleCompanyChange.bind(this)}
+                        removeUserLink={this.removeUserLink.bind(user.id)}
                         
                 />
         })
@@ -476,13 +558,14 @@ class Companies extends Component {
             <div>
             <ExpansionPanel hidden={this.props.hidden}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <CompanySaveNotification 
+                        open={this.state.openSaveNotification} 
+                        message={'Company saved: ' + this.state.name}
+                        handleClose={() => {this.setState({openSaveNotification:false})}}
+                    />
             {/* <Card className='company-card' hidden={this.props.hidden}> */}
             <div className="company-logo">
                 <img className='logo-company' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
-
-                <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
-                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
-                </Dropzone>
             </div>
             <div className='company-details'>
                 <TextField className='company-name'
@@ -510,10 +593,11 @@ class Companies extends Component {
                     label='Creation date'
                 />
             </div>
-            <div className='company-description'>
+            <div className='company-description' >
                 <TextField
                     className='company-description-text'
                     onChange={event => this.setState({description:event.target.value})}
+                    onClick ={(event)=>"event.stopPropagation()"}
                     multiline
                     rows='4'
                     defaultValue={this.state.description}
@@ -522,13 +606,11 @@ class Companies extends Component {
             </div>
             <div className='company-actions'>
 
-            <FormControlLabel control={<Switch checked={this.state.status}
-                                onChange = {(event) => this.setState({status:!this.state.status})} />} label="Active" />
-                {/* <TextField className='company-status' 
-                    onChange={event => this.setState({status:event.target.value})}
-                    defaultValue={this.state.status}
-                    label='Status'
-                /> */}
+                <FormControlLabel 
+                    className="company-active-switch"
+                    control={<Switch checked={this.state.status}
+                            onChange = {(event) => this.setState({status:!this.state.status})} />} 
+                    label="Active" />
                 <Button 
                     className="company-save-button"
                     size="small"
@@ -568,15 +650,21 @@ class Companies extends Component {
             </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <Card fullWidth>
+                <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
+                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
+                </Dropzone>
+                <div className="company-users-card">
+                <Card>
                     <NewCompanyUserLinkDialog
                         company={this.state.id}
+                        handleCompanyChange={this.handleCompanyChange.bind(this)}
                     />
                     {/* <Divider/> */}
                     <List fullWidth className="company-user-element">
                         {mappedUsers}
                     </List>
                 </Card>
+                </div>
             </ExpansionPanelDetails>
         </ExpansionPanel>
         <br /> 

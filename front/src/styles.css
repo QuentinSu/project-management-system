@@ -79,7 +79,7 @@
 .company-logo {
 	display: flex;
 	height:150px;
-	width:300px;
+	width:150px;
 }
 
 .logo-company {
@@ -108,7 +108,7 @@
 	top:0px;
 	height: 150px;
 	max-width:35%;
-	margin-left:30px;
+	margin-left:60px;
 }
 .company-name {
 	top:15px;
@@ -129,16 +129,20 @@
 	left:15px;
 	width:30%
 }
+.company-users-card {
+	display:block;
+	margin-left:50px;
+	width:75%;
+}
 .company-user-element {
-	display: flex;
-	flex-wrap: wrap;
-	width:500%;
+	width:90%;
+	left:30px;
 }
 
 .company-description {
 	display: flex;
     flex-wrap: wrap;
-	margin-left: -60px;
+	margin-left: -20px;
 	top:0px;
 	height:150px;
 	width: 35%;
@@ -153,16 +157,29 @@
 	/* right: 30px; */
 }
 
-.lsp {
-	height:2px;
-}
-
 .company-actions {
 	display: flex;
     flex-wrap: wrap;
-	margin-left:15px !important;
+	margin-left:50px !important;
 	top:0px;
-	width: 10%
+	
+}
+.company-active-switch {
+	width: 100%;
+}
+
+.company-active-filter {
+	padding-left:20px;
+	width: 10%;
+}
+
+.company-save-button {
+	
+}
+
+.company-delete-button {
+	display: flex;
+	flex-wrap: wrap;
 }
 
 /** end */
@@ -353,6 +370,18 @@
 
 .checklist-list-item {
 	width: 80%;
+}
+
+.company-stats {
+	width: 10%;
+	float: right;
+	background:#f44336;
+}
+
+.company-stats-nb {
+	display:block;
+	text-align:center;
+	padding-top:15px;
 }
 
 .ticket-client {

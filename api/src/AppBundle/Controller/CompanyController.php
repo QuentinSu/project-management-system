@@ -103,7 +103,7 @@ class CompanyController extends Controller
         $dbm = $this->getDoctrine()->getManager();
 
         !empty($company) ? $company->addUser($user) : NULL;
-
+        $dbm->persist($company);
         $dbm->flush();
 
         // $this->notify('Company ID'.$company->getId().' modified');
