@@ -652,7 +652,7 @@ class Companies extends Component {
                             onChange = {(event) => this.setState({status:!this.state.status})} />} 
                     label="Active" />
                 
-                <Chip color="secondary-light" className='company-live' square={false} label={liveFrom} />
+                <Chip className='company-live' label={liveFrom} />
                 
                 <Button 
                     className="company-save-button"
@@ -694,7 +694,7 @@ class Companies extends Component {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
                 <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
-                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
+                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg).<br/>Best if close to square format</p>
                 </Dropzone>
                 <div className="company-users-card">
                 <Card>

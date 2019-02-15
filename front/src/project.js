@@ -719,7 +719,7 @@ class Project extends Component {
                                 type='date'
                                 onChange={(event) => this.setState({goLiveDate:event.target.value})}
                                 defaultValue={this.state.goLiveDate}
-                                label='Deadline'
+                                label='Go live date'
                         />
                             <Button 
                                 color="primary"  

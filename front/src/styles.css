@@ -171,6 +171,7 @@
 }
 .company-active-switch {
 	width: 50%;
+	padding-left:10px;
 }
 
 .company-active-filter {
@@ -181,8 +182,8 @@
 .company-live {
 	/* 	width:35%; */
 	height:50px;
-	margin-top:20px;
-	min-width:25%;
+	margin-top:25px;
+	min-width:30%;
 }
 
 .company-save-button {
