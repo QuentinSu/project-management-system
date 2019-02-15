@@ -6,6 +6,11 @@ login/advanced:
     type: rest
     resource: AppBundle\Controller\RestLoginController
 
+
+reminder:
+    type: rest
+    resource: AppBundle\Controller\ReminderController
+
 password_management:
     type: rest
     resource: AppBundle\Controller\RestPasswordManagementController

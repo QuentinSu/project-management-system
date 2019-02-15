@@ -4,6 +4,8 @@ import StarIcon from '@material-ui/icons/Star';
 import { Link, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import {DeleteProjectDialog, NewProjectDialog, NotifyUsersDialog} from './projectDialog.js'
+import Card from '@material-ui/core/Card';
+
 
 var config = require('./config.json');
 
@@ -15,7 +17,7 @@ class Reminders extends Component {
     constructor(props){
       super(props);
       this.state={
-          projects: [],
+          reminders: [],
           trigger: true
       }
     };
@@ -23,7 +25,7 @@ class Reminders extends Component {
         var self = this;
         axios({
             method: 'get', //you can set what request you want to be
-            url: apiBaseUrl+'project',
+            url: apiBaseUrl+'reminder',
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -31,7 +33,7 @@ class Reminders extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                self.setState({projects:response.data});
+                self.setState({reminders:response.data});
                 this.forceUpdate();
               }
             })
@@ -42,7 +44,7 @@ class Reminders extends Component {
         var self = this;
         axios({
             method: 'get', //you can set what request you want to be
-            url: apiBaseUrl+'project',
+            url: apiBaseUrl+'reminder',
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -50,37 +52,59 @@ class Reminders extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                self.setState({projects:response.data});
+                self.setState({reminders:response.data});
               }
             })
             .catch(function (error) {
             });
     }
 
-    filterProjects(label) {
-        let newProjects = this.state.projects.slice();
-        newProjects.map((project)=>{
-            if (project.name.toUpperCase().includes(label.toUpperCase()) || project.type.toUpperCase().includes(label.toUpperCase())) {
-                project.hidden = false;
+    filterReminders(label) {
+        let newReminders = this.state.reminders.slice();
+        newReminders.map((reminder)=>{
+            if (reminder.name.toUpperCase().includes(label.toUpperCase()) || reminder.type.toUpperCase().includes(label.toUpperCase())) {
+                reminder.hidden = false;
             } else {
-                project.hidden = true;
+                reminder.hidden = true;
             }
         })
-        this.setState({projects: newProjects}); 
+        this.setState({reminders: newReminders}); 
     }
 
+    getDetailledReminder() {
+      var self = this;
+      console.log('here bro yes');
+      axios({
+        method: 'get', //you can set what request you want to be
+        url: apiBaseUrl+'reminder/116',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('session'),
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+          .then(function (response) {
+            if(response.status === 200){
+              console.log(JSON.stringify(response.data));
+              // self.setState({reminders:response.data});
+              // this.forceUpdate();
+            }
+          })
+          .catch(function (error) {
+            console.log(error.response);
+          });
+  }
+
     render(){
-        let mappedReminders = this.state.projects.map((project)=>{
-          return <Reminder   key={project.id}
-                            id={project.id}
-                            name={project.name}
-                            type={project.type}
-                            status={project.status}
-                            goLiveDate={project.go_live_date}
-                            checklists={project.checklists}
-                            tickets={project.tickets}
-                            hidden={project.hidden ? project.hidden : false}
-                            file_ticket_id={project.file_ticket_id}
+        var test = this.getDetailledReminder();
+        let mappedReminders = this.state.reminders.map((reminder)=>{
+          return <Reminder   key={reminder.id}
+                            eoy={reminder.eoy}
+                            reminders={reminder.reminders}
+                            id={reminder.id}
+                            name={reminder.name}
+                            status={reminder.status}
+                            goLiveDate={reminder.go_live_date}
+                            hidden={reminder.hidden ? reminder.hidden : false}
                             handleRemindersChange={this.handleRemindersChange.bind(this)}
                 />     
         })
@@ -89,7 +113,7 @@ class Reminders extends Component {
                 <div className='project-header'>
                     <input
                         placeholder="Search (e.g: name, special reminder, date)"
-                        onChange={event => this.filterProjects(event.target.value)}
+                        onChange={event => this.filterReminders(event.target.value)}
                     />
                 </div>
                 <p></p>
@@ -106,17 +130,19 @@ class Reminder extends Component {
     constructor(props){
       super(props);
       this.state={
-          market: [],
-          trigger: true,
-          open: false,
-          newAuthor: null,
-          newDescription: null
+          id: props.id,
+          name: props.name,
+          goLiveDate: props.goLiveDate,
+          reminders: props.reminders,
+          eoy: props.eoy,
+          status: props.status,
+          openSaveNotification: false
       }
     }
     render() {
         return (
             <div>
-                <p>Reminder</p>
+                <Card>Reminder {this.state.name}</Card>
             </div>
         );
     }

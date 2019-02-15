@@ -2,9 +2,18 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\User;
+use AppBundle\Entity\date;
+use AppBundle\Entity\Project;
+use JMS\Serializer\Annotation as JMSSerializer;
 
 /**
+ * Reminder
+ * 
+ * @ORM\Table(name="reminder")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ReminderRepository")
  */
 class Reminder
@@ -17,7 +26,7 @@ class Reminder
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Project", inversedBy="reminders")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Project", inversedBy="reminders")
      * @ORM\JoinColumn(nullable=false)
      */
     private $project;
@@ -36,6 +45,11 @@ class Reminder
      * @ORM\Column(type="string", length=255)
      */
     private $deadline;
+
+    public function __construct()
+    {
+
+    }
 
     public function getId(): ?int
     {

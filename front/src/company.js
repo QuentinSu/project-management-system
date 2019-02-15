@@ -585,7 +585,6 @@ class Companies extends Component {
 
         //Live from management
         var dateDifference = dateDiff(this.state.creation);
-        console.log(dateDifference);
         var liveFrom = dateDifference[0]>0 ? dateDifference[0]+' years ' : '';
         liveFrom += dateDifference[1]>0 ? dateDifference[1]+' months ' : '';
         liveFrom += liveFrom!=='' ? '' : 'New !';
