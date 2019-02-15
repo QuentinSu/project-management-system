@@ -15,6 +15,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
+import Chip from '@material-ui/core/Chip';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -28,6 +29,7 @@ import NewCompanyUserLinkDialog from './newCompanyUserLinkDialog.js';
 import Divider from '@material-ui/core/Divider';
 import CompanySaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
+import { array } from 'prop-types';
 
 
 //import Typography from '@material-ui/core/Typography';
@@ -66,6 +68,33 @@ if (ss < 10) {
 }
 
 var created = yyyy + '-' + mm + '-' + dd +' '+ hh + ":" + min + ":" + ss;
+
+function dateDiff(date) {
+    date = date.split('-');
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = today.getMonth() + 1;
+    var day = today.getDate();
+    var yy = parseInt(date[0]);
+    var mm = parseInt(date[1]);
+    var dd = parseInt(date[2]);
+    var years, months, days;
+    // months
+    months = month - mm;
+    if (day < dd) {
+        months = months - 1;
+    }
+    // years
+    years = year - yy;
+    if (month * 100 + day < mm * 100 + dd) {
+        years = years - 1;
+        months = months + 12;
+    }
+    // days
+    days = Math.floor((today.getTime() - (new Date(yy + years, mm + months - 1, dd)).getTime()) / (24 * 60 * 60 * 1000));
+    //
+    return [years, months, days];
+}
 
 // CLASS TO RENDER ALL THE COMPANIES
 
@@ -554,6 +583,17 @@ class Companies extends Component {
                 />
         })
 
+        //Live from management
+        var dateDifference = dateDiff(this.state.creation);
+        console.log(dateDifference);
+        var liveFrom = dateDifference[0]>0 ? dateDifference[0]+' years ' : '';
+        liveFrom += dateDifference[1]>0 ? dateDifference[1]+' months ' : '';
+        liveFrom += liveFrom!=='' ? '' : 'New !';
+
+        if(liveFrom!=='New !') {
+            liveFrom = 'Live from '+liveFrom;
+        }
+
         return (
             <div>
             <ExpansionPanel hidden={this.props.hidden}>
@@ -611,6 +651,9 @@ class Companies extends Component {
                     control={<Switch checked={this.state.status}
                             onChange = {(event) => this.setState({status:!this.state.status})} />} 
                     label="Active" />
+                
+                <Chip color="secondary-light" className='company-live' square={false} label={liveFrom} />
+                
                 <Button 
                     className="company-save-button"
                     size="small"

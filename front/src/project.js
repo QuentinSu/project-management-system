@@ -698,12 +698,6 @@ class Project extends Component {
                     <ExpansionPanelDetails className='project-details'>
         
                         <TextField className='project-text'
-                                type='date'
-                                onChange={(event) => this.setState({goLiveDate:event.target.value})}
-                                defaultValue={this.state.goLiveDate}
-                                label='GoLiveDate'
-                        />
-                        <TextField className='project-text'
                             defaultValue={this.state.type}
                             label='Type'
                             onChange = {(event) => this.setState({type:event.target.value})}
@@ -721,6 +715,12 @@ class Project extends Component {
                         <MenuItem value='Pending'>Pending</MenuItem>
                         <MenuItem value='Complete'>Complete</MenuItem>
                         </Select>
+                        <TextField className='project-deadline'
+                                type='date'
+                                onChange={(event) => this.setState({goLiveDate:event.target.value})}
+                                defaultValue={this.state.goLiveDate}
+                                label='Deadline'
+                        />
                             <Button 
                                 color="primary"  
                                 size="small"
@@ -799,7 +799,6 @@ class Projects extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                  console.log(response.data);
                 self.setState({projects:response.data});
               }
             })

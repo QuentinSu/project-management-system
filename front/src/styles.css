@@ -34,6 +34,11 @@
 	margin: 20px;
 }
 
+.project-deadline {
+	margin: 16px;
+
+}
+
 .status-select {
 	margin: 16px;
 	width: 200px;
@@ -165,12 +170,19 @@
 	
 }
 .company-active-switch {
-	width: 100%;
+	width: 50%;
 }
 
 .company-active-filter {
 	padding-left:20px;
 	width: 10%;
+}
+
+.company-live {
+	/* 	width:35%; */
+	height:50px;
+	margin-top:20px;
+	min-width:25%;
 }
 
 .company-save-button {
