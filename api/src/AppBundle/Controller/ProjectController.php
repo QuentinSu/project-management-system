@@ -76,18 +76,21 @@ class ProjectController extends RestServiceController
       $name = $request->get('name');
       $type = $request->get('type');
       $status = $request->get('status');
-      $golivedate = $request->get('golivedate');
+      $goLiveDate = $request->get('goLiveDate');
 
       // TODO: DO ENUMS VERIF HERE
 
     if( empty($name) || empty($type) || empty($status) )
     {
       return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
-    } 
+    }
+    if (empty($goLiveDate)) {
+      $goLiveDate = date('Y-m-d', strtotime('+1 year'));
+    }
       $project->setName($name);
       $project->setType($type);
       $project->setStatus($status);
-      $project->setGoLiveDate($golivedate);
+      $project->setGoLiveDate($goLiveDate);
       $em = $this->getDoctrine()->getManager();
       $em->persist($project);
 
@@ -122,7 +125,7 @@ class ProjectController extends RestServiceController
       $name = $request->get('name');
       $type = $request->get('type');
       $status = $request->get('status');
-      $golivedate = $request->get('golivedate');
+      $goLiveDate = $request->get('goLiveDate');
       $dbm = $this->getDoctrine()->getManager();
       $project = $this->getDoctrine()->getRepository('AppBundle:Project')->find($id);
       if (empty($project)) {
@@ -132,7 +135,7 @@ class ProjectController extends RestServiceController
       !empty($name) ? $project->setName($name) : 0;
       !empty($type) ? $project->setType($type) : 0;
       !empty($status) ? $project->setStatus($status) : 0;
-      !empty($golivedate) ? $project->setGoLiveDate($golivedate) : date("Y-m-d");
+      !empty($goLiveDate) ? $project->setGoLiveDate($goLiveDate) : date("Y-m-d");
 
       $dbm->flush();
 

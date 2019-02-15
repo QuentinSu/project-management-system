@@ -139,8 +139,8 @@ function Checklist(props) {
                         <SaveIcon/> Save
                 </Button>
                 <DeleteChecklistDialog 
-                    projectId={props.projectId} 
-                    checklistId={props.checklistId} 
+                    projectId={props.projectId}
+                    checklistId={props.checklistId}
                     handleProjectChange={props.handleProjectChange}
                 />
             </div>
@@ -409,7 +409,7 @@ class Project extends Component {
             name: props.name,
             type: props.type,
             status: props.status,
-            golivedate: props.golivedate,
+            goLiveDate: props.goLiveDate,
             checklists: props.checklists,
             tickets: props.tickets,
             tabValue: 0,
@@ -495,7 +495,7 @@ class Project extends Component {
         axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'project/'+project.id,
-            data: {name:project.name, type:project.type, status:project.status, golivedate:project.golivedate},
+            data: {name:project.name, type:project.type, status:project.status, goLiveDate:project.goLiveDate},
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -696,10 +696,11 @@ class Project extends Component {
                         />
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails className='project-details'>
+        
                         <TextField className='project-text'
                                 type='date'
-                                onChange={(event) => this.setState({golivedate:event.target.value})}
-                                defaultValue={this.state.golivedate}
+                                onChange={(event) => this.setState({goLiveDate:event.target.value})}
+                                defaultValue={this.state.goLiveDate}
                                 label='GoLiveDate'
                         />
                         <TextField className='project-text'
@@ -798,6 +799,7 @@ class Projects extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                  console.log(response.data);
                 self.setState({projects:response.data});
               }
             })
@@ -824,7 +826,7 @@ class Projects extends Component {
                             name={project.name}
                             type={project.type}
                             status={project.status}
-                            golivedate={project.golivedate}
+                            goLiveDate={project.go_live_date}
                             checklists={project.checklists}
                             tickets={project.tickets}
                             hidden={project.hidden ? project.hidden : false}

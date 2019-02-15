@@ -134,6 +134,7 @@ export class DeleteProjectDialog extends React.Component {
       if (day < 10) {
         day = '0' + day;
       }
+      this.state.golivedate = yearPlusOne+"-"+month+"-"+day;
       return (
         <div>
           <Button onClick={this.handleClickOpen} color="primary" className='new-button'>
@@ -167,7 +168,6 @@ export class DeleteProjectDialog extends React.Component {
                 onChange = {(event) => this.setState({type:event.target.value})}
                 fullWidth
               />
-              {console.log(yearPlusOne+'-'+month+'-'+day)}
               <TextField className='golive'
                     type='date'
                     id="golivedate"
