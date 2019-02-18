@@ -79,7 +79,7 @@ class Reminders extends Component {
         // var test = this.getDetailledReminder();
         let mappedReminders = this.state.reminders.map((reminder)=>{
           return <Reminder   key={reminder.id}
-                            // eoy={reminder.eoy}
+                            eoys={reminder.eoys}
                             reminders={reminder.reminders}
                             id={reminder.id}
                             name={reminder.name}
@@ -115,7 +115,7 @@ class Reminder extends Component {
           name: props.name,
           goLiveDate: props.goLiveDate,
           reminders: props.reminders,
-          eoy: props.eoy,
+          eoys: props.eoys,
           status: props.status,
           openSaveNotification: false
       }
@@ -123,7 +123,7 @@ class Reminder extends Component {
     render() {
         return (
             <div>
-                <Card>Reminder {this.state.name} {this.state.goLiveDate}</Card>
+                <Card>Reminder {this.state.name+"  "} {this.state.goLiveDate+"  "} {this.state.reminders[0]} {this.state.eoys[0]}</Card>
             </div>
         );
     }

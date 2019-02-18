@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
+use AppBundle\Entity\Company;
 use AppBundle\Entity\Reminder;
 use AppBundle\Repository\ReminderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -51,7 +52,7 @@ class ReminderController extends Controller
             $golive = $cardReminder->getGoLiveDate();
             $remind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($cardReminder->getId())));
             if(!$remind) {
-                $remindResult = 'empty';
+                $remindResult = ['empty'];
             } else {
                 //$iterableResult = $remind->iterate();
                 $remindResult = [];
@@ -65,11 +66,31 @@ class ReminderController extends Controller
                     array_push($remindResult,$remindInfos);
                 }
             }
-            $newRemind = ['name'=>$name, 'go_live_date'=>$golive, 'reminders'=>$remindResult];
+            //search company of each users, next find eoy of each companies and add their eoy in eoy return (often unique but smtimes plural). Finally eoy will containes list of [nameOfCompany, eoyOfCompany]
+            $userLinkToProject = $cardReminder->getUsers();
+            $companiesEoy = [];
+            foreach ($userLinkToProject as $user) {
+                $company = $user->getCompany();
+                $company ? ($companyEoy=$company->getEoy()) : ($companyEoy=null);
+                if ($company) {
+                    $companyInfo = [];
+                    array_push($companyInfo, $company->getName());
+                    array_push($companyInfo, $companyEoy);
+                    array_push($companiesEoy, $companyInfo);
+                }
+            }
+            if($companiesEoy) {
+                // $eoys = array_unique($companiesEoy, SORT_REGULAR);
+                $eoys=$companiesEoy;
+            } else {
+                $eoys = ['noCompaniesLinked'];
+            }
+
+            $newRemind = ['name'=>$name, 'go_live_date'=>$golive, 'reminders'=>$remindResult, 'eoys'=> $eoys];
             //to add : eoy project->user->company
             array_push($reminders,$newRemind);
         }
-        return $reminders;
+        return $reminders; 
     }
 
     /**
