@@ -41,24 +41,36 @@ class ReminderController extends Controller
      * 
      */
     public function getAction() {
-        return $this->getDoctrine()->getRepository('AppBundle:Project')->findAll();
-    }
+        // return $this->getDoctrine()->getRepository('AppBundle:Project')->findAll();
 
-    /**
-     * @Get("/reminder/{id}")
-     *
-     */
-    public function getCompleteReminder($id) {
-        
-        $reminders = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findAll();
-        if (empty($reminders)) {
-            return new View("reminder not found", Response::HTTP_NOT_FOUND);
-        } 
+        $reminders = [];
+        $projects = $this->getDoctrine()->getRepository('AppBundle:Project')->findAll();
 
+        foreach ($projects as $cardReminder) {
+            $name = $cardReminder->getName();
+            $golive = $cardReminder->getGoLiveDate();
+            $remind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($cardReminder->getId())));
+            if(!$remind) {
+                $remindResult = 'empty';
+            } else {
+                //$iterableResult = $remind->iterate();
+                $remindResult = [];
+                foreach ($remind as $row) {
+                    //$remindResult .= 'c ';
+                    $remindInfos = [];
+                    array_push($remindInfos,$row->getId());
+                    array_push($remindInfos,$row->getStatus());
+                    array_push($remindInfos,$row->getType());
+                    array_push($remindInfos,$row->getDeadline());
+                    array_push($remindResult,$remindInfos);
+                }
+            }
+            $newRemind = ['name'=>$name, 'go_live_date'=>$golive, 'reminders'=>$remindResult];
+            //to add : eoy project->user->company
+            array_push($reminders,$newRemind);
+        }
         return $reminders;
-    }   
-
-
+    }
 
     /**
      * @Post("/reminder")

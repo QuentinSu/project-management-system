@@ -77,7 +77,7 @@ class CompanyController extends Controller
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
-    //   $this->notify('Company added');
+    //$this->notify('Company added');
       return new View("Company Added Successfully", Response::HTTP_OK);
     }
 
@@ -88,12 +88,12 @@ class CompanyController extends Controller
         $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
         if (empty($company)) {
             return new View("company not found", Response::HTTP_NOT_FOUND);
-        } 
+        }
 
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id_user);
         if (empty($user)) {
             return new View("user not found", Response::HTTP_NOT_FOUND);
-        } 
+        }
 
         // Admin restriction for this view
         if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {

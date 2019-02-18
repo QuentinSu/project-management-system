@@ -132,6 +132,7 @@ class Companies extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                console.log(JSON.stringify(response.data));
                 self.setState({companies:response.data});
                 this.forceUpdate();
               }
@@ -360,7 +361,7 @@ class Companies extends Component {
                         margin="dense"
                         id="status"
                         label="Status"
-                        defaultValue={true}
+                        defaultValue='active'
                         onChange = {(event) => this.setState({newStatus:event.target.value})}
                     />
 
@@ -390,7 +391,7 @@ class Companies extends Component {
   function User(props) {
     return (
         <div>
-        <ListItem fullWidth key={props.userId}> 
+        <ListItem key={props.userId}> 
             <ListItemText>
                 <Typography>
                     {props.username}
@@ -702,7 +703,7 @@ class Companies extends Component {
                         handleCompanyChange={this.handleCompanyChange.bind(this)}
                     />
                     {/* <Divider/> */}
-                    <List fullWidth className="company-user-element">
+                    <List className="company-user-element">
                         {mappedUsers}
                     </List>
                 </Card>

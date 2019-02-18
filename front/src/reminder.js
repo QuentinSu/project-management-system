@@ -33,11 +33,13 @@ class Reminders extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                console.log(response.data);
                 self.setState({reminders:response.data});
                 this.forceUpdate();
               }
             })
             .catch(function (error) {
+              console.log(error.response);
             });
     }
     componentDidMount() {
@@ -52,10 +54,12 @@ class Reminders extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                console.log(JSON.stringify(response.data));
                 self.setState({reminders:response.data});
               }
             })
             .catch(function (error) {
+              console.log(error.response);
             });
     }
 
@@ -71,34 +75,11 @@ class Reminders extends Component {
         this.setState({reminders: newReminders}); 
     }
 
-    getDetailledReminder() {
-      var self = this;
-      console.log('here bro yes');
-      axios({
-        method: 'get', //you can set what request you want to be
-        url: apiBaseUrl+'reminder/116',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('session'),
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-          .then(function (response) {
-            if(response.status === 200){
-              console.log(JSON.stringify(response.data));
-              // self.setState({reminders:response.data});
-              // this.forceUpdate();
-            }
-          })
-          .catch(function (error) {
-            console.log(error.response);
-          });
-  }
-
     render(){
-        var test = this.getDetailledReminder();
+        // var test = this.getDetailledReminder();
         let mappedReminders = this.state.reminders.map((reminder)=>{
           return <Reminder   key={reminder.id}
-                            eoy={reminder.eoy}
+                            // eoy={reminder.eoy}
                             reminders={reminder.reminders}
                             id={reminder.id}
                             name={reminder.name}
@@ -142,7 +123,7 @@ class Reminder extends Component {
     render() {
         return (
             <div>
-                <Card>Reminder {this.state.name}</Card>
+                <Card>Reminder {this.state.name} {this.state.goLiveDate}</Card>
             </div>
         );
     }
