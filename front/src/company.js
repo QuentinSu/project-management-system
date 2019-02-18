@@ -31,7 +31,6 @@ import CompanySaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
 import { array } from 'prop-types';
 
-
 //import Typography from '@material-ui/core/Typography';
 //import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 

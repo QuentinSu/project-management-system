@@ -542,7 +542,6 @@ class User extends Component {
         var currentCompanyId;
         
         if(this.state.company != undefined) {
-            console.log(this.state.company.id);
             currentCompanyName = this.state.company.name;
             currentCompanyId = this.state.company.id;
         } else {
@@ -560,7 +559,6 @@ class User extends Component {
         }
         if(this.state.companies != undefined) {
             listOfCompanies = this.state.companies;
-            console.log(listOfCompanies);
             mappedComp = this.state.companies.map((comp)=>{
                 return <MenuItem value={comp.value}>{comp.label}</MenuItem>
             }) 

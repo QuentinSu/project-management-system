@@ -50,6 +50,7 @@ class ReminderController extends Controller
         foreach ($projects as $cardReminder) {
             $name = $cardReminder->getName();
             $golive = $cardReminder->getGoLiveDate();
+            $status = $cardReminder->getStatus();
             $remind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($cardReminder->getId())));
             if(!$remind) {
                 $remindResult = ['empty'];
@@ -86,7 +87,7 @@ class ReminderController extends Controller
                 $eoys = ['noCompaniesLinked'];
             }
 
-            $newRemind = ['name'=>$name, 'go_live_date'=>$golive, 'reminders'=>$remindResult, 'eoys'=> $eoys];
+            $newRemind = ['name'=>$name, 'go_live_date'=>$golive, 'status'=>$status, 'reminders'=>$remindResult, 'eoys'=> $eoys];
             //to add : eoy project->user->company
             array_push($reminders,$newRemind);
         }

@@ -5,11 +5,35 @@ import { Link, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import {DeleteProjectDialog, NewProjectDialog, NotifyUsersDialog} from './projectDialog.js'
 import Card from '@material-ui/core/Card';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SaveIcon from '@material-ui/icons/Save';
+import List from '@material-ui/core/List';
+import { withStyles } from 'material-ui/styles';
+import PropTypes from 'prop-types';
+
 
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
+
+const reminderTheme = createMuiTheme(
+  {overrides: 
+    {textField:
+        { borderColor:'#f44336',
+          background: 'blue',
+          color: 'greend',
+        },
+    },
+  },
+  // { palette: { primary: {main: '#ffffff'} }, secondary: {main: '#f44336'}}
+);
 
 // CLASS TO RENDER ALL THE PROJECTS
 
@@ -117,14 +141,81 @@ class Reminder extends Component {
           reminders: props.reminders,
           eoys: props.eoys,
           status: props.status,
-          openSaveNotification: false
+          openSaveNotification: false,
+          openDelete: false,
+          hidden: false
       }
     }
+
     render() {
+      const { classes } = this.props;
+      let mappedListOfReminders = this.state.reminders.map((reminder)=>{
         return (
-            <div>
-                <Card>Reminder {this.state.name+"  "} {this.state.goLiveDate+"  "} {this.state.reminders[0]} {this.state.eoys[0]}</Card>
-            </div>
-        );
+        <div>
+          <MuiThemeProvider theme={reminderTheme} >
+                <TextField className='reminder-deadline'
+                    type='date'
+                    defaultValue={reminder[3]} 
+                    label={reminder[2]}
+                />
+            </MuiThemeProvider>
+                
+        </div>
+        )
+    })
+        return (
+          <div>
+          <ExpansionPanel hidden={this.props.hidden}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          {/* <ReminderSaveNotification 
+                      open={this.state.openSaveNotification} 
+                      message={'Reminder saved: ' + this.state.name}
+                      handleClose={() => {this.setState({openSaveNotification:false})}}
+                  /> */}
+          {/* <Card className='company-card' hidden={this.props.hidden}> */}
+          <div className='reminder-details'>
+              <TextField className='reminder-name'
+                  onChange={event => this.setState({name:event.target.value})}
+                  defaultValue={this.state.name}
+                  label='Name'
+              />
+
+              <TextField className='reminder-golive'
+                  type='date'
+                  onChange={event => this.setState({goLiveDate:event.target.value})}
+                  defaultValue={this.state.goLiveDate}
+                  label='EOY'
+              />
+
+              <Typography color="textSecondary">
+                Status: 
+              </Typography>
+              <span>&nbsp;&nbsp;</span>
+              <Typography>
+                  {this.state.status}
+              </Typography>
+          </div>
+          <div className='reminder-actions'>
+              <Button 
+                  className="reminder-save-button"
+                  size="small"
+                  color="primary" 
+                  onClick={() => this.saveReminder()}>
+                  <SaveIcon/> Save
+              </Button>
+              {this.state.reminders[0]!=="empty" && mappedListOfReminders}
+              {/* can't delete reminder beacause reminder always linked with project (project master) */}
+          </div>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+              
+              <Card>
+                  Nothing else matters
+              </Card>
+          </ExpansionPanelDetails>
+      </ExpansionPanel>
+      <br /> 
+      </div>
+      );
     }
 }
