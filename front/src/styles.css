@@ -36,7 +36,6 @@
 
 .project-deadline {
 	margin: 16px;
-
 }
 
 .status-select {
@@ -77,6 +76,67 @@
 
 .message-delete-button {
 	float: left;
+}
+
+/** reminder element */
+
+.reminder-legend {
+	min-width: 5%;
+	max-width: 10%;
+	float: right;
+	text-align: center;
+}
+
+.reminder-details {
+	float:left !important;
+	margin-top: 10px;
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-bottom:10px;
+	width:20%;
+}
+
+.reminder-save-button {
+	margin-top: 10px;
+	float:right;
+}
+
+.reminder-avatar {
+	float:left;
+	right:10px;
+	position: absolute;
+}
+.reminder-name {
+	width: 50% !important;
+	font-size:150%;
+	float:left;
+	margin-top: 10px;
+	margin-bottom:10px;
+	/* position:absolute; */
+}
+
+.reminder-golive {
+	width:35%;
+	left:10px;
+	margin-top:10px;
+	float:right;
+}
+
+.reminder-list {
+	float:left;
+	margin-left: 25px;
+	width: 40%;
+	margin-top: 10px;
+}
+
+.reminder-element {
+	margin-left: 25px;
+	max-width:25%;
+	display:inline-block;
+}
+
+.reminder-element-theme {
+	width: 100%;
 }
 
 /** company element */

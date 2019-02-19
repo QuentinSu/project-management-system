@@ -16,24 +16,26 @@ import SaveIcon from '@material-ui/icons/Save';
 import List from '@material-ui/core/List';
 import { withStyles } from 'material-ui/styles';
 import PropTypes from 'prop-types';
-
+import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
+import Avatar from '@material-ui/core/Avatar';
 
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
+var remindersState = [];
 
-const reminderTheme = createMuiTheme(
-  {overrides: 
-    {textField:
-        { borderColor:'#f44336',
-          background: 'blue',
-          color: 'greend',
-        },
-    },
-  },
-  // { palette: { primary: {main: '#ffffff'} }, secondary: {main: '#f44336'}}
-);
+// const reminderTheme = createMuiTheme(
+//   {overrides: 
+//     {textField:
+//         { borderColor:'#f44336',
+//           background: 'green',
+//         },
+//     },
+//   },
+//   // { palette: { primary: {main: '#ffffff'} }, secondary: {main: '#f44336'}}
+// );
 
 // CLASS TO RENDER ALL THE PROJECTS
 
@@ -57,7 +59,6 @@ class Reminders extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                console.log(response.data);
                 self.setState({reminders:response.data});
                 this.forceUpdate();
               }
@@ -78,7 +79,6 @@ class Reminders extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                console.log(JSON.stringify(response.data));
                 self.setState({reminders:response.data});
               }
             })
@@ -113,6 +113,11 @@ class Reminders extends Component {
                             handleRemindersChange={this.handleRemindersChange.bind(this)}
                 />     
         })
+
+        var legendText = <div><Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Validated<br/>
+                          <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Late<br/>
+                          <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days)<br/>
+                          <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Active<br/></div>
         return(
             <div>
                 <div className='project-header'>
@@ -121,7 +126,10 @@ class Reminders extends Component {
                         onChange={event => this.filterReminders(event.target.value)}
                     />
                 </div>
-                <p></p>
+                <Tooltip title={legendText} interactive>
+                  <Paper className='reminder-legend' square={false}>Legend</Paper>
+                  </Tooltip>
+                  <br/><p></p>
                 {mappedReminders}
             </div>
         );
@@ -129,7 +137,6 @@ class Reminders extends Component {
   }
 
   export default Reminders;
-
 
 class Reminder extends Component {
     constructor(props){
@@ -147,73 +154,115 @@ class Reminder extends Component {
       }
     }
 
+    colorReminder(reminder) {
+      var today = new Date();
+      today.setHours(0,0,0,0);
+      console.log(today);
+      var remindDate = new Date(reminder["reminder"][3]);
+
+      var remindDateLessFourteen = new Date(remindDate - 12096e5); //14 days in milliseconds
+      console.log("Remind date : "+remindDate);
+      console.log("Less 14 days : "+remindDateLessFourteen);
+      if(remindDate < today) {
+        return '#f44336';
+      } else if(today > remindDateLessFourteen){
+        return '#f6ae47';
+      } else {
+        return '#c9c9c9';
+      }
+    }
+
     render() {
-      const { classes } = this.props;
+      const classes = this.props;
       let mappedListOfReminders = this.state.reminders.map((reminder)=>{
+        if(reminder!=="empty") {
+          var cololor = this.colorReminder({reminder});
+        }
         return (
-        <div>
-          <MuiThemeProvider theme={reminderTheme} >
-                <TextField className='reminder-deadline'
+          <div className='reminder-element'>
+            <MuiThemeProvider>
+              {reminder[2]}
+                <TextField
+                    className='reminder-element-theme'
                     type='date'
-                    defaultValue={reminder[3]} 
-                    label={reminder[2]}
+                    style={{
+                      background: (reminder[1]=='ok') ? "#00984C" : cololor,
+                    }}
+                    defaultValue={reminder[3]}
+                    InputProps={{
+                      className: classes.textField,
+                    }}
+                    variant="outlined"
                 />
             </MuiThemeProvider>
-                
-        </div>
+            <span>&nbsp;&nbsp;</span>
+          </div>
         )
     })
-        return (
-          <div>
-          <ExpansionPanel hidden={this.props.hidden}>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          {/* <ReminderSaveNotification 
-                      open={this.state.openSaveNotification} 
-                      message={'Reminder saved: ' + this.state.name}
-                      handleClose={() => {this.setState({openSaveNotification:false})}}
-                  /> */}
-          {/* <Card className='company-card' hidden={this.props.hidden}> */}
-          <div className='reminder-details'>
-              <TextField className='reminder-name'
-                  onChange={event => this.setState({name:event.target.value})}
-                  defaultValue={this.state.name}
-                  label='Name'
-              />
+    let mappedEoys = this.state.eoys.map((eoy)=>{
+      return (
+        <div className='reminder-eoy'>
+        <MuiThemeProvider>
+              EOY+{eoy[0]}
+                <TextField
+                    className='eoy-element-theme'
+                    type='date'
+                    style={{
+                      
+                    }}
+                    defaultValue={eoy[1]}
+                    InputProps={{
+                      className: classes.textField,
+                    }}
+                    variant="outlined"
+                /> 
+            </MuiThemeProvider>
+            <span>&nbsp;&nbsp;</span>
+        </div>
+      )
+    })
+    return (
+      <div>
+      <Card className="reminder-card" hidden={this.props.hidden}>
+      {/* <ReminderSaveNotification 
+                  open={this.state.openSaveNotification} 
+                  message={'Reminder saved: ' + this.state.name}
+                  handleClose={() => {this.setState({openSaveNotification:false})}}
+              /> */}
+      {/* <Card className='company-card' hidden={this.props.hidden}> */}
+      <div className='reminder-details'>
+          <Avatar className='reminder-avatar' style={{background: "#00984C"}}>{this.state.reminders.length}</Avatar>
+          <text className='reminder-name'>
+              {this.state.name}
+          </text>
 
-              <TextField className='reminder-golive'
-                  type='date'
-                  onChange={event => this.setState({goLiveDate:event.target.value})}
-                  defaultValue={this.state.goLiveDate}
-                  label='EOY'
-              />
+          <TextField className='reminder-golive'
+              type='date'
+              onChange={event => this.setState({goLiveDate:event.target.value})}
+              defaultValue={this.state.goLiveDate}
+              label='Go Live Date'
+          />
 
-              <Typography color="textSecondary">
-                Status: 
-              </Typography>
-              <span>&nbsp;&nbsp;</span>
-              <Typography>
-                  {this.state.status}
-              </Typography>
-          </div>
-          <div className='reminder-actions'>
-              <Button 
-                  className="reminder-save-button"
-                  size="small"
-                  color="primary" 
-                  onClick={() => this.saveReminder()}>
-                  <SaveIcon/> Save
-              </Button>
-              {this.state.reminders[0]!=="empty" && mappedListOfReminders}
-              {/* can't delete reminder beacause reminder always linked with project (project master) */}
-          </div>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-              
-              <Card>
-                  Nothing else matters
-              </Card>
-          </ExpansionPanelDetails>
-      </ExpansionPanel>
+          {/* <Typography color="textSecondary">
+            Status: 
+          </Typography>
+          <span>&nbsp;&nbsp;</span>
+          <Typography>
+              {this.state.status}
+          </Typography> */}
+        </div>
+        <div className='reminder-list'>
+          {this.state.reminders[0]!=="empty" && mappedListOfReminders}
+          {/* can't delete reminder beacause reminder always linked with project (project master) */}
+        </div>
+          <Button 
+              className="reminder-save-button"
+              size="small"
+              color="primary"
+              onClick={() => this.saveReminder()}>
+              <SaveIcon/> Save
+          </Button>
+      </Card>
       <br /> 
       </div>
       );
