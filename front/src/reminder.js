@@ -24,7 +24,11 @@ import Avatar from '@material-ui/core/Avatar';
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
-var remindersState = [];
+var remindersState = new Array();
+remindersState["validated"] = new Array();
+remindersState["late"] = new Array();
+remindersState["soon"] = new Array();
+remindersState["active"] = new Array();
 
 // const reminderTheme = createMuiTheme(
 //   {overrides: 
@@ -154,29 +158,93 @@ class Reminder extends Component {
       }
     }
 
-    colorReminder(reminder) {
+    colorReminder(nameCard, reminder) {
+      var nameCard = nameCard["nameCard"];
       var today = new Date();
       today.setHours(0,0,0,0);
-      console.log(today);
       var remindDate = new Date(reminder["reminder"][3]);
 
       var remindDateLessFourteen = new Date(remindDate - 12096e5); //14 days in milliseconds
-      console.log("Remind date : "+remindDate);
-      console.log("Less 14 days : "+remindDateLessFourteen);
-      if(remindDate < today) {
-        return '#f44336';
-      } else if(today > remindDateLessFourteen){
-        return '#f6ae47';
+      if(reminder["reminder"][1]=='ok') {
+        reminder["reminder"][4] = 'validated';
+        return '#00984C';
       } else {
-        return '#c9c9c9';
+        if(remindDate < today) {
+          reminder["reminder"][4] = 'late';
+          return '#f44336';
+        } else if(today > remindDateLessFourteen){
+          reminder["reminder"][4] = 'soon';
+          return '#f6ae47';
+        } else {
+          reminder["reminder"][4] = 'active';
+          return '#c9c9c9';
+        }
       }
     }
 
+    countReminderState(id, name, reminders) {
+      if(reminders[0]!=='empty') {
+          var cardReminderStateEntete = new Array();
+          cardReminderStateEntete[0] = id;
+          cardReminderStateEntete[1] = name;
+
+          var cardReminderLateState = new Array();
+          cardReminderLateState.push('late');
+          var cardReminderValidatedState = new Array();
+          cardReminderValidatedState.push('validated');
+          var cardReminderSoonState = new Array();
+          cardReminderSoonState.push('soon');
+          var cardReminderActiveState = new Array();
+          cardReminderActiveState.push('active');
+
+          cardReminderLateState = cardReminderStateEntete.concat(cardReminderLateState);
+          cardReminderValidatedState = cardReminderStateEntete.concat(cardReminderValidatedState);
+          cardReminderSoonState =  cardReminderStateEntete.concat(cardReminderSoonState);
+          cardReminderActiveState =  cardReminderStateEntete.concat(cardReminderActiveState);
+
+          var cardReminderLateNb = 0;
+          var cardReminderValidatedNb = 0;
+          var cardReminderSoonNb = 0;
+          var cardReminderActiveNb = 0;
+
+          for(var i=0; i<reminders.length; i++) {
+            switch (reminders[i][4]) {
+              case 'late':
+                cardReminderLateNb++;
+                break;
+              case 'validated':
+                cardReminderValidatedNb++;
+                break;
+              case 'soon':
+                cardReminderSoonNb++;
+                break;
+              case 'active':
+                cardReminderActiveNb++;
+                break;
+            }
+          }
+          cardReminderLateState.push(cardReminderLateNb);
+          cardReminderValidatedState.push(cardReminderValidatedNb);
+          cardReminderSoonState.push(cardReminderSoonNb);
+          cardReminderActiveState.push(cardReminderActiveNb);
+          
+          cardReminderLateNb!==0 ? remindersState.push(cardReminderLateState) : null;
+          cardReminderValidatedNb!==0 ? remindersState.push(cardReminderValidatedState) : null;
+          cardReminderSoonNb!==0 ? remindersState.push(cardReminderSoonState) : null;
+          cardReminderActiveNb!==0 ? remindersState.push(cardReminderActiveState) : null;
+
+          console.log(remindersState);
+      }
+
+    }
+
+
     render() {
       const classes = this.props;
+      let nameCard = this.state.name;
       let mappedListOfReminders = this.state.reminders.map((reminder)=>{
         if(reminder!=="empty") {
-          var cololor = this.colorReminder({reminder});
+          var cololor = this.colorReminder({nameCard}, {reminder});
         }
         return (
           <div className='reminder-element'>
@@ -186,7 +254,7 @@ class Reminder extends Component {
                     className='reminder-element-theme'
                     type='date'
                     style={{
-                      background: (reminder[1]=='ok') ? "#00984C" : cololor,
+                      background: cololor,
                     }}
                     defaultValue={reminder[3]}
                     InputProps={{
@@ -221,6 +289,7 @@ class Reminder extends Component {
         </div>
       )
     })
+    this.countReminderState(this.state.id, this.state.name, this.state.reminders);
     return (
       <div>
       <Card className="reminder-card" hidden={this.props.hidden}>
@@ -231,7 +300,7 @@ class Reminder extends Component {
               /> */}
       {/* <Card className='company-card' hidden={this.props.hidden}> */}
       <div className='reminder-details'>
-          <Avatar className='reminder-avatar' style={{background: "#00984C"}}>{this.state.reminders.length}</Avatar>
+          <Avatar className='reminder-avatar' style={{background: "#00984C"}}>{this.state.reminders[0]==='empty' ? 0 : this.state.reminders.length}</Avatar>
           <text className='reminder-name'>
               {this.state.name}
           </text>
