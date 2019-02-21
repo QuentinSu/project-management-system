@@ -6,6 +6,7 @@ use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\Company;
 use AppBundle\Entity\Reminder;
+use FOS\RestBundle\View\View;
 use AppBundle\Repository\ReminderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,6 +30,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Psr\Log\LoggerInterface;
 
 
 /**
@@ -36,7 +38,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class ReminderController extends Controller
 {
-
      /**
      * @Get("/reminder")
      * 
@@ -92,129 +93,111 @@ class ReminderController extends Controller
             //to add : eoy project->user->company
             array_push($reminders,$newRemind);
         }
-        return $reminders; 
+        return $reminders;
     }
 
     /**
      * @Post("/reminder")
      */
-    // public function postAction(Request $request) { 
-    //   $data = new Company();
-    //   $name = $request->get('name');
-    //   $description = $request->get('description');
-    //   $phone = $request->get('phone');
-    //   $status = $request->get('status');
-    //   $eoy = $request->get('eoy');
-    //   $creation = $request->get('creation'); // to test
-
-    //     if( empty($description) || empty($name) ) {
-    //         return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
-    //     } 
-    //   $data->setName($name);
-    //   $data->setDescription($description);
-    //   $data->setPhone($phone);
-    //   $data->setCreation($creation);
-    //   $data->setStatus($status);
-    //   $data->setEoy($eoy);
-    //   $em = $this->getDoctrine()->getManager();
-    //   $em->persist($data);
-    //   $em->flush();
-    // //   $this->notify('Company added');
-    //   return new View("Company Added Successfully", Response::HTTP_OK);
-    // }
-
-    // /** 
-    // * @Put("/company/{id}/user/{id_user}")
-    // */
-    // public function addCompanyUser($id, $id_user, Request $request){
-    //     $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
-    //     if (empty($company)) {
-    //         return new View("company not found", Response::HTTP_NOT_FOUND);
-    //     } 
-
-    //     $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id_user);
-    //     if (empty($user)) {
-    //         return new View("user not found", Response::HTTP_NOT_FOUND);
-    //     } 
-
-    //     // Admin restriction for this view
-    //     if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
-    //         return new View("not allowed", Response::HTTP_FORBIDDEN);
-    //     }
+    public function postAction(Request $request) {
         
-    //     $dbm = $this->getDoctrine()->getManager();
+      // Admin restriction for this view
+      if (!$this->getUser()->isAdmin()) {
+        return new View("not allowed", Response::HTTP_FORBIDDEN);
+      }
+      
+      $reminder = new Reminder;
+      $projectId = $request->get('projectId');
+      $project = $this->getDoctrine()->getRepository('AppBundle:Project')->find($projectId);
+      $status = 'notok';
+      $type = $request->get('type');
+      $deadline = $request->get('deadline');
 
-    //     !empty($company) ? $company->addUser($user) : NULL;
-    //     $dbm->persist($company);
-    //     $dbm->flush();
+      // TODO: DO ENUMS VERIF HERE
 
-    //     // $this->notify('Company ID'.$company->getId().' modified');
+    if( empty($tpye) || empty($deadline) )
+    {
+      return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
+    }
 
-    //     return new View("Company Updated Successfully", Response::HTTP_OK);
+      $reminder->setProject($project);
+      $reminder->setStatus($status);
+      $reminder->setType($type);
+      $reminder->setDeadline($deadline);
+      $em = $this->getDoctrine()->getManager();
+      $em->persist($reminder);
+
+      $em->flush();
+
+      $this->notify('Reminder '.$type.' created for project :'.$projectId); 
+
+      return new View("Reminder Added Successfully", Response::HTTP_OK);
+    }
+
+    /**
+     * @Put("/reminder/{id}")
+     */
+    public function updateAction($id,Request $request) {
+
         
-    // }
+      // Admin restriction for this view
+      if (!$this->getUser()->isAdmin()) {
+        return new View("not allowed", Response::HTTP_FORBIDDEN);
+      }
+      
+      $data = new Reminder;
+      $projectId = $request->get('projectId');
+      $status = 'notok';
+      $type = $request->get('type');
+      $deadline = $request->get('deadline');
+      $dbm = $this->getDoctrine()->getManager();
+      $project = $this->getDoctrine()->getRepository('AppBundle:Project')->find($projectId);
+      if (empty($project)) {
+        return new View("project not found", Response::HTTP_NOT_FOUND);
+      }
 
-    // /** 
-    // * @Put("/company/{id}")
-    // */
-    // public function updateAction($id,Request $request)
-    // { 
+      $reminder = $this->getDoctrine()->getRepository('AppBundle:Reminder')->find($id);
+      if (empty($project)) {
+        return new View("project not found", Response::HTTP_NOT_FOUND);
+      }
 
-    //     $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
-    //     if (empty($company)) {
-    //         return new View("company not found", Response::HTTP_NOT_FOUND);
-    //     } 
+      !empty($type) ? $reminder->setType($type) : 'custom';
+      !empty($status) ? $reminder->setStatus($status) : 'notok';
+      //!empty($deadline) ? $reminder->setDeadline($deadline) : 0;
+      $reminder->setDeadline($deadline);
+      $reminder->setProject($project);
 
-    //     // Admin restriction for this view
-    //     if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
-    //         return new View("not allowed", Response::HTTP_FORBIDDEN);
-    //     }
-        
-    //     $description = $request->get('description');
-    //     $name = $request->get('name');
-    //     $phone = $request->get('phone');
-    //     $creation = $request->get('creation');
-    //     $status = $request->get('status');
-    //     $eoy = $request->get('eoy');
+      $dbm->flush();
 
-    //     $dbm = $this->getDoctrine()->getManager();
+      // $this->notify('Reminder n°'.$reminder->getId().', type: '.'"'.$type.'"'.' modified');    
 
-    //     !empty($description) ? $company->setDescription($description) : 0;
-    //     !empty($name) ? $company->setName($name) : 0;
-    //     !empty($phone) ? $company->setPhone($phone) : 0;
-    //     !empty($creation) ? $company->setCreation($creation) : 0;
-    //     !empty($eoy) ? $company->setEoy($eoy) : date("Y").'-12-31';
-
-    //     $company->setStatus($status);
-
-    //     $dbm->flush();
-
-    //     // $this->notify('Company ID'.$company->getId().' modified');
-
-    //     return new View("Company Updated Successfully", Response::HTTP_OK);
-    // }
-
-    // /**
-    //  * @Delete("/company/{id}")
-    //  */
-    // public function deleteAction($id)
-    // {
-    //     $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
-    //     if (empty($company)) {
-    //         return new View("Company not found", Response::HTTP_NOT_FOUND);
-    //     } 
-
-    //     // Admin restriction for this view
-    //     if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
-    //         return new View("not allowed", Response::HTTP_FORBIDDEN);
-    //     }
-        
-    //     // $this->notify('Company ID'.$company->getId().' deleted');
-    //     $dbm = $this->getDoctrine()->getManager();
-    //     $dbm->remove($company);
-    //     $dbm->flush();
-    
-    //     return new View("Deleted successfully", Response::HTTP_OK);
-    // }
+      return new View("Project Updated Successfully", Response::HTTP_OK);;
 
     }
+
+    /**
+     * @Delete("/reminder/{id}")
+     */
+    public function deleteAction($id)
+    {
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
+        
+        $data = new reminder;
+        $dbm = $this->getDoctrine()->getManager();
+        $reminder = $this->getDoctrine()->getRepository('AppBundle:Reminder')->find($id);
+
+        if (empty($reminder)) {
+            return new View("reminder not found", Response::HTTP_NOT_FOUND);
+        } else {
+            $this->notify('Reminder n°'.$reminder->getId().' deleted'); 
+            $dbm->remove($reminder);
+            $dbm->flush();
+        }
+
+        return new View("Deleted successfully", Response::HTTP_OK);
+    }
+
+}
