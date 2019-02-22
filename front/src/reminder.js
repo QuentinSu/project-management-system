@@ -20,6 +20,11 @@ import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
 import AddIcon from '@material-ui/icons/Add';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 
@@ -34,6 +39,113 @@ var reminderStatSoon;
 var reminderStatActive;
 var stats = "";
 
+
+export class NewReminderDialog extends React.Component {
+  state = {
+    open: false,
+    project: '',
+    email: '',
+    password: ''
+  };
+
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  };
+
+  generatePassword = () => {
+      var randomstring = Math.random().toString(36).slice(-8);
+      this.setState({ password: randomstring});
+  }
+
+  saveUser = () => {
+      var self = this;
+      axios({
+          method: 'post', //you can set what request you want to be
+          url: apiBaseUrl+'register',
+          data: {
+              username: this.state.username,
+              email: this.state.email,
+              plainPassword: {
+                  first: this.state.password,
+                  second: this.state.password
+              }
+          },
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+      }).then(function (response) {
+          if(response.status === 201){
+              self.setState({ open: false });
+              self.props.handleUsersChange();
+          }
+      }).catch(function (error) {
+          alert("Bad request : the username or the mail may be already used");
+      });
+  }
+
+  render() {
+    return (
+      <div>
+        <Button onClick={this.handleClickOpen} color="primary" className='new-button'>
+              <AddIcon /> User
+        </Button>
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="new-project-dialog-title">New User</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To create a new user, please fill all fields
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="username"
+              label="username"
+              required
+              onChange = {(event) => this.setState({username:event.target.value})}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="email"
+              label="email"
+              required
+              onChange = {(event) => this.setState({email:event.target.value})}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="password"
+              label="password"
+              required
+              value= {this.state.password}
+              onChange = {(event) => this.setState({password:event.target.value})}
+              fullWidth
+            />
+            <Button onClick={this.generatePassword}
+                  color="primary">
+              Generate password
+            </Button>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.setState({ open: false })} color="primary">
+              Cancel
+            </Button>
+            <Button 
+              onClick={this.saveUser}
+              color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+}
 
 class Reminder extends Component {
     constructor(props){
@@ -88,6 +200,7 @@ class Reminder extends Component {
           }
       }).then(function (response) {
           if(response.status === 200){
+              this.forceUpdate();
               self.props.handleProjectsChange();
           }
       }).catch(function (error) {
@@ -98,7 +211,6 @@ class Reminder extends Component {
         console.log(JSON.stringify(remind));
       
         if(remind[2]!="3m" && remind[2]!="6m") {
-          console.log(remind[3]+ ' JE SUIS PASSE PAR ICI');
           axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'reminder/'+remind[0],
@@ -118,7 +230,7 @@ class Reminder extends Component {
           });
         }
       });
-
+      self.forceUpdate();
     }
 
     countReminderState(id, name, reminders) {
@@ -220,8 +332,7 @@ class Reminder extends Component {
                       className: classes.textField,
                     }}
                     onChange={event => (reminder[3]=event.target.value)}
-                    variant="outlined"
-                    
+                    variant="outlined"  
                 />
             </MuiThemeProvider>
             <span>&nbsp;&nbsp;</span>
@@ -296,7 +407,7 @@ class Reminder extends Component {
               size="small"
               color="primary"
               onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-              <SaveIcon/> Save
+              <SaveIcon/> Save GoLive & Custom
           </Button>
       </Card>
       <br /> 

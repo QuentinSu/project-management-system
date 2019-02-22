@@ -210,7 +210,7 @@ class RestProfileController extends RestServiceController implements ClassResour
         
 
         //check case of no company linked
-        if($companyId != -1) {
+        if($companyId) {
             $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($companyId);
             $user->setCompany($company);
         } else {

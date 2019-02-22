@@ -133,11 +133,11 @@ class Companies extends Component {
               if(response.status === 200){
                 console.log(JSON.stringify(response.data));
                 self.setState({companies:response.data});
-                this.forceUpdate();
               }
             })
             .catch(function (error) {
             });
+        self.forceUpdate();
     }
 
     componentDidMount() {
@@ -157,6 +157,7 @@ class Companies extends Component {
                     nbClients = response.data.length;
                 }
                 self.setState({companies:response.data});
+                this.forceUpdate();
               }
             })
             .catch(function (error) {
@@ -308,7 +309,7 @@ class Companies extends Component {
             <div>
                 {button}
                 <Dialog
-                    open={this.state.open}
+                    open={this.state.open} 
                     aria-labelledby="form-dialog-title"
                     fullWidth
                 >
@@ -431,21 +432,15 @@ class Companies extends Component {
     removeUserLink(userId) {
         var self = this;
         axios({
-            method: 'put', //you can set what request you want to be
-            url: apiBaseUrl+'profile/'+userId,
-            data: {
-                'companyId': -1
-            },
+            method: 'delete', //you can set what request you want to be
+            url: apiBaseUrl+'company/'+self.state.id+'/user/'+userId,
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
             }
         }).then(function (response) {
             if(response.status === 200){
-                self.props.updateCompanies();
                 self.handleCompanyChange();
-                self.forceUpdate();
-                self.setState({openSaveNotification: true});
             }
         }).catch(function (error) {
         });
@@ -500,6 +495,7 @@ class Companies extends Component {
             })
             .catch(function (error) {
             });
+        self.forceUpdate();
     }
 
     deleteCompany() {
@@ -514,16 +510,17 @@ class Companies extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                self.setState({ openDelete: false });
                 self.props.updateCompanies();
+                this.setState({openSaveNotification: true});
+                self.setState({ openDelete: true });
+                
               }
             })
             .catch(function (error) {
             });
-            self.forceUpdate();
     }
 
-    handleCompanyChange(type, data) {
+    handleCompanyChange() {
         this.setState({openSaveNotification: true});
         var self = this;
         axios({
@@ -578,7 +575,7 @@ class Companies extends Component {
                         userId={user.id}
                         username={user.username}
                         handleCompanyChange={this.handleCompanyChange.bind(this)}
-                        removeUserLink={this.removeUserLink.bind(user.id)}
+                        removeUserLink={this.removeUserLink.bind(this)}
                         
                 />
         })
