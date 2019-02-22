@@ -25,8 +25,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
-
+import {NewReminderDialog} from './reminderDialog.js';
 
 var config = require('./config.json');
 
@@ -38,114 +37,6 @@ var reminderStatValidated;
 var reminderStatSoon;
 var reminderStatActive;
 var stats = "";
-
-
-export class NewReminderDialog extends React.Component {
-  state = {
-    open: false,
-    project: '',
-    email: '',
-    password: ''
-  };
-
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
-
-  generatePassword = () => {
-      var randomstring = Math.random().toString(36).slice(-8);
-      this.setState({ password: randomstring});
-  }
-
-  saveUser = () => {
-      var self = this;
-      axios({
-          method: 'post', //you can set what request you want to be
-          url: apiBaseUrl+'register',
-          data: {
-              username: this.state.username,
-              email: this.state.email,
-              plainPassword: {
-                  first: this.state.password,
-                  second: this.state.password
-              }
-          },
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('session'),
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-      }).then(function (response) {
-          if(response.status === 201){
-              self.setState({ open: false });
-              self.props.handleUsersChange();
-          }
-      }).catch(function (error) {
-          alert("Bad request : the username or the mail may be already used");
-      });
-  }
-
-  render() {
-    return (
-      <div>
-        <Button onClick={this.handleClickOpen} color="primary" className='new-button'>
-              <AddIcon /> User
-        </Button>
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="new-project-dialog-title">New User</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              To create a new user, please fill all fields
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="username"
-              label="username"
-              required
-              onChange = {(event) => this.setState({username:event.target.value})}
-              fullWidth
-            />
-            <TextField
-              margin="dense"
-              id="email"
-              label="email"
-              required
-              onChange = {(event) => this.setState({email:event.target.value})}
-              fullWidth
-            />
-            <TextField
-              margin="dense"
-              id="password"
-              label="password"
-              required
-              value= {this.state.password}
-              onChange = {(event) => this.setState({password:event.target.value})}
-              fullWidth
-            />
-            <Button onClick={this.generatePassword}
-                  color="primary">
-              Generate password
-            </Button>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => this.setState({ open: false })} color="primary">
-              Cancel
-            </Button>
-            <Button 
-              onClick={this.saveUser}
-              color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
-  }
-}
 
 class Reminder extends Component {
     constructor(props){
@@ -398,17 +289,19 @@ class Reminder extends Component {
           {this.state.reminders[0]!=="empty" && mappedListOfReminders}
           {/* can't delete reminder beacause reminder always linked with project (project master) */}
         </div>
-          <Button 
-              onClick={this.handleClickOpen} size="small" color="primary" className='new-button'>
-              <AddIcon /> Reminder
-          </Button>
-          <Button
-              className="reminder-save-button"
-              size="small"
-              color="primary"
-              onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-              <SaveIcon/> Save GoLive & Custom
-          </Button>
+        <NewReminderDialog
+                    projectId={this.props.id}
+                    type={this.props.type}
+                    deadline={this.props.deadline}
+                    handleReminderChange={this.props.handleReminderChange}
+        />
+        <Button
+            className="reminder-save-button"
+            size="small"
+            color="primary"
+            onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+            <SaveIcon/> Save GoLive & Custom
+        </Button>
       </Card>
       <br /> 
       </div>
@@ -446,6 +339,7 @@ class Reminders extends Component {
               console.log(error.response);
             });
     }
+
     componentDidMount() {
         var self = this;
         axios({
@@ -512,10 +406,23 @@ class Reminders extends Component {
                 />     
         })
 
-        var legendText = <div><Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Validated<br/>
+
+        var legendText = <div><br/>
+                          <b><h4>Legend</h4></b>
+                          <Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Validated<br/>
                           <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Late<br/>
                           <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days)<br/>
-                          <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Active<br/></div>
+                          <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Active<br/>
+                        </div>
+
+        var advancedFunction = <div>
+                                <div>
+                                  <b><h4>Advanced function</h4></b>
+                                  <Button  variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}}>Regenerate Reminders (3m, 6m)</Button>
+                                </div>
+                                {legendText}
+                              </div>
+
 
         return(
             <div>
@@ -525,12 +432,13 @@ class Reminders extends Component {
                         onChange={event => this.filterReminders(event.target.value)}
                     />
                 </div>
-                <div className='testme'>
+                <div>
+                  <div className='reminder-legend'>
+                  <Tooltip title={advancedFunction} interactive>
+                    <Paper square={false}>Advanced functions & Legend</Paper>
+                  </Tooltip>
+                  </div>
                 </div>
-                <Button onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}}>Regenerate Reminders (3m, 6m)</Button>
-                <Tooltip title={legendText} interactive>
-                  <Paper className='reminder-legend' square={false}>Legend</Paper>
-                </Tooltip>
                 <br/><p></p>
                 {mappedReminders}
             </div>

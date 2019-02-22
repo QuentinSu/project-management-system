@@ -115,10 +115,10 @@ class ReminderController extends Controller
 
       // TODO: DO ENUMS VERIF HERE
 
-    if( empty($tpye) || empty($deadline) )
-    {
-      return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
-    }
+      if( empty($type) || empty($deadline) )
+      {
+        return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
+      }
 
       $reminder->setProject($project);
       $reminder->setStatus($status);
@@ -129,7 +129,7 @@ class ReminderController extends Controller
 
       $em->flush();
 
-      $this->notify('Reminder '.$type.' created for project :'.$projectId); 
+      //$this->notify('Reminder '.$type.' created for project :'.$projectId); 
 
       return new View("Reminder Added Successfully", Response::HTTP_OK);
     }
