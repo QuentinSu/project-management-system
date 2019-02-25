@@ -34,6 +34,10 @@
 	margin: 20px;
 }
 
+.project-deadline {
+	margin: 16px;
+}
+
 .status-select {
 	margin: 16px;
 	width: 200px;
@@ -74,20 +78,146 @@
 	float: left;
 }
 
+/** reminder element */
+
+.reminder-legend {
+	min-width: 15%;
+	max-width: 20%;
+	line-height: 30px;
+	margin-top: -30px;
+	float:left;
+	margin-left:260px;
+	text-align: center;	
+}
+
+.reminder-card {
+	display:block;
+}
+
+.reminder-details {
+	float:left !important;
+	margin-top: 10px;
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-right: 15px;
+	margin-bottom:10px;
+	width:20%;
+}
+
+.reminder-save-button {
+	float:right;
+}
+
+.reminder-avatar {
+	float:left;
+	right:10px;
+	position: absolute;
+}
+.reminder-name {
+	width: 50% !important;
+	font-size:150%;
+	float:left;
+	margin-top: 10px;
+	margin-bottom:10px;
+	/* position:absolute; */
+}
+
+.reminder-golive {
+	width:35%;
+	left:10px;
+	margin-top:10px;
+	float:right;
+}
+
+.reminder-list {
+	float:left;
+	margin-left: 25px;
+	width: 48%;
+	margin-top: 10px;
+}
+
+.eoy-list {
+	float:left;
+	margin-left:0px;
+	width: 10%;
+	margin-top: 10px;
+}
+
+.reminder-eoy {
+	/* margin-top: 10px; */
+	/* margin-left: 25px; */
+	/* max-width:25%; */
+	margin-bottom:10px;
+	display:inline-block;
+}
+
+.reminder-element {
+	margin-left: 0px;
+	vertical-align: middle;
+	width: 22%;
+	margin-left:0px;
+	/* max-width:25%; */
+	display:inline-block;
+	margin-bottom: 10px;
+}
+
+.golive-timeline {
+	border:1px solid #c9c9c9;
+	text-align: center;
+	margin-top:-20px;
+    border-radius: 15px;
+}
+
+.timeline-reminders {
+	width:10%;
+	float:right;
+	height:20px;
+	margin-top:15px;
+	/* margin-left: 10px; */
+	opacity: 0.8
+}
+.reminder-element-theme {
+	float: left;
+	width: 90%;
+	/* mandatory otherwise button reminder-actions-button is on top and disable date change */
+	z-index : 10;
+}
+
+.reminder-action-buttons {
+	padding-top:60px;
+	width:100%;
+	opacity: 0.8;
+}
+
+.reminder-button {
+	height:100%;
+	font-size:small;
+	min-width:20% !important;
+	max-width:25%;
+}
+
+.eoy-element-theme {
+	width: 100%;
+}
+
+.bite {
+	size:10px;
+}
+
 /** company element */
 
 .company-logo {
 	display: flex;
 	height:150px;
-	width:150px;
+	max-width:250px;
 }
 
 .logo-company {
-	display: flex;
-    flex-wrap: wrap;
+	/* display: flex; */
+    /* flex-wrap: wrap; */
 	top:0px;
 	width: 150px;
-	/* height:150px; */
+	height:150px;
 	left:0
 }
 .dropzone-square {
@@ -96,7 +226,7 @@
 	border: 3px dashed #f44336;
     border-radius: 15px;
 	text-align: center;
-	display:flex;
+	/* display:flex; */
 	float:right;
 	/* padding-top: 160px; */
 	/* display:inline-block; */	
@@ -165,12 +295,20 @@
 	
 }
 .company-active-switch {
-	width: 100%;
+	width: 50%;
+	padding-left:10px;
 }
 
 .company-active-filter {
 	padding-left:20px;
 	width: 10%;
+}
+
+.company-live {
+	/* 	width:35%; */
+	height:50px;
+	margin-top:25px;
+	min-width:30%;
 }
 
 .company-save-button {
@@ -207,10 +345,6 @@
 
 .checklist-label {
 	width: 100%;
-}
-
-@media(max-width:700px) {
-
 }
 
 .ticket-buttons {
@@ -373,7 +507,7 @@
 }
 
 .company-stats {
-	width: 10%;
+	width: 20%;
 	float: right;
 	background:#f44336;
 }
@@ -510,8 +644,6 @@
     padding: 3px;
 }
 
-
-
 .user-frame {
 	color: white;
 	position: absolute;
@@ -566,6 +698,10 @@
 @media(max-width: 1000px) {
 	.advanced-but-dashboard {
 			left:0;
+	}
+
+	.company-logo {
+		display:none;
 	}
 }
 

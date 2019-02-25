@@ -54,6 +54,14 @@ class CompanyController extends Controller
     }
 
     /**
+     * @Get("/company/{id}")
+     * 
+     */
+    public function getActionCompany($id) {
+        return $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
+    }
+
+    /**
      * @Post("/company")
      */
     public function postAction(Request $request) { 
@@ -63,6 +71,7 @@ class CompanyController extends Controller
       $phone = $request->get('phone');
       $status = $request->get('status');
       $eoy = $request->get('eoy');
+      $user = $request->get('user');
       $creation = $request->get('creation'); // to test
 
         if( empty($description) || empty($name) ) {
@@ -73,11 +82,14 @@ class CompanyController extends Controller
       $data->setPhone($phone);
       $data->setCreation($creation);
       $data->setStatus($status);
-      $data->setEoy($eoy);
+      !empty($eoy) ? $data->setEoy($eoy) : $data->setEoy(date("Y").'-12-31');
+      if($user) {
+        $data->addUser($user);
+      }
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
-    //   $this->notify('Company added');
+    //$this->notify('Company added');
       return new View("Company Added Successfully", Response::HTTP_OK);
     }
 
@@ -88,12 +100,12 @@ class CompanyController extends Controller
         $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($id);
         if (empty($company)) {
             return new View("company not found", Response::HTTP_NOT_FOUND);
-        } 
+        }
 
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id_user);
         if (empty($user)) {
             return new View("user not found", Response::HTTP_NOT_FOUND);
-        } 
+        }
 
         // Admin restriction for this view
         if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
@@ -103,6 +115,7 @@ class CompanyController extends Controller
         $dbm = $this->getDoctrine()->getManager();
 
         !empty($company) ? $company->addUser($user) : NULL;
+        $user->setCompany($company);
         $dbm->persist($company);
         $dbm->flush();
 
@@ -110,6 +123,39 @@ class CompanyController extends Controller
 
         return new View("Company Updated Successfully", Response::HTTP_OK);
         
+    }
+
+    /**
+     * @Delete("/company/{company}/user/{user}")
+     * 
+     * @param Request       $request
+     * @param UserInterface $user
+     * 
+     * @ParamConverter("company", class="AppBundle:Company")
+     * @ParamConverter("user", class="AppBundle:User")
+     */
+    public function removeUserAction(user $user, Company $company)
+    {
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
+
+        $dbm = $this->getDoctrine()->getManager();
+
+        $user->setCompany(null);
+        $company->removeUser($user);
+        $dbm->persist($company);
+        $dbm->persist($user);
+        $dbm->flush();
+
+        /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+        // $userManager = $this->get('fos_user.user_manager');
+        // $userManager->updateUser($user);
+
+        //$this->notify('Project n°'.$project->getId().' removed from username: '.$user->getUsername()); 
+
+        return $user;
     }
 
     /** 

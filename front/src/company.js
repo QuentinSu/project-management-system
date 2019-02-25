@@ -15,6 +15,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
+import Chip from '@material-ui/core/Chip';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -28,7 +29,7 @@ import NewCompanyUserLinkDialog from './newCompanyUserLinkDialog.js';
 import Divider from '@material-ui/core/Divider';
 import CompanySaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
-
+import { array } from 'prop-types';
 
 //import Typography from '@material-ui/core/Typography';
 //import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
@@ -67,6 +68,33 @@ if (ss < 10) {
 
 var created = yyyy + '-' + mm + '-' + dd +' '+ hh + ":" + min + ":" + ss;
 
+function dateDiff(date) {
+    date = date.split('-');
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = today.getMonth() + 1;
+    var day = today.getDate();
+    var yy = parseInt(date[0]);
+    var mm = parseInt(date[1]);
+    var dd = parseInt(date[2]);
+    var years, months, days;
+    // months
+    months = month - mm;
+    if (day < dd) {
+        months = months - 1;
+    }
+    // years
+    years = year - yy;
+    if (month * 100 + day < mm * 100 + dd) {
+        years = years - 1;
+        months = months + 12;
+    }
+    // days
+    days = Math.floor((today.getTime() - (new Date(yy + years, mm + months - 1, dd)).getTime()) / (24 * 60 * 60 * 1000));
+    //
+    return [years, months, days];
+}
+
 // CLASS TO RENDER ALL THE COMPANIES
 
 class Companies extends Component {
@@ -103,12 +131,13 @@ class Companies extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                console.log(JSON.stringify(response.data));
                 self.setState({companies:response.data});
-                this.forceUpdate();
               }
             })
             .catch(function (error) {
             });
+        self.forceUpdate();
     }
 
     componentDidMount() {
@@ -128,6 +157,7 @@ class Companies extends Component {
                     nbClients = response.data.length;
                 }
                 self.setState({companies:response.data});
+                this.forceUpdate();
               }
             })
             .catch(function (error) {
@@ -279,7 +309,7 @@ class Companies extends Component {
             <div>
                 {button}
                 <Dialog
-                    open={this.state.open}
+                    open={this.state.open} 
                     aria-labelledby="form-dialog-title"
                     fullWidth
                 >
@@ -331,7 +361,7 @@ class Companies extends Component {
                         margin="dense"
                         id="status"
                         label="Status"
-                        defaultValue={true}
+                        defaultValue='active'
                         onChange = {(event) => this.setState({newStatus:event.target.value})}
                     />
 
@@ -361,7 +391,7 @@ class Companies extends Component {
   function User(props) {
     return (
         <div>
-        <ListItem fullWidth key={props.userId}> 
+        <ListItem key={props.userId}> 
             <ListItemText>
                 <Typography>
                     {props.username}
@@ -402,21 +432,15 @@ class Companies extends Component {
     removeUserLink(userId) {
         var self = this;
         axios({
-            method: 'put', //you can set what request you want to be
-            url: apiBaseUrl+'profile/'+userId,
-            data: {
-                'companyId': -1
-            },
+            method: 'delete', //you can set what request you want to be
+            url: apiBaseUrl+'company/'+self.state.id+'/user/'+userId,
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
             }
         }).then(function (response) {
             if(response.status === 200){
-                self.props.updateCompanies();
                 self.handleCompanyChange();
-                self.forceUpdate();
-                self.setState({openSaveNotification: true});
             }
         }).catch(function (error) {
         });
@@ -471,6 +495,7 @@ class Companies extends Component {
             })
             .catch(function (error) {
             });
+        self.forceUpdate();
     }
 
     deleteCompany() {
@@ -485,16 +510,17 @@ class Companies extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                self.setState({ openDelete: false });
                 self.props.updateCompanies();
+                this.setState({openSaveNotification: true});
+                self.setState({ openDelete: true });
+                
               }
             })
             .catch(function (error) {
             });
-            self.forceUpdate();
     }
 
-    handleCompanyChange(type, data) {
+    handleCompanyChange() {
         this.setState({openSaveNotification: true});
         var self = this;
         axios({
@@ -549,10 +575,20 @@ class Companies extends Component {
                         userId={user.id}
                         username={user.username}
                         handleCompanyChange={this.handleCompanyChange.bind(this)}
-                        removeUserLink={this.removeUserLink.bind(user.id)}
+                        removeUserLink={this.removeUserLink.bind(this)}
                         
                 />
         })
+
+        //Live from management
+        var dateDifference = dateDiff(this.state.creation);
+        var liveFrom = dateDifference[0]>0 ? dateDifference[0]+' years ' : '';
+        liveFrom += dateDifference[1]>0 ? dateDifference[1]+' months ' : '';
+        liveFrom += liveFrom!=='' ? '' : 'New !';
+
+        if(liveFrom!=='New !') {
+            liveFrom = 'Live from '+liveFrom;
+        }
 
         return (
             <div>
@@ -611,6 +647,9 @@ class Companies extends Component {
                     control={<Switch checked={this.state.status}
                             onChange = {(event) => this.setState({status:!this.state.status})} />} 
                     label="Active" />
+                
+                <Chip className='company-live' label={liveFrom} />
+                
                 <Button 
                     className="company-save-button"
                     size="small"
@@ -651,7 +690,7 @@ class Companies extends Component {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
                 <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
-                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg)</p>
+                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg).<br/>Best if close to square format</p>
                 </Dropzone>
                 <div className="company-users-card">
                 <Card>
@@ -660,7 +699,7 @@ class Companies extends Component {
                         handleCompanyChange={this.handleCompanyChange.bind(this)}
                     />
                     {/* <Divider/> */}
-                    <List fullWidth className="company-user-element">
+                    <List className="company-user-element">
                         {mappedUsers}
                     </List>
                 </Card>

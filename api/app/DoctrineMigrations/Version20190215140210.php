@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190206093159 extends AbstractMigration
+final class Version20190215140210 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,7 @@ final class Version20190206093159 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE company CHANGE date_creation dateCreation VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE reminder DROP INDEX UNIQ_40374F40166D1F9C, ADD INDEX IDX_40374F40166D1F9C (project_id)');
     }
 
     public function down(Schema $schema) : void
@@ -30,6 +30,6 @@ final class Version20190206093159 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE company CHANGE datecreation date_creation VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE reminder DROP INDEX IDX_40374F40166D1F9C, ADD UNIQUE INDEX UNIQ_40374F40166D1F9C (project_id)');
     }
 }

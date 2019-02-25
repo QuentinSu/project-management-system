@@ -2,9 +2,18 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\User;
+use AppBundle\Entity\date;
+use AppBundle\Entity\Project;
+use JMS\Serializer\Annotation as JMSSerializer;
 
 /**
+ * Reminder
+ * 
+ * @ORM\Table(name="reminder")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ReminderRepository")
  */
 class Reminder
@@ -33,9 +42,14 @@ class Reminder
     private $type;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="string", length=255)
      */
     private $deadline;
+
+    public function __construct()
+    {
+
+    }
 
     public function getId(): ?int
     {
@@ -78,12 +92,12 @@ class Reminder
         return $this;
     }
 
-    public function getDeadline(): ?\DateTimeInterface
+    public function getDeadline(): ?string
     {
         return $this->deadline;
     }
 
-    public function setDeadline(\DateTimeInterface $deadline): self
+    public function setDeadline(string $deadline): self
     {
         $this->deadline = $deadline;
 

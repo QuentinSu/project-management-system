@@ -5,7 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\SupportTicket;
+use AppBundle\Entity\Reminder;
 use AppBundle\Controller\RestServiceController;
+use AppBundle\Controller\ReminderController;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -62,6 +64,51 @@ class ProjectController extends RestServiceController
       return $singleresult;
     }
 
+    public function postAutoReminder6M(Project $project) {
+      //get project, get golive date, calcul date auto 3m and 6m
+
+      $golive=$project->getGoLiveDate();
+      $sixMToGo=date("Y-m-d", strtotime($golive. '-6 month'));
+
+      $reminder6M = new Reminder;
+      $reminder6M->setProject($project);
+      $reminder6M->setStatus('notok');
+      $reminder6M->setType('6m');
+      $reminder6M->setDeadline($sixMToGo);
+
+      $em = $this->getDoctrine()->getManager();
+      $em->persist($reminder6M);
+
+      $em->flush();
+
+      $this->notify('Reminder auto 6M created for project'); 
+
+      return new View("Reminder auto 6M Added Successfully", Response::HTTP_OK);
+  }
+    
+
+    public function postAutoReminder3M(Project $project) {
+      //get project, get golive date, calcul date auto 3m and 6m
+
+      $golive=$project->getGoLiveDate();
+      $threeMToGo=date("Y-m-d", strtotime($golive. '-3 month'));
+
+      $reminder3M = new Reminder;
+      $reminder3M->setProject($project);
+      $reminder3M->setStatus('notok');
+      $reminder3M->setType('3m');
+      $reminder3M->setDeadline($threeMToGo);
+
+      $em = $this->getDoctrine()->getManager();
+      $em->persist($reminder3M);
+
+      $em->flush();
+
+      $this->notify('Reminder auto 3M created for project'); 
+
+      return new View("Reminder auto 3M Added Successfully", Response::HTTP_OK);
+  }
+
     /**
      * @Post("/project")
      */
@@ -76,16 +123,21 @@ class ProjectController extends RestServiceController
       $name = $request->get('name');
       $type = $request->get('type');
       $status = $request->get('status');
+      $goLiveDate = $request->get('goLiveDate');
 
       // TODO: DO ENUMS VERIF HERE
 
     if( empty($name) || empty($type) || empty($status) )
     {
       return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE); 
-    } 
+    }
+    if (empty($goLiveDate)) {
+      $goLiveDate = date('Y-m-d', strtotime('+1 year'));
+    }
       $project->setName($name);
       $project->setType($type);
       $project->setStatus($status);
+      $project->setGoLiveDate($goLiveDate);
       $em = $this->getDoctrine()->getManager();
       $em->persist($project);
 
@@ -99,6 +151,9 @@ class ProjectController extends RestServiceController
 
       $project->setFileTicketId($ticket->getId());
       $em->flush();
+
+      $this->postAutoReminder3M($project);
+      $this->postAutoReminder6M($project);
 
       $this->notify('Project created with name: '.$name); 
 
@@ -120,15 +175,30 @@ class ProjectController extends RestServiceController
       $name = $request->get('name');
       $type = $request->get('type');
       $status = $request->get('status');
+      $goLiveDate = $request->get('goLiveDate');
       $dbm = $this->getDoctrine()->getManager();
       $project = $this->getDoctrine()->getRepository('AppBundle:Project')->find($id);
       if (empty($project)) {
         return new View("project not found", Response::HTTP_NOT_FOUND);
-      } 
+      }
 
       !empty($name) ? $project->setName($name) : 0;
       !empty($type) ? $project->setType($type) : 0;
       !empty($status) ? $project->setStatus($status) : 0;
+      !empty($goLiveDate) ? $project->setGoLiveDate($goLiveDate) : date("Y-m-d");
+
+      //update of 3m and 6m linked reminders
+      $threeMToGo=date("Y-m-d", strtotime($goLiveDate. '-3 month'));
+      $sixMToGo=date("Y-m-d", strtotime($goLiveDate. '-6 month'));
+      $reminders = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($id)));
+      foreach ($reminders as $row) {
+        if($row->getType()==='3m') {
+          $row->setDeadline($threeMToGo);
+        }
+        if($row->getType()==='6m') {
+          $row->setDeadline($sixMToGo);
+        }
+      }
 
       $dbm->flush();
 
@@ -150,16 +220,17 @@ class ProjectController extends RestServiceController
       $data = new Project;
       $dbm = $this->getDoctrine()->getManager();
       $project = $this->getDoctrine()->getRepository('AppBundle:Project')->find($id);
-    if (empty($project)) {
-      return new View("project not found", Response::HTTP_NOT_FOUND);
-    }
-    else {
-      $this->notify('Project n°'.$project->getId().', name: '.'"'.$project->getName().'"'.' deleted'); 
-      $dbm->remove($project);
-      $dbm->flush();
-    }
-      return new View("deleted successfully", Response::HTTP_OK);
-    }
+      
+      if (empty($project)) {
+        return new View("project not found", Response::HTTP_NOT_FOUND);
+      }
+      else {
+        $this->notify('Project n°'.$project->getId().', name: '.'"'.$project->getName().'"'.' deleted'); 
+        $dbm->remove($project);
+        $dbm->flush();
+      }
+        return new View("deleted successfully", Response::HTTP_OK);
+      }
 
     /**
      * @Post("/project/{project}/notify")
@@ -235,7 +306,59 @@ class ProjectController extends RestServiceController
       foreach ($this->getParameter('admin_mails') as $mailAddress) {
         mail($mailAddress,$subject,$content);
       }
-
       return $status;
     }
+
+    /**
+     * @Put("/reminder/autoregen")
+     */
+    public function forceRegenAutoReminder() {
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
+        
+        $data = new reminder;
+        $dbm = $this->getDoctrine()->getManager();
+        $reminder3M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('3m'), 'status'=>('notok')));
+        $reminder6M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('6m'), 'status'=>('notok')));
+
+        foreach($reminder3M as $row3M) {
+          if (empty($row3M)) {
+              return new View("reminder not found", Response::HTTP_NOT_FOUND);
+          } else {
+              $this->notify('Reminder n°'.$row3M->getId().' deleted'); 
+              $dbm->remove($row3M);
+          }
+        }
+
+        foreach($reminder6M as $row6M) {
+          if (empty($row6M)) {
+              return new View("reminder not found", Response::HTTP_NOT_FOUND);
+          } else {
+              $this->notify('Reminder n°'.$row6M->getId().' deleted'); 
+              $dbm->remove($row6M);
+          }
+        }
+
+        $dbm->flush();
+
+        $projects = $this->getAction();
+
+        foreach($projects as $proj) {
+          // verification if reminder 3m/6m validated exist
+          $reminder6M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('6m'), 'project'=>($proj->getId())));
+          if(!$reminder6M) {
+            $this->postAutoReminder6M($proj);
+          }
+          $reminder3M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('3m'), 'project'=>($proj->getId())));
+          if(!$reminder3M) {
+            $this->postAutoReminder3M($proj);
+          }
+          
+        }
+        
+        return new View("Deleted successfully", Response::HTTP_OK);
+    }
+
 }

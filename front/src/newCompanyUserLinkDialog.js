@@ -221,6 +221,7 @@ class NewCompanyUserLinkDialog extends React.Component {
         this.setState({
           [name]: value,
         });
+        this.forceUpdate();
     };
 
     saveLink = () => {
@@ -242,6 +243,7 @@ class NewCompanyUserLinkDialog extends React.Component {
             }).catch(function (error) {
             });
         });
+        self.forceUpdate();
     }
   
     render() {

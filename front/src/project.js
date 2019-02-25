@@ -139,8 +139,8 @@ function Checklist(props) {
                         <SaveIcon/> Save
                 </Button>
                 <DeleteChecklistDialog 
-                    projectId={props.projectId} 
-                    checklistId={props.checklistId} 
+                    projectId={props.projectId}
+                    checklistId={props.checklistId}
                     handleProjectChange={props.handleProjectChange}
                 />
             </div>
@@ -409,6 +409,7 @@ class Project extends Component {
             name: props.name,
             type: props.type,
             status: props.status,
+            goLiveDate: props.goLiveDate,
             checklists: props.checklists,
             tickets: props.tickets,
             tabValue: 0,
@@ -494,7 +495,7 @@ class Project extends Component {
         axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'project/'+project.id,
-            data: {name:project.name, type:project.type, status:project.status},
+            data: {name:project.name, type:project.type, status:project.status, goLiveDate:project.goLiveDate},
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -695,6 +696,7 @@ class Project extends Component {
                         />
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails className='project-details'>
+        
                         <TextField className='project-text'
                             defaultValue={this.state.type}
                             label='Type'
@@ -713,6 +715,12 @@ class Project extends Component {
                         <MenuItem value='Pending'>Pending</MenuItem>
                         <MenuItem value='Complete'>Complete</MenuItem>
                         </Select>
+                        <TextField className='project-deadline'
+                                type='date'
+                                onChange={(event) => this.setState({goLiveDate:event.target.value})}
+                                defaultValue={this.state.goLiveDate}
+                                label='Go live date'
+                        />
                             <Button 
                                 color="primary"  
                                 size="small"
@@ -817,6 +825,7 @@ class Projects extends Component {
                             name={project.name}
                             type={project.type}
                             status={project.status}
+                            goLiveDate={project.go_live_date}
                             checklists={project.checklists}
                             tickets={project.tickets}
                             hidden={project.hidden ? project.hidden : false}
