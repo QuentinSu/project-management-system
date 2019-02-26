@@ -17,11 +17,13 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
+import List from '@material-ui/core/List';
 import { withStyles } from 'material-ui/styles';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
+import AddIcon from '@material-ui/icons/Add';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -116,7 +118,6 @@ class Reminder extends Component {
       });
   }
 
-
     saveReminder(projectid, reminders, golive) {
       // project element update : golive (so reminder 3m and 6m date too)
       var self = this;
@@ -138,7 +139,6 @@ class Reminder extends Component {
 
       //custom reminder update/add
       reminders.forEach(function(remind) {
-      
         if(remind[2]!="3m" && remind[2]!="6m") {
           axios({
             method: 'put', //you can set what request you want to be
@@ -243,6 +243,7 @@ class Reminder extends Component {
       let nameCard = this.state.name;
       //sort by date
       let mappedListOfReminders = this.state.reminders.sort((a, b) => a[3] > b[3]).map((reminder)=>{
+
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
         }
@@ -263,7 +264,7 @@ class Reminder extends Component {
                     InputProps={{
                       className: classes.textField,
                     }}
-                    onChange={(event) => (reminder[3]=event.target.value)}
+                    onChange={event => (reminder[3]=event.target.value)}
                     variant="outlined"  
                 />
             </MuiThemeProvider>

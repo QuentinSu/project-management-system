@@ -82,10 +82,12 @@ class CompanyController extends Controller
       $data->setPhone($phone);
       $data->setCreation($creation);
       $data->setStatus($status);
+
       !empty($eoy) ? $data->setEoy($eoy) : $data->setEoy(date("Y").'-12-31');
       if($user) {
         $data->addUser($user);
       }
+
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();

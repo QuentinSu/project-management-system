@@ -38,9 +38,7 @@ use Psr\Log\LoggerInterface;
  */
 class ReminderController extends Controller
 {
-
-
-  /**
+     /**
      * @Get("/reminder/{id}")
      */
     public function idAction($id)

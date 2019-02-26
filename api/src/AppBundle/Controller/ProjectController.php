@@ -351,11 +351,12 @@ class ProjectController extends RestServiceController
           if(!$reminder6M) {
             $this->postAutoReminder6M($proj);
           }
+
           $reminder3M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('3m'), 'project'=>($proj->getId())));
           if(!$reminder3M) {
             $this->postAutoReminder3M($proj);
           }
-          
+
         }
         
         return new View("Deleted successfully", Response::HTTP_OK);
