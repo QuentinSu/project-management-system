@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import StarIcon from '@material-ui/icons/Star';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import EmailIcon from '@material-ui/icons/Email';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Link, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import {DeleteProjectDialog, NewProjectDialog, NotifyUsersDialog} from './projectDialog.js'
@@ -77,6 +81,42 @@ class Reminder extends Component {
       }
     }
 
+    handleReminderChange(type, data) {
+      this.setState({openSaveNotification: true});
+      var self = this;
+      switch(type) {
+          case 'addRemind':
+              this.getReminders(this.state.id, function(newReminds) {
+                  self.setState({reminders: newReminds});
+                  //this.props.handleProjectsChange();
+              }); 
+              break;
+          case 'deleteReminder':
+              this.props.handleRemindersChange();
+              break;
+          default:
+              this.props.handleRemindersChange();
+              console.log('unknown type');
+      }
+  }
+
+    getReminders(projectId, callback) {
+      axios({
+          method: 'get', //you can set what request you want to be
+          url: apiBaseUrl+'reminder/'+projectId,
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+      })
+          .then(function (response) {
+            if(response.status === 200){
+              callback(response.data.reminders)
+            }
+      })
+          .catch(function (error) {
+      });
+  }
 
     saveReminder(projectid, reminders, golive) {
       // project element update : golive (so reminder 3m and 6m date too)
@@ -99,8 +139,6 @@ class Reminder extends Component {
 
       //custom reminder update/add
       reminders.forEach(function(remind) {
-        console.log(JSON.stringify(remind));
-      
         if(remind[2]!="3m" && remind[2]!="6m") {
           axios({
             method: 'put', //you can set what request you want to be
@@ -203,7 +241,9 @@ class Reminder extends Component {
     render() {
       const classes = this.props;
       let nameCard = this.state.name;
-      let mappedListOfReminders = this.state.reminders.map((reminder)=>{
+      //sort by date
+      let mappedListOfReminders = this.state.reminders.sort((a, b) => a[3] > b[3]).map((reminder)=>{
+
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
         }
@@ -211,7 +251,9 @@ class Reminder extends Component {
         return (
           <div className='reminder-element'>
             <MuiThemeProvider>
-              {reminder[2]}
+              {!shown && reminder[2]}
+              {shown && reminder[2]=='3m' && '3 Months to Go'}
+              {shown && reminder[2]=='6m' && '6 Months to Go'}
                 <TextField disabled={shown}
                     className='reminder-element-theme'
                     type='date'
@@ -227,34 +269,83 @@ class Reminder extends Component {
                 />
             </MuiThemeProvider>
             <span>&nbsp;&nbsp;</span>
+            <img className='timeline-reminders' src={process.env.PUBLIC_URL + '/time.png'}></img>
+            <div className='reminder-action-buttons'>
+            {reminder[1]=='notok' &&
+            <Tooltip title="Force validation" interactive>
+              <Button
+                  className="reminder-button"
+                  size="small"
+                  color="primary"
+                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+                  >
+                  <CheckCircleIcon style={{color: "#00984C"}} className="bite"/>
+              </Button>
+            </Tooltip>}
+            {reminder[1]=='notok' &&
+            <Tooltip title="Email sender" interactive>
+              <Button
+                  className="reminder-button" //reminder-mail-button"*
+                  size="small"
+                  color="primary"
+                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+                  >
+                  <EmailIcon/>
+              </Button>
+            </Tooltip>}
+            <Tooltip title="Add 1 year on reminder date" interactive>
+              <Button
+                  className="reminder-button" //  reminder-addyear-button"
+                  size="small"
+                  color="primary"
+                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+                  >
+                  <AddIcon/><small>1y</small>
+              </Button>
+            </Tooltip>
+            {!shown &&
+            <Tooltip title="Delete custom reminder" interactive>
+              <Button
+                  className="reminder-button"// reminder-delete-button"
+                  size="small"
+                  color="primary"
+                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+                  >
+                  <DeleteIcon style={{color: "#f44336"}} />
+              </Button>
+            </Tooltip>}
+            </div>
           </div>
         )
     })
-    let mappedEoys = this.state.eoys.map((eoy)=>{
-      return (
-        <div className='reminder-eoy'>
-        <MuiThemeProvider>
-              EOY+{eoy[0]}
-                <TextField
-                    className='eoy-element-theme'
-                    type='date'
-                    style={{
-                      
-                    }}
-                    defaultValue={eoy[1]}
-                    InputProps={{
-                      className: classes.textField,
-                    }}
-                    variant="outlined"
-                /> 
-            </MuiThemeProvider>
-            <span>&nbsp;&nbsp;</span>
-        </div>
-      )
+    let mappedEoys = this.state.eoys.sort((a, b) => a[1] > b[1]).map((eoy)=>{
+      if(eoy != 'noCompaniesLinked') {
+        return (
+          <div className='reminder-eoy'>
+          <MuiThemeProvider>
+                EOY {eoy[0]}
+                  <TextField disabled
+                      className='eoy-element-theme'
+                      type='date'
+                      style={{
+
+                      }}
+                      defaultValue={eoy[1]}
+                      InputProps={{
+                        className: classes.textField,
+                      }}
+                      variant="outlined"
+                  /> 
+              </MuiThemeProvider>
+          </div>
+        )
+      } else return null;
     })
 
     this.countReminderState(this.state.id, this.state.name, this.state.reminders);
     this.remindersStats();
+
+    var backTimeUrl= process.env.PUBLIC_URL + "/time.png";
     
     return (
       <div>
@@ -285,23 +376,33 @@ class Reminder extends Component {
               {this.state.status}
           </Typography> */}
         </div>
-        <div className='reminder-list'>
+        <div className='reminder-list'>  
+        {/* style={{backgroundImage: "url(" + backTimeUrl + ")", background}}> */}
           {this.state.reminders[0]!=="empty" && mappedListOfReminders}
-          {/* can't delete reminder beacause reminder always linked with project (project master) */}
+
+          {/* GO LIVE DATE SHOWN ON THE TIMELINE OR NOT ?*/}
+
+          {/* <div className='reminder-element golive-timeline'><i>Go live<span>&nbsp;</span>
+          { this.state.goLiveDate}</i></div> */}
         </div>
-        <NewReminderDialog
-                    projectId={this.props.id}
-                    type={this.props.type}
-                    deadline={this.props.deadline}
-                    handleReminderChange={this.props.handleReminderChange}
-        />
-        <Button
-            className="reminder-save-button"
-            size="small"
-            color="primary"
-            onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-            <SaveIcon/> Save GoLive & Custom
-        </Button>
+        
+        <div className='eoy-list'>
+            {mappedEoys}
+          </div>
+        <div className="reminder-save-button">
+          <NewReminderDialog
+              projectId={this.props.id}
+              type={this.props.type}
+              deadline={this.props.deadline}
+              handleReminderChange={this.props.handleReminderChange}
+          />
+          <Button
+              size="small"
+              color="primary"
+              onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+              <SaveIcon/> Save GoLive & Custom
+          </Button>
+        </div>
       </Card>
       <br /> 
       </div>

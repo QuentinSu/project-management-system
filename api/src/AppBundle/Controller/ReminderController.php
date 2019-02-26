@@ -39,6 +39,21 @@ use Psr\Log\LoggerInterface;
 class ReminderController extends Controller
 {
      /**
+     * @Get("/reminder/{id}")
+     */
+    public function idAction($id)
+    {
+      $singleresult = $this->getDoctrine()->getRepository('AppBundle:Project')->find($id);
+      if ($singleresult === null) {
+        return new View("project not found", Response::HTTP_NOT_FOUND);
+      } 
+      if (!$this->getUser()->getProjects()->contains($singleresult) && !$this->getUser()->isAdmin()) {
+        return new View("not allowed", Response::HTTP_FORBIDDEN);
+      }
+      return $singleresult;
+    }
+
+     /**
      * @Get("/reminder")
      * 
      */

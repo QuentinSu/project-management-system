@@ -347,14 +347,16 @@ class ProjectController extends RestServiceController
 
         foreach($projects as $proj) {
           // verification if reminder 3m/6m validated exist
-          $reminder3M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('3m'), 'project'=>($proj->getId())));
-          if(!$reminder3M) {
-            $this->postAutoReminder3M($proj);
-          }
           $reminder6M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('6m'), 'project'=>($proj->getId())));
           if(!$reminder6M) {
             $this->postAutoReminder6M($proj);
           }
+
+          $reminder3M = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('type'=>('3m'), 'project'=>($proj->getId())));
+          if(!$reminder3M) {
+            $this->postAutoReminder3M($proj);
+          }
+
         }
         
         return new View("Deleted successfully", Response::HTTP_OK);

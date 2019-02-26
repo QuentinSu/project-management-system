@@ -99,12 +99,12 @@
 	margin-top: 10px;
 	margin-left: 20px;
 	margin-top: 10px;
+	margin-right: 15px;
 	margin-bottom:10px;
 	width:20%;
 }
 
 .reminder-save-button {
-	margin-top: 50%;
 	float:right;
 }
 
@@ -132,18 +132,76 @@
 .reminder-list {
 	float:left;
 	margin-left: 25px;
-	width: 40%;
+	width: 48%;
 	margin-top: 10px;
 }
 
-.reminder-element {
-	margin-left: 25px;
-	max-width:25%;
+.eoy-list {
+	float:left;
+	margin-left:0px;
+	width: 10%;
+	margin-top: 10px;
+}
+
+.reminder-eoy {
+	/* margin-top: 10px; */
+	/* margin-left: 25px; */
+	/* max-width:25%; */
+	margin-bottom:10px;
 	display:inline-block;
 }
 
+.reminder-element {
+	margin-left: 0px;
+	vertical-align: middle;
+	width: 22%;
+	margin-left:0px;
+	/* max-width:25%; */
+	display:inline-block;
+	margin-bottom: 10px;
+}
+
+.golive-timeline {
+	border:1px solid #c9c9c9;
+	text-align: center;
+	margin-top:-20px;
+    border-radius: 15px;
+}
+
+.timeline-reminders {
+	width:10%;
+	float:right;
+	height:20px;
+	margin-top:15px;
+	/* margin-left: 10px; */
+	opacity: 0.8
+}
 .reminder-element-theme {
+	float: left;
+	width: 90%;
+	/* mandatory otherwise button reminder-actions-button is on top and disable date change */
+	z-index : 10;
+}
+
+.reminder-action-buttons {
+	padding-top:60px;
+	width:100%;
+	opacity: 0.8;
+}
+
+.reminder-button {
+	height:100%;
+	font-size:small;
+	min-width:20% !important;
+	max-width:25%;
+}
+
+.eoy-element-theme {
 	width: 100%;
+}
+
+.bite {
+	size:10px;
 }
 
 /** company element */

@@ -50,9 +50,12 @@ export class NewReminderDialog extends React.Component {
         }).then(function (response) {
             if(response.status === 200){
                 self.setState({ open: false });
-                // UPDATE REMINDERS WITH THE NEW ONE HERE LOOK ON TICKET DIALOG !!!
+                var data = {type:self.state.type, deadline:self.state.deadline}
+                self.props.handleReminderChange('addRemind', data);
+                  //this.props.handleProjectsChange();
+                
                 //self.setState({reminders: newTickets});
-                this.forceUpdate();
+                //this.forceUpdate();
             }
         }).catch(function (error) {
             alert("Bad request : the custom "+this.state.type+" for this project may be already exist");
