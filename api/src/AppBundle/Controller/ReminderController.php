@@ -149,6 +149,24 @@ class ReminderController extends Controller
       return new View("Reminder Added Successfully", Response::HTTP_OK);
     }
 
+
+    /**
+     * @Put("/reminder/forcevalid/{id}")
+     */
+    public function forceValidation($id) {
+      $remind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->find($id);
+      if(!$remind) {
+        return new View("REMINDER NOT FOUND", Response::HTTP_NOT_ACCEPTABLE); 
+      }
+
+      $remind->setStatus('ok');
+      $dbm = $this->getDoctrine()->getManager();
+
+      $dbm->flush();
+      return new View("Reminder Updated Successfully : validated", Response::HTTP_OK);
+
+    }
+
     /**
      * @Put("/reminder/{id}")
      */
@@ -186,7 +204,7 @@ class ReminderController extends Controller
 
       // $this->notify('Reminder n°'.$reminder->getId().', type: '.'"'.$type.'"'.' modified');    
 
-      return new View("Project Updated Successfully", Response::HTTP_OK);;
+      return new View("Reminder Updated Successfully", Response::HTTP_OK);
 
     }
 

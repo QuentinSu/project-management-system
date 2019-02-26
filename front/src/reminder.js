@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
-import AddIcon from '@material-ui/icons/Add';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -55,6 +54,25 @@ class Reminder extends Component {
           openSaveNotification: false,
           hidden: false
       }
+    }
+
+    forceValidation(reminder) {
+      var self = this;
+      axios({
+        method: 'put', //you can set what request you want to be
+        url: apiBaseUrl+'reminder/forcevalid/'+reminder["reminder"][0],
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('session'),
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+    })
+        .then(function (response) {
+          if(response.status === 200){
+            reminder["reminder"][4] = 'validated';
+          }
+    })
+        .catch(function (error) {
+    });
     }
 
     colorReminder(nameCard, reminder) {
@@ -247,13 +265,15 @@ class Reminder extends Component {
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
         }
-        var shown = (reminder[2]==='3m'||reminder[2]==='6m');
+        var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
+        var shown = (autoRemind || reminder[1]==='ok');
+        var remindValid = (!autoRemind && reminder[1] === 'ok');
         return (
           <div className='reminder-element'>
             <MuiThemeProvider>
-              {!shown && reminder[2]}
-              {shown && reminder[2]=='3m' && '3 Months to Go'}
-              {shown && reminder[2]=='6m' && '6 Months to Go'}
+              {(remindValid || !shown) && reminder[2]}
+              {autoRemind && reminder[2]=='3m' && '3 Months to Go'}
+              {autoRemind && reminder[2]=='6m' && '6 Months to Go'}
                 <TextField disabled={shown}
                     className='reminder-element-theme'
                     type='date'
@@ -277,8 +297,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-                  >
+                  onClick={() => this.forceValidation({reminder})}>
                   <CheckCircleIcon style={{color: "#00984C"}} className="bite"/>
               </Button>
             </Tooltip>}
@@ -303,7 +322,7 @@ class Reminder extends Component {
                   <AddIcon/><small>1y</small>
               </Button>
             </Tooltip>
-            {!shown &&
+            {!autoRemind &&
             <Tooltip title="Delete custom reminder" interactive>
               <Button
                   className="reminder-button"// reminder-delete-button"
