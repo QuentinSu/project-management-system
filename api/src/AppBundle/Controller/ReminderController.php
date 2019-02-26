@@ -225,7 +225,7 @@ class ReminderController extends Controller
         if (empty($reminder)) {
             return new View("reminder not found", Response::HTTP_NOT_FOUND);
         } else {
-            $this->notify('Reminder n°'.$reminder->getId().' deleted'); 
+            // $this->notify('Reminder n°'.$reminder->getId().' deleted'); 
             $dbm->remove($reminder);
             $dbm->flush();
         }

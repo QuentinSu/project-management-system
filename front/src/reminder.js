@@ -108,8 +108,8 @@ class Reminder extends Component {
           case 'addRemind':
               this.getReminders(this.state.id, function(newReminds) {
                   self.setState({reminders: newReminds});
-                  //this.props.handleProjectsChange();
-              }); 
+              });
+              this.props.handleRemindersChange();
               break;
           case 'deleteReminder':
               this.props.handleRemindersChange();
@@ -139,6 +139,25 @@ class Reminder extends Component {
           .catch(function (error) {
       });
       //this.props.handleRemindersChange();
+  }
+
+  deleteReminder(cardObject, reminder) {
+    var self = cardObject['cardObject'];
+    axios({
+          method: 'delete', //you can set what request you want to be
+          url: apiBaseUrl+'reminder/'+reminder["reminder"][0],
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }).then(function (response) {
+            if(response.status === 200){
+              cardObject['cardObject'].forceUpdate();
+            }
+        }).catch(function (error) {
+          console.log('error on delete reminder');
+      });
+    self.forceUpdate();
   }
 
     saveReminder(projectid, reminders, golive) {
@@ -186,81 +205,81 @@ class Reminder extends Component {
       self.forceUpdate();
     }
 
-    countReminderState(id, name, reminders) {
-      if(reminders[0]!=='empty') {
-          var cardReminderStateEntete = new Array();
-          cardReminderStateEntete[0] = id;
-          cardReminderStateEntete[1] = name;
+    // countReminderState(id, name, reminders) {
+    //   if(reminders[0]!=='empty') {
+    //       var cardReminderStateEntete = new Array();
+    //       cardReminderStateEntete[0] = id;
+    //       cardReminderStateEntete[1] = name;
 
-          var cardReminderLateState = new Array();
-          cardReminderLateState.push('late');
-          var cardReminderValidatedState = new Array();
-          cardReminderValidatedState.push('validated');
-          var cardReminderSoonState = new Array();
-          cardReminderSoonState.push('soon');
-          var cardReminderActiveState = new Array();
-          cardReminderActiveState.push('active');
+    //       var cardReminderLateState = new Array();
+    //       cardReminderLateState.push('late');
+    //       var cardReminderValidatedState = new Array();
+    //       cardReminderValidatedState.push('validated');
+    //       var cardReminderSoonState = new Array();
+    //       cardReminderSoonState.push('soon');
+    //       var cardReminderActiveState = new Array();
+    //       cardReminderActiveState.push('active');
 
-          cardReminderLateState = cardReminderStateEntete.concat(cardReminderLateState);
-          cardReminderValidatedState = cardReminderStateEntete.concat(cardReminderValidatedState);
-          cardReminderSoonState =  cardReminderStateEntete.concat(cardReminderSoonState);
-          cardReminderActiveState =  cardReminderStateEntete.concat(cardReminderActiveState);
+    //       cardReminderLateState = cardReminderStateEntete.concat(cardReminderLateState);
+    //       cardReminderValidatedState = cardReminderStateEntete.concat(cardReminderValidatedState);
+    //       cardReminderSoonState =  cardReminderStateEntete.concat(cardReminderSoonState);
+    //       cardReminderActiveState =  cardReminderStateEntete.concat(cardReminderActiveState);
 
-          var cardReminderLateNb = 0;
-          var cardReminderValidatedNb = 0;
-          var cardReminderSoonNb = 0;
-          var cardReminderActiveNb = 0;
+    //       var cardReminderLateNb = 0;
+    //       var cardReminderValidatedNb = 0;
+    //       var cardReminderSoonNb = 0;
+    //       var cardReminderActiveNb = 0;
 
-          for(var i=0; i<reminders.length; i++) {
-            switch (reminders[i][4]) {
-              case 'late':
-                cardReminderLateNb++;
-                break;
-              case 'validated':
-                cardReminderValidatedNb++;
-                break;
-              case 'soon':
-                cardReminderSoonNb++;
-                break;
-              case 'active':
-                cardReminderActiveNb++;
-                break;
-            }
-          }
-          cardReminderLateState.push(cardReminderLateNb);
-          cardReminderValidatedState.push(cardReminderValidatedNb);
-          cardReminderSoonState.push(cardReminderSoonNb);
-          cardReminderActiveState.push(cardReminderActiveNb);
+    //       for(var i=0; i<reminders.length; i++) {
+    //         switch (reminders[i][4]) {
+    //           case 'late':
+    //             cardReminderLateNb++;
+    //             break;
+    //           case 'validated':
+    //             cardReminderValidatedNb++;
+    //             break;
+    //           case 'soon':
+    //             cardReminderSoonNb++;
+    //             break;
+    //           case 'active':
+    //             cardReminderActiveNb++;
+    //             break;
+    //         }
+    //       }
+    //       cardReminderLateState.push(cardReminderLateNb);
+    //       cardReminderValidatedState.push(cardReminderValidatedNb);
+    //       cardReminderSoonState.push(cardReminderSoonNb);
+    //       cardReminderActiveState.push(cardReminderActiveNb);
           
-          cardReminderLateNb!==0 ? remindersState.push(cardReminderLateState) : null;
-          cardReminderValidatedNb!==0 ? remindersState.push(cardReminderValidatedState) : null;
-          cardReminderSoonNb!==0 ? remindersState.push(cardReminderSoonState) : null;
-          cardReminderActiveNb!==0 ? remindersState.push(cardReminderActiveState) : null;
-      }
-    }
+    //       cardReminderLateNb!==0 ? remindersState.push(cardReminderLateState) : null;
+    //       cardReminderValidatedNb!==0 ? remindersState.push(cardReminderValidatedState) : null;
+    //       cardReminderSoonNb!==0 ? remindersState.push(cardReminderSoonState) : null;
+    //       cardReminderActiveNb!==0 ? remindersState.push(cardReminderActiveState) : null;
+    //   }
+    // }
 
-    remindersStats() {
-      reminderStatLate = 0;
-      reminderStatActive = 0;
-      reminderStatSoon = 0;
-      reminderStatValidated = 0;
-      remindersState.forEach(function(remind) {
-        switch (remind[2]) { 
-          case 'late':
-            reminderStatLate++;
-            break;
-          case 'active':
-            reminderStatActive++;
-            break;
-          case 'soon':
-            reminderStatSoon++;
-            break;
-          case 'validated':
-            reminderStatValidated++;
-            break;
-        }
-      });
-    }
+    // remindersStats() {
+    //   reminderStatLate = 0;
+    //   reminderStatActive = 0;
+    //   reminderStatSoon = 0;
+    //   reminderStatValidated = 0;
+    //   remindersState.forEach(function(remind) {
+    //     switch (remind[2]) { 
+    //       case 'late':
+    //         reminderStatLate++;
+    //         break;
+    //       case 'active':
+    //         reminderStatActive++;
+    //         break;
+    //       case 'soon':
+    //         reminderStatSoon++;
+    //         break;
+    //       case 'validated':
+    //         reminderStatValidated++;
+    //         break;
+    //     }
+    //   });
+    // }
 
     render() {
       const classes = this.props;
@@ -336,8 +355,8 @@ class Reminder extends Component {
                   className="reminder-button"// reminder-delete-button"
                   size="small"
                   color="primary"
-                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-                  >
+                  onClick={() => { if (window.confirm('Are you sure you wish to delete this reminder?')) this.deleteReminder({cardObject}, {reminder})}}>
+    
                   <DeleteIcon style={{color: "#f44336"}} />
               </Button>
             </Tooltip>}
@@ -369,8 +388,8 @@ class Reminder extends Component {
       } else return null;
     })
 
-    this.countReminderState(this.state.id, this.state.name, this.state.reminders);
-    this.remindersStats();
+    // this.countReminderState(this.state.id, this.state.name, this.state.reminders);
+    // this.remindersStats();
 
     var backTimeUrl= process.env.PUBLIC_URL + "/time.png";
     
