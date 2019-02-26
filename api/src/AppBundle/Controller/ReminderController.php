@@ -180,7 +180,7 @@ class ReminderController extends Controller
       
       $data = new Reminder;
       $projectId = $request->get('projectId');
-      $status = 'notok';
+      $status = $request->get('status');
       $type = $request->get('type');
       $deadline = $request->get('deadline');
       $dbm = $this->getDoctrine()->getManager();

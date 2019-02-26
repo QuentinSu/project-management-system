@@ -25,6 +25,7 @@ export class NewReminderDialog extends React.Component {
       open: false,
       type: 'custom',
       deadline: '',
+      status: 'notok',
     };
   
     handleClickOpen = () => {
@@ -34,12 +35,12 @@ export class NewReminderDialog extends React.Component {
   
     saveRemind = () => {
         var self = this;
-        console.log('type : '+this.state.type+' | deadline : '+this.state.deadline+' | projectId : '+self.props.projectId);
         axios({
             method: 'post', //you can set what request you want to be
             url: apiBaseUrl+'reminder',
             data: {
                 type: this.state.type,
+                status: this.state.status,
                 deadline: this.state.deadline,
                 projectId: self.props.projectId
             },
@@ -50,14 +51,11 @@ export class NewReminderDialog extends React.Component {
         }).then(function (response) {
             if(response.status === 200){
                 self.setState({ open: false });
-                var data = {type:self.state.type, deadline:self.state.deadline}
+                var data = {status:self.state.status, type:self.state.type, deadline:self.state.deadline}
                 self.props.handleReminderChange('addRemind', data);
-                  //this.props.handleProjectsChange();
-                
-                //self.setState({reminders: newTickets});
-                //this.forceUpdate();
             }
         }).catch(function (error) {
+            console.log('coucou');
             alert("Bad request : the custom "+this.state.type+" for this project may be already exist");
         });
     }

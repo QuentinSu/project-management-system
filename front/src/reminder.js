@@ -56,23 +56,25 @@ class Reminder extends Component {
       }
     }
 
-    forceValidation(reminder) {
-      var self = this;
+    forceValidation(cardObject, reminder, projectId) {
+      var self = cardObject['cardObject'];
       axios({
-        method: 'put', //you can set what request you want to be
-        url: apiBaseUrl+'reminder/forcevalid/'+reminder["reminder"][0],
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('session'),
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-    })
-        .then(function (response) {
-          if(response.status === 200){
-            reminder["reminder"][4] = 'validated';
-          }
-    })
-        .catch(function (error) {
-    });
+            method: 'put', //you can set what request you want to be
+            url: apiBaseUrl+'reminder/'+reminder["reminder"][0],
+            data: {projectId:projectId["projectId"], status:'ok', type:reminder["reminder"][2], deadline:reminder["reminder"][3]},
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('session'),
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          }).then(function (response) {
+              if(response.status === 200){
+                reminder["reminder"][1]='ok';
+                cardObject['cardObject'].forceUpdate();
+              }
+          }).catch(function (error) {
+            console.log('error on forcing reminder validation');
+        });
+      self.forceUpdate();
     }
 
     colorReminder(nameCard, reminder) {
@@ -129,16 +131,20 @@ class Reminder extends Component {
       })
           .then(function (response) {
             if(response.status === 200){
-              callback(response.data.reminders)
+              //this.setState({reminders: response.data.reminders});
+              callback(response.data.reminders);
+              this.forceUpdate();
             }
       })
           .catch(function (error) {
       });
+      //this.props.handleRemindersChange();
   }
 
     saveReminder(projectid, reminders, golive) {
       // project element update : golive (so reminder 3m and 6m date too)
       var self = this;
+      console.log(self);
       axios({
           method: 'put', //you can set what request you want to be
           url: apiBaseUrl+'project/'+projectid,
@@ -259,6 +265,8 @@ class Reminder extends Component {
     render() {
       const classes = this.props;
       let nameCard = this.state.name;
+      let cardObject = this;
+      let projectId = this.state.id;
       //sort by date
       let mappedListOfReminders = this.state.reminders.sort((a, b) => a[3] > b[3]).map((reminder)=>{
 
@@ -297,8 +305,8 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => this.forceValidation({reminder})}>
-                  <CheckCircleIcon style={{color: "#00984C"}} className="bite"/>
+                  onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.forceValidation({cardObject}, {reminder}, {projectId})}}>
+                  <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
               </Button>
             </Tooltip>}
             {reminder[1]=='notok' &&
@@ -413,7 +421,8 @@ class Reminder extends Component {
               projectId={this.props.id}
               type={this.props.type}
               deadline={this.props.deadline}
-              handleReminderChange={this.props.handleReminderChange}
+              handleReminderChange={this.handleReminderChange.bind(this)}
+
           />
           <Button
               size="small"
@@ -456,8 +465,10 @@ class Reminders extends Component {
               }
             })
             .catch(function (error) {
+              console.log('tu es un dieu');
               console.log(error.response);
             });
+            return 'blup';
     }
 
     componentDidMount() {
