@@ -109,4 +109,85 @@ export class NewReminderDialog extends React.Component {
       );
     }
   }
-    
+
+ 
+export class NewMailReminderDialog extends React.Component {
+  state = {
+    open: false,
+    type: 'custom',
+    deadline: '',
+    status: 'notok',
+  };
+
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  };
+
+  sendMail(reminderId) {
+    var self = this;
+    axios({
+        method: 'put', //you can set what request you want to be
+        url: apiBaseUrl+'reminder/mail/'+reminderId,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('session'),
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+    }).then(function (response) {
+        if(response.status === 200){
+            console.log('c\'est fine');
+        }
+    }).catch(function (error) {
+      console.log('c\'est pas fine');
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <Button onClick={this.handleClickOpen} color="primary" className='new-button'>
+              <AddIcon /> Send reminder Mail
+        </Button>
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="new-project-dialog-title">New Custom Reminder</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To create a new reminder, please fill all fields
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="type"
+              label="type"
+              required
+              onChange = {(event) => this.setState({type:event.target.value})}
+              fullWidth
+            />
+            <TextField
+              type='date'
+              value={this.state.deadline}
+              variant="outlined"
+              required
+              onChange= {(event) => this.setState({deadline:event.target.value})}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.setState({ open: false })} color="primary">
+              Cancel
+            </Button>
+            <Button 
+              onClick={this.saveRemind}
+              color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
+}

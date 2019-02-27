@@ -133,7 +133,7 @@ class Reminder extends Component {
             if(response.status === 200){
               //this.setState({reminders: response.data.reminders});
               callback(response.data.reminders);
-              this.forceUpdate();
+              // this.forceUpdate();
             }
       })
           .catch(function (error) {
@@ -163,7 +163,6 @@ class Reminder extends Component {
     saveReminder(projectid, reminders, golive) {
       // project element update : golive (so reminder 3m and 6m date too)
       var self = this;
-      console.log(self);
       axios({
           method: 'put', //you can set what request you want to be
           url: apiBaseUrl+'project/'+projectid,
@@ -202,6 +201,7 @@ class Reminder extends Component {
           });
         }
       });
+      this.props.handleRemindersChange();
       self.forceUpdate();
     }
 
@@ -311,7 +311,7 @@ class Reminder extends Component {
                     InputProps={{
                       className: classes.textField,
                     }}
-                    onChange={event => (reminder[3]=event.target.value)}
+                    onChange={(event) => (reminder[3]=event.target.value)}
                     variant="outlined"  
                 />
             </MuiThemeProvider>
@@ -334,8 +334,7 @@ class Reminder extends Component {
                   className="reminder-button" //reminder-mail-button"*
                   size="small"
                   color="primary"
-                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-                  >
+                  onClick={() => this.sendMail(reminder[0])}>
                   <EmailIcon/>
               </Button>
             </Tooltip>}
@@ -568,7 +567,8 @@ class Reminders extends Component {
         var advancedFunction = <div>
                                 <div>
                                   <b><h4>Advanced function</h4></b>
-                                  <Button  variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}}>Regenerate Reminders (3m, 6m)</Button>
+                                  <Button  variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}}>Regenerate Reminders (3m, 6m)</Button><br />
+                                  <Button  variant="contained" onClick={() =>null} fullWidth>Manage preformatted mail</Button>
                                 </div>
                                 {legendText}
                               </div>

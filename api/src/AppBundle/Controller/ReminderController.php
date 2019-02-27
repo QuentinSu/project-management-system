@@ -233,4 +233,36 @@ class ReminderController extends Controller
         return new View("Deleted successfully", Response::HTTP_OK);
     }
 
+
+    /**
+     * @Put("/reminder/mail/{id}")
+     */
+    function sendMailBrother($id, Request $request) {
+      $object = $request->get('object');
+      $body = $request->get('body');
+      
+      if(empty($object)) {
+        $object='Reminder Rhys Welsh Info';
+      }
+
+      $message = (new \Swift_Message($object))
+          ->setFrom('crm.rhyswelsh@gmail.com')
+          ->setTo('quentin.sutkowski@gmail.com')
+          ->setBody(
+              $body  
+          )
+          /*
+          * If you also want to include a plaintext version of the message
+          ->addPart(
+              $this->renderView(
+                  'Emails/registration.txt.twig',
+                  array('name' => $name)
+              ),
+              'text/plain'
+          )
+          */
+      ;
+      $this->get('mailer')->send($message);
+    }
+
 }
