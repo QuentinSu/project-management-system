@@ -567,8 +567,9 @@ class Reminders extends Component {
         var advancedFunction = <div>
                                 <div>
                                   <b><h4>Advanced function</h4></b>
-                                  <Button  variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}}>Regenerate Reminders (3m, 6m)</Button><br />
-                                  <Button  variant="contained" onClick={() =>null} fullWidth>Manage preformatted mail</Button>
+                                  <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
+                                  _
+                                  <Button className="button-advanced-reminder" variant="contained" onClick={() =>null} fullWidth>Manage preformatted mail</Button>
                                 </div>
                                 {legendText}
                               </div>

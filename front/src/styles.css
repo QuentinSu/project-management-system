@@ -183,6 +183,10 @@
 	z-index : 10;
 }
 
+.button-advanced-reminder {
+	margin-bottom:100px;
+}
+
 .reminder-action-buttons {
 	padding-top:60px;
 	width:100%;

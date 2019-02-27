@@ -40,6 +40,9 @@ reminder:
     type: rest
     resource: AppBundle\Controller\ReminderController
 
+mailpreformat:
+    type: rest
+    resource: AppBundle\Controller\MailPreformatController
 
 server:
     type: rest

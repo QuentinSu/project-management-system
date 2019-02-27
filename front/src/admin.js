@@ -14,6 +14,7 @@ import Companies from './company.js';
 import Reminders from './reminder.js';
 import Servers from './server.js';
 import Marketing from './marketing.js';
+import MailsManagement from './mailManagement.js';
 import PropTypes from 'prop-types';
 import Users from './user.js';
 import Footer from './footer.js';
@@ -122,6 +123,7 @@ class AdminDashboard extends Component {
                   <Tab label="Reminders" />
                   <Tab label="Servers" />
                   <Tab label="Marketing" />
+                  <Tab label="Manage mail" />
                 </Tabs>
               )}
               </AppBar>
@@ -130,7 +132,7 @@ class AdminDashboard extends Component {
               {(this.state.tabValue === 1) && <TabContainer>{advanced ? <Users/> : <Reminders/>}</TabContainer>}
               {(this.state.tabValue === 2) && <TabContainer>{advanced ? <Testimonials/> : <Servers/>}</TabContainer>}
               {(this.state.tabValue === 3) && <TabContainer><Marketing/></TabContainer>}
-            
+              {(this.state.tabValue === 4) && <TabContainer><MailsManagement/></TabContainer>}
             <Footer/>
         </div>
     );
