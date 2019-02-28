@@ -58,6 +58,7 @@ class MailPreformatController extends RestServiceController
     } 
       $data->setContent($content);
       $data->setName($name);
+      $data->setType($type);
       $em = $this->getDoctrine()->getManager();
       $em->persist($data);
       $em->flush();
@@ -89,13 +90,13 @@ class MailPreformatController extends RestServiceController
 
         !empty($content) ? $mail->setContent($content) : 0;
         !empty($name) ? $mail->setName($name) : 0;
-        !empty($type) ? $mail->setType($type) : null;
+        !empty($type) ? $mail->setType($type) : 'tagrossemere';
 
         $dbm->flush();
 
         //$this->notify('Mail preformatted n°'.$mail->getId().' modified');
 
-        return new View("Mail preformatted Updated Successfully", Response::HTTP_OK);;
+        return new View("Mail preformatted Updated Successfully. Type : ".$type, Response::HTTP_OK);;
     }
 
     /**

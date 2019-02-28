@@ -11,7 +11,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -152,10 +151,10 @@ export class NewMailReminderDialog extends React.Component {
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="new-project-dialog-title">New Custom Reminder</DialogTitle>
+          <DialogTitle id="new-project-dialog-title">Template Mail for this reminder</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              To create a new reminder, please fill all fields
+              These elements are preformatted. You can copy and paste it to send quickly mail to clients
             </DialogContentText>
             <TextField
               autoFocus

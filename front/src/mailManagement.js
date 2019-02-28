@@ -15,8 +15,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import FormControl from '@material-ui/core/FormControl';
+import Paper from '@material-ui/core/Paper';
+
 
 var config = require('./config.json');
 
@@ -79,6 +83,7 @@ class MailsManagement extends Component {
 
     saveNewMail() {
         var self = this;
+        console.log(this.state.newType);
         axios({
             method: 'post', //you can set what request you want to be
             url: apiBaseUrl+'mailpreformat',
@@ -88,14 +93,16 @@ class MailsManagement extends Component {
             },
             data: {
                 "name": this.state.newName,
-                "content": this.state.newContent,
-                "type": this.state.newType
+                "type": this.state.newType,
+                "content": this.state.newContent
+                
             }
           })
             .then(function (response) {
               if(response.status === 200){
                 self.setState({ open: false });
                 self.updateMails();
+                console.log(response);
               }
             })
             .catch(function (error) {
@@ -123,7 +130,7 @@ class MailsManagement extends Component {
                 {button}
                 <Dialog
                     open={this.state.open}
-                    maxWidth="150%"
+                    maxWidth="lg"
                     aria-labelledby="form-dialog-title"
                     fullWidth
                 >
@@ -140,13 +147,13 @@ class MailsManagement extends Component {
                         value={this.state.newType}
                         label="Type"
                         inputProps={{  
-                            id: "type",
+                            id: "newTsype",
                         }}
                         fullWidth
                     >
                         <MenuItem value='3m'>3 months to go</MenuItem>
                         <MenuItem value='6m'>6 months to go</MenuItem>
-                        <MenuItem value='custom' selected>Custom template</MenuItem>
+                        <MenuItem value='custom'>Custom template</MenuItem>
                     </Select>
                     <TextField
                         fullWidth
@@ -179,6 +186,7 @@ class MailsManagement extends Component {
                     </Button>
                     </DialogActions>
                 </Dialog>
+                <Paper  color="primary" className='company-stats' square={false}>💡 You can go <a href="https://unicode-table.com/en/sets/" target="_blank">there</a> to pick emots and symbols for you content!</Paper>
                 <p></p>
                 {mappedMails}
             </div>
@@ -252,8 +260,24 @@ class MailsManagement extends Component {
                 disabled
                 defaultValue={this.state.id}
                 label='ID'
-            />
-
+            />&nbsp;
+            <FormControl>
+              <InputLabel htmlFor="type">Type</InputLabel>
+              <Select
+                  className="type-select"
+                  value={this.state.type}
+                  onChange={(event) => {this.setState({type:event.target.value})}}
+                  name="type"
+                  label="Type"
+                  inputProps={{  
+                      id: "type",
+                  }}
+                  >
+                  <MenuItem value='3m'>3 months to go</MenuItem>
+                  <MenuItem value='6m'>6 months to go</MenuItem>
+                  <MenuItem value='custom'>Custom template</MenuItem>
+              </Select>
+            </FormControl>
             <TextField fullWidth
                 onChange={event => this.setState({name:event.target.value})}
                 defaultValue={this.state.name}
@@ -265,7 +289,7 @@ class MailsManagement extends Component {
                 rows="15"
                 defaultValue={this.state.content}
                 label='Content'
-            />     
+            />
             </div>
             <div className='mail-buttons'>
               {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}

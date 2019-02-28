@@ -519,6 +519,7 @@
 .company-stats {
 	width: 20%;
 	float: right;
+	text-align:center;
 	background:#f44336;
 }
 

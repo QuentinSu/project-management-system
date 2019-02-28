@@ -28,7 +28,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {NewReminderDialog} from './reminderDialog.js';
+import {NewReminderDialog, NewMailReminderDialog} from './reminderDialog.js';
 
 var config = require('./config.json');
 
@@ -338,6 +338,8 @@ class Reminder extends Component {
                   <EmailIcon/>
               </Button>
             </Tooltip>}
+            <NewMailReminderDialog
+            />
             <Tooltip title="Add 1 year on reminder date" interactive>
               <Button
                   className="reminder-button" //  reminder-addyear-button"
@@ -406,7 +408,7 @@ class Reminder extends Component {
           <text className='reminder-name'>
               {this.state.name}
           </text>
-
+          <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:quentin.sutkowski@gmail.com,rhys.welsh@rhys.com?subject=Hi&body=coucou"}}>Test</Button>
           <TextField className='reminder-golive'
               type='date'
               onChange={event => this.setState({goLiveDate:event.target.value})}
