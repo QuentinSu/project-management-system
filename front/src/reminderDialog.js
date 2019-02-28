@@ -7,6 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
+import EmailIcon from '@material-ui/icons/Email';
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
@@ -15,9 +16,14 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import { checkPropTypes } from 'prop-types';
+import Tooltip from '@material-ui/core/Tooltip';
+import Select from '@material-ui/core/Select';
+
+
 
 var config = require('./config.json');
 const apiBaseUrl = config.apiBaseUrl;
+
 
 export class NewReminderDialog extends React.Component {
     state = {
@@ -109,17 +115,45 @@ export class NewReminderDialog extends React.Component {
     }
   }
 
- 
 export class NewMailReminderDialog extends React.Component {
   state = {
-    open: false,
-    type: 'custom',
-    deadline: '',
-    status: 'notok',
-  };
+      open: false,
+      type: 'custom',
+      mailto: [],
+      name: '',
+      content: '',
+      status: 'notok',
+      multi: null,
+    };
+
+    getMailTo() {
+      var self = this;
+      console.log('projectid '+self.props.projectId);
+      axios({
+          method: 'get', //you can set what request you want to be
+          url: apiBaseUrl+'project/'+self.props.projectId+'/users',
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(function (response) {
+            if(response.status === 200){
+              // self.setState({mailto:response.data});
+              
+              console.log(JSON.stringify(response.data));
+              // console.log("Mail to :"+this.state.mailto);
+            }
+          })
+          .catch(function (error) {
+            console.log('issue bro');
+            console.log(error)
+          });
+        }
 
   handleClickOpen = () => {
     this.setState({ open: true });
+    this.getMailTo();
   };
 
   sendMail(reminderId) {
@@ -141,12 +175,25 @@ export class NewMailReminderDialog extends React.Component {
   }
 
   render() {
+    const { classes, theme } = this.props;
+        const selectStyles = {
+        input: base => ({
+            ...base,
+            color: theme.palette.text.primary,
+        }),
+        };
     return (
-      <div>
-        <Button onClick={this.handleClickOpen} color="primary" className='new-button'>
-              <AddIcon /> Send reminder Mail
-        </Button>
+      <React.Fragment>
+        <Tooltip title="Manage mail reminder" interactive>
+          <Button onClick={this.handleClickOpen} className="reminder-button" //reminder-mail-button"*
+                    size="small"
+                    color="primary">
+                    {/* onClick={() => this.sendMail(reminder[0])} */}
+                <EmailIcon/>
+          </Button>
+        </Tooltip>
         <Dialog
+          maxWidth="lg"
           open={this.state.open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
@@ -156,21 +203,42 @@ export class NewMailReminderDialog extends React.Component {
             <DialogContentText>
               These elements are preformatted. You can copy and paste it to send quickly mail to clients
             </DialogContentText>
+            {/* TO ADD : GET MAIL PREFORMATTED WITH CORRESPONDING TYPE */}
+            <Select
+                classes={classes}
+                styles={selectStyles}
+                textFieldProps={{
+                InputLabelProps: {
+                    label: 'Recipients',
+                    shrink: true,
+                },
+                }}
+                options={this.state.users}
+                // components={components}
+                value={this.state.multi}
+                // onChange={this.handleChange('multi')}
+                placeholder="Mail recipients"
+                isMulti
+                classes={classes}
+            />
             <TextField
               autoFocus
               margin="dense"
-              id="type"
-              label="type"
+              id="name"
+              label="Object"
               required
-              onChange = {(event) => this.setState({type:event.target.value})}
+              onChange = {(event) => this.setState(this.state.name:event.target.value)}
               fullWidth
             />
             <TextField
-              type='date'
-              value={this.state.deadline}
-              variant="outlined"
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Body"
               required
-              onChange= {(event) => this.setState({deadline:event.target.value})}
+              multiline
+              rows="15"
+              onChange = {(event) => this.setState(this.state.content:event.target.value)}
               fullWidth
             />
           </DialogContent>
@@ -178,6 +246,7 @@ export class NewMailReminderDialog extends React.Component {
             <Button onClick={() => this.setState({ open: false })} color="primary">
               Cancel
             </Button>
+            <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:quentin.sutkowski@gmail.com,rhys.welsh@rhys.com?subject="+this.state.name+"&body="+this.state.content}}>Mail manager</Button> 
             <Button 
               onClick={this.saveRemind}
               color="primary">
@@ -185,7 +254,7 @@ export class NewMailReminderDialog extends React.Component {
             </Button>
           </DialogActions>
         </Dialog>
-      </div>
+      </React.Fragment>
     );
   }
 

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import StarIcon from '@material-ui/icons/Star';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import EmailIcon from '@material-ui/icons/Email';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Link, NavLink } from 'react-router-dom';
@@ -328,18 +327,12 @@ class Reminder extends Component {
                   <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
               </Button>
             </Tooltip>}
+            
             {reminder[1]=='notok' &&
-            <Tooltip title="Email sender" interactive>
-              <Button
-                  className="reminder-button" //reminder-mail-button"*
-                  size="small"
-                  color="primary"
-                  onClick={() => this.sendMail(reminder[0])}>
-                  <EmailIcon/>
-              </Button>
-            </Tooltip>}
-            <NewMailReminderDialog
-            />
+            <React.Fragment>
+              <NewMailReminderDialog  projectId={this.props.id}/></React.Fragment>
+            }
+            
             <Tooltip title="Add 1 year on reminder date" interactive>
               <Button
                   className="reminder-button" //  reminder-addyear-button"
@@ -408,7 +401,7 @@ class Reminder extends Component {
           <text className='reminder-name'>
               {this.state.name}
           </text>
-          <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:quentin.sutkowski@gmail.com,rhys.welsh@rhys.com?subject=Hi&body=coucou"}}>Test</Button>
+          {/* <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:quentin.sutkowski@gmail.com,rhys.welsh@rhys.com?subject=Hi "+this.state.name+"&body=coucou"}}>Test</Button> */}
           <TextField className='reminder-golive'
               type='date'
               onChange={event => this.setState({goLiveDate:event.target.value})}

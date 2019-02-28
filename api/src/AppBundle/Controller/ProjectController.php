@@ -64,6 +64,16 @@ class ProjectController extends RestServiceController
       return $singleresult;
     }
 
+     /**
+     * @Get("/project/{id}/users")
+     */
+    public function idActionUsers($id)
+    {
+      $singleresult = $this->getDoctrine()->getRepository('AppBundle:Project')->find($id);
+      
+      return $singleresult->getUsers();
+    }
+
     public function postAutoReminder6M(Project $project) {
       //get project, get golive date, calcul date auto 3m and 6m
 
