@@ -15,8 +15,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
-
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 var config = require('./config.json');
 
@@ -34,9 +34,10 @@ class MailsManagement extends Component {
           open: false,
           newName: null,
           newContent: null,
-          newType: null
+          newType: 'custom',
       }
     };
+
     updateMails() {
         var self = this;
         axios({
@@ -56,6 +57,7 @@ class MailsManagement extends Component {
             .catch(function (error) {
             });
     }
+
     componentDidMount() {
         var self = this;
         axios({
@@ -76,7 +78,6 @@ class MailsManagement extends Component {
     }
 
     saveNewMail() {
-        console.log('je suis passé par ici :)');
         var self = this;
         axios({
             method: 'post', //you can set what request you want to be
@@ -94,7 +95,7 @@ class MailsManagement extends Component {
             .then(function (response) {
               if(response.status === 200){
                 self.setState({ open: false });
-                self.updateMailsManagement();
+                self.updateMails();
               }
             })
             .catch(function (error) {
@@ -122,45 +123,50 @@ class MailsManagement extends Component {
                 {button}
                 <Dialog
                     open={this.state.open}
+                    maxWidth="150%"
                     aria-labelledby="form-dialog-title"
                     fullWidth
                 >
                     <DialogTitle id="new-project-dialog-title">New Testimonial</DialogTitle>
                     <DialogContent>
                     <DialogContentText>
-                        To create a new preformatted mail, please fill all fields
+                        To create a new preformatted mail, please fill all fields<br></br>
+                        <small>You can go <a href="https://unicode-table.com/en/sets/" target="_blank">there</a> to pick emots and symbols for you content!</small>
                     </DialogContentText>
+                    <Select
+                        className="type-select"
+                        onChange={(event) => this.setState({newType:event.target.value})}
+                        name="type"
+                        value={this.state.newType}
+                        label="Type"
+                        inputProps={{  
+                            id: "type",
+                        }}
+                        fullWidth
+                    >
+                        <MenuItem value='3m'>3 months to go</MenuItem>
+                        <MenuItem value='6m'>6 months to go</MenuItem>
+                        <MenuItem value='custom' selected>Custom template</MenuItem>
+                    </Select>
                     <TextField
-                        style={{height:'175px'}}
-                        multiline
+                        fullWidth
                         autoFocus
                         margin="dense"
                         id="name"
                         label="Name"
                         required
                         onChange = {(event) => this.setState({newName:event.target.value})}
-                        fullWidth
                     />
                     <TextField
                         margin="dense"
                         id="content"
                         label="Content"
                         required
+                        multiline
+                        rows="15"
                         onChange = {(event) => this.setState({newContent:event.target.value})}
                         fullWidth
                     />
-                    <Select
-                        className="status-select"
-                        onChange={(event) => {this.setState({newType:event.target.value})}}
-                        name="type"
-                        inputProps={{  
-                            id: 'type',
-                        }}
-                        >
-                        <MenuItem value='3m'>3 months to go</MenuItem>
-                        <MenuItem value='6m'>6 months to go</MenuItem>
-                        <MenuItem value='custom'>Custom template</MenuItem>
-                        </Select>
                     </DialogContent>
                     <DialogActions>
                     <Button onClick={() => this.setState({ open: false })} color="primary">
@@ -188,6 +194,7 @@ class MailsManagement extends Component {
             content: props.content,
             name: props.name,
             type: props.type,
+            copied: false,
             openDelete: false
         }
     }
@@ -196,7 +203,7 @@ class MailsManagement extends Component {
         var self = this;
         axios({
             method: 'put', //you can set what request you want to be
-            url: apiBaseUrl+'mailpreformated/'+this.state.id,
+            url: apiBaseUrl+'mailpreformat/'+this.state.id,
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -213,6 +220,7 @@ class MailsManagement extends Component {
               }
             })
             .catch(function (error) {
+              console.log(error.response)
             });
     }
 
@@ -220,7 +228,7 @@ class MailsManagement extends Component {
         var self = this;
         axios({
             method: 'delete', //you can set what request you want to be
-            url: apiBaseUrl+'mailpreformated/'+this.state.id,
+            url: apiBaseUrl+'mailpreformat/'+this.state.id,
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -240,11 +248,12 @@ class MailsManagement extends Component {
         return (
             <Card className='mail-card'>
         <div>
-            <TextField 
+            <TextField
                 disabled
                 defaultValue={this.state.id}
                 label='ID'
             />
+
             <TextField fullWidth
                 onChange={event => this.setState({name:event.target.value})}
                 defaultValue={this.state.name}
@@ -253,22 +262,17 @@ class MailsManagement extends Component {
             <TextField fullWidth
                 onChange={event => this.setState({content:event.target.value})}
                 multiline
+                rows="15"
                 defaultValue={this.state.content}
                 label='Content'
-            />
-            {this.props.isClient && 
-            <div>
-                <Typography>
-                {this.state.content}
-                </Typography>
-                <Typography color="textSecondary">
-                    Name: {this.state.name}
-                </Typography>
-            </div>     
-            }
+            />     
             </div>
-            {!this.props.isClient &&
-            <div className='ticket-buttons'>
+            <div className='mail-buttons'>
+              {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}
+              <CopyToClipboard text={this.state.name+"\n\n"+this.state.content}
+                onCopy={() => this.setState({copied: true})}>
+                <Button variant="outlined">Copy name + content</Button>
+              </CopyToClipboard>
                 <Button 
                     className="save-button"
                     size="small"
@@ -282,6 +286,8 @@ class MailsManagement extends Component {
                     color="secondary" 
                     className='delete-button'>
                     <DeleteIcon /> Delete
+
+                    
                 </Button>
                 <Dialog
                     open={this.state.openDelete}
@@ -306,7 +312,6 @@ class MailsManagement extends Component {
                 </DialogActions>
                 </Dialog>
             </div>
-            }
         </Card>
         );
     }

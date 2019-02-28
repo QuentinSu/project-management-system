@@ -592,7 +592,7 @@ class Companies extends Component {
 
         return (
             <div>
-            <ExpansionPanel hidden={this.props.hidden}>
+            <ExpansionPanel className='company-card' hidden={this.props.hidden}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <CompanySaveNotification 
                         open={this.state.openSaveNotification} 

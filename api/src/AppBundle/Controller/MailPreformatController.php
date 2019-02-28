@@ -71,7 +71,7 @@ class MailPreformatController extends RestServiceController
     public function updateAction($id,Request $request)
     { 
 
-        $mail = $this->getDoctrine()->getRepository('AppBundle:Testimonial')->find($id);
+        $mail = $this->getDoctrine()->getRepository('AppBundle:MailPreformat')->find($id);
         if (empty($mail)) {
             return new View("testimonial not found", Response::HTTP_NOT_FOUND);
         } 
@@ -87,13 +87,13 @@ class MailPreformatController extends RestServiceController
 
         $dbm = $this->getDoctrine()->getManager();
 
-        !empty($content) ? $mail->setDescription($content) : 0;
-        !empty($name) ? $mail->setAuthor($name) : 0;
-        !empty($type) ? $testimonial->setAuthor($type) : null;
+        !empty($content) ? $mail->setContent($content) : 0;
+        !empty($name) ? $mail->setName($name) : 0;
+        !empty($type) ? $mail->setType($type) : null;
 
         $dbm->flush();
 
-        $this->notify('Mail preformatted n°'.$mail->getId().' modified');
+        //$this->notify('Mail preformatted n°'.$mail->getId().' modified');
 
         return new View("Mail preformatted Updated Successfully", Response::HTTP_OK);;
     }
