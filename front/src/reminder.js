@@ -27,7 +27,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {NewReminderDialog, NewMailReminderDialog} from './reminderDialog.js';
+import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
 
 var config = require('./config.json');
 
@@ -330,7 +330,7 @@ class Reminder extends Component {
             
             {reminder[1]=='notok' &&
             <React.Fragment>
-              <NewMailReminderDialog  projectId={this.props.id}/></React.Fragment>
+              <NewMailReminderDialog  projectId={this.props.id} reminderType={reminder[2]}/></React.Fragment>
             }
             
             <Tooltip title="Add 1 year on reminder date" interactive>
@@ -395,35 +395,21 @@ class Reminder extends Component {
                   message={'Reminder saved: ' + this.state.name}
                   handleClose={() => {this.setState({openSaveNotification:false})}}
               /> */}
-      {/* <Card className='company-card' hidden={this.props.hidden}> */}
       <div className='reminder-details'>
           <Avatar className='reminder-avatar' style={{background: "#00984C"}}>{this.state.reminders[0]==='empty' ? 0 : this.state.reminders.length}</Avatar>
           <text className='reminder-name'>
               {this.state.name}
           </text>
-          {/* <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:quentin.sutkowski@gmail.com,rhys.welsh@rhys.com?subject=Hi "+this.state.name+"&body=coucou"}}>Test</Button> */}
           <TextField className='reminder-golive'
               type='date'
               onChange={event => this.setState({goLiveDate:event.target.value})}
               defaultValue={this.state.goLiveDate}
               label='Go Live Date'
           />
-          {/* <Typography color="textSecondary">
-            Status:
-          </Typography>
-          <span>&nbsp;&nbsp;</span>
-          <Typography>
-              {this.state.status}
-          </Typography> */}
         </div>
-        <div className='reminder-list'>  
-        {/* style={{backgroundImage: "url(" + backTimeUrl + ")", background}}> */}
+        <div className='reminder-list'>
           {this.state.reminders[0]!=="empty" && mappedListOfReminders}
 
-          {/* GO LIVE DATE SHOWN ON THE TIMELINE OR NOT ?*/}
-
-          {/* <div className='reminder-element golive-timeline'><i>Go live<span>&nbsp;</span>
-          { this.state.goLiveDate}</i></div> */}
         </div>
         
         <div className='eoy-list'>
@@ -563,8 +549,7 @@ class Reminders extends Component {
                                 <div>
                                   <b><h4>Advanced function</h4></b>
                                   <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
-                                  _
-                                  <Button className="button-advanced-reminder" variant="contained" onClick={() =>null} fullWidth>Manage preformatted mail</Button>
+                                  {/* Insert here other advanced function buttons */}
                                 </div>
                                 {legendText}
                               </div>

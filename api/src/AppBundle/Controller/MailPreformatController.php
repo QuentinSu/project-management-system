@@ -43,6 +43,18 @@ class MailPreformatController extends RestServiceController
     }
 
     /**
+     * @Get("/mailpreformat/{type}")
+     * 
+     */
+    public function getActionForType($type)
+    {
+        if(!$type) {
+            $type = 'custom';
+        }
+        return $this->getDoctrine()->getRepository('AppBundle:MailPreformat')->findBy(array('type'=>($type)));
+    }
+
+    /**
      * @Post("/mailpreformat")
      */
     public function postAction(Request $request)

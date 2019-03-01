@@ -47,7 +47,7 @@ class CommandMail extends ContainerAwareCommand
         $this->swiftMailerService = $swiftMailerService;
     }
 
-    public function getAction() {
+    public function getRemindersOfTheDay() {
 
         $reminders = [];
         $projects = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Project')->findAll();
@@ -110,7 +110,8 @@ class CommandMail extends ContainerAwareCommand
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $allreminder = $this->getAction();
+        //call getRemindersOfTheDay
+        $allreminder = $this->getRemindersOfTheDay();
         $message = (new \Swift_Message('Reminder of the day '.date("d.m")))
                     ->setFrom('crm.rhyswelsh@gmail.com')
                     ->setTo('quentin.sutkowski@gmail.com')

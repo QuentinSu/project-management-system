@@ -222,6 +222,7 @@ class NewCompanyUserLinkDialog extends React.Component {
           [name]: value,
         });
         this.forceUpdate();
+        console.log(this.state.mailto);
     };
 
     saveLink = () => {
@@ -283,7 +284,7 @@ class NewCompanyUserLinkDialog extends React.Component {
                         autoFocus
                         onChange={this.handleChange('multi')}
                         placeholder="Select users"
-                        isMulti
+                        ismulti
                         classes={classes}
                     />
                 </div>

@@ -159,6 +159,21 @@
 	/* max-width:25%; */
 	display:inline-block;
 	margin-bottom: 10px;
+	border-radius: 4px;
+
+}
+
+.template-mail-selector {
+	position:absolute;
+	
+	width:20%;
+	margin-top:0px;
+	right:0px;
+}
+
+.reminder-element:hover {
+	box-shadow: 0 7px 9px rgba(0,0,0,0.25), 0 4px 4px rgba(0,0,0,0.22)
+	/* background: #d9d9d9 */
 }
 
 .golive-timeline {
@@ -669,6 +684,8 @@
 .mail-card:hover, .company-card:hover, .testimonial-card:hover, .reminder-card:hover {
     box-shadow: 0 14px 18px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)
 }
+
+.recipients-label {padding:0 0 0 0;}
 
 .user-frame {
 	color: white;
