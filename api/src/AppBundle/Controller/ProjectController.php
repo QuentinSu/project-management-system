@@ -204,9 +204,11 @@ class ProjectController extends RestServiceController
       foreach ($reminders as $row) {
         if($row->getType()==='3m') {
           $row->setDeadline($threeMToGo);
+          $row->setStatus('notok'); //reminders updated so new validation mandatory
         }
         if($row->getType()==='6m') {
           $row->setDeadline($sixMToGo);
+          $row->setStatus('notok'); //reminders updated so new validation mandatory
         }
       }
 

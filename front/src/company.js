@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import RemoveIcon from '@material-ui/icons/Remove';
 import axios from 'axios';
+import purple from '@material-ui/core/colors/purple';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import Chip from '@material-ui/core/Chip';
@@ -38,6 +39,20 @@ var config = require('./config.json');
 var nbClients;
 var once = false;
 const apiBaseUrl = config.apiBaseUrl;
+
+const styles = theme => ({
+    colorSwitchBase: {
+      color: purple[500],
+      '&$colorChecked': {
+        color: purple[500],
+        '& + $colorBar': {
+          backgroundColor: purple[500],
+        },
+      },
+    },
+    colorBar: {},
+    colorChecked: {},
+});
 //const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } });
 
 var today = new Date();
@@ -266,7 +281,6 @@ class Companies extends Component {
         if (!localStorage.getItem('isAdvanced')) {
             window.location.href = '/admin'
         }
-
         let mappedCompanies = this.state.companies.map((company)=>{
           return <Company   key={company.id}
                             id={company.id}
@@ -295,7 +309,7 @@ class Companies extends Component {
             onChange={event =>this.filterCompanies(event.target.value)}
         />
         <Paper color="primary" className='company-stats' square={false}>
-            <Typography className='company-stats-nb'>You have <b>{nbClients}</b> clients <i>with this filter</i></Typography>
+            <Typography className='company-stats-nb'>You have <b>{nbClients}</b> clients</Typography>
         </Paper>
          <FormControlLabel 
                     className="company-active-filter"
@@ -567,7 +581,9 @@ class Companies extends Component {
     render() {
         //var dateCreation = new Date(this.state.dateCreation);
         //var parsedCreation = dateCreation.toLocaleString('en-GB', { timeZone: 'UTC' });
-        
+        const classes = this.props;
+
+
        var logoUrl = this.state.name.replace(/\s/g,'');
 
        let mappedUsers = this.state.users.map((user)=>{
@@ -582,13 +598,14 @@ class Companies extends Component {
 
         //Live from management
         var dateDifference = dateDiff(this.state.creation);
-        var liveFrom = dateDifference[0]>0 ? dateDifference[0]+' years ' : '';
-        liveFrom += dateDifference[1]>0 ? dateDifference[1]+' months ' : '';
-        liveFrom += liveFrom!=='' ? '' : 'New !';
-
-        if(liveFrom!=='New !') {
-            liveFrom = 'Live from '+liveFrom;
+        var liveFrom = dateDifference[0]>0 ? dateDifference[0]+" years " : "0 year ";
+        if(dateDifference[1]>0) {
+            liveFrom += dateDifference[1]+" months ";
+        } else {
+            liveFrom += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
         }
+
+        liveFrom = liveFrom + " old";
 
         return (
             <div>
@@ -641,13 +658,16 @@ class Companies extends Component {
                 />
             </div>
             <div className='company-actions'>
-
                 <FormControlLabel 
                     className="company-active-switch"
                     control={<Switch checked={this.state.status}
+                            classes={{
+                                switchBase: classes.colorSwitchBase,
+                                checked: classes.colorChecked,
+                                bar: classes.colorBar,
+                            }}
                             onChange = {(event) => this.setState({status:!this.state.status})} />} 
                     label="Active" />
-                
                 <Chip className='company-live' label={liveFrom} />
                 
                 <Button 
@@ -655,7 +675,7 @@ class Companies extends Component {
                     size="small"
                     color="primary" 
                     onClick={() => this.saveCompany()}>
-                    <SaveIcon/> Save
+                    <SaveIcon/> Save changes
                 </Button>
                 <Button 
                     onClick={() => this.setState({ openDelete: true })} 

@@ -57,7 +57,7 @@ class Login extends Component {
       this.checkLogs(null);
     }
     return (
-      <div className={advanced && "mainlog"}>
+      <div className={advanced ? "mainlog" : ""}>
       <Dialog open={this.state.open}>
         <DialogTitle>{!previousSession && <p>Invalid credentials</p>}{previousSession && <p>Already log in. Work in progress.</p>}</DialogTitle>
         {!previousSession &&
@@ -80,7 +80,7 @@ class Login extends Component {
       </Button>
       <Card className='login-form'>
         <CardMedia title="Rhys Welsh Logo" className="logo-login">
-          <img src={process.env.PUBLIC_URL + '/rw.png'}/>
+          <img alt='rhysw_logo' src={process.env.PUBLIC_URL + '/rw.png'}/>
         </CardMedia>
         <CardContent>
           <TextField

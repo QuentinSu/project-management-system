@@ -56,23 +56,23 @@ class Reminder extends Component {
       }
     }
 
-    forceValidation(cardObject, reminder, projectId) {
+    changeStatus(cardObject, reminder, projectId, targetStatus) {
       var self = cardObject['cardObject'];
       axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'reminder/'+reminder["reminder"][0],
-            data: {projectId:projectId["projectId"], status:'ok', type:reminder["reminder"][2], deadline:reminder["reminder"][3]},
+            data: {projectId:projectId["projectId"], status:targetStatus, type:reminder["reminder"][2], deadline:reminder["reminder"][3]},
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
             }
           }).then(function (response) {
               if(response.status === 200){
-                reminder["reminder"][1]='ok';
+                reminder["reminder"][1]=targetStatus;
                 cardObject['cardObject'].forceUpdate();
               }
           }).catch(function (error) {
-            console.log('error on forcing reminder validation');
+            console.log('error on forcing reminder change status');
         });
       self.forceUpdate();
     }
@@ -288,7 +288,7 @@ class Reminder extends Component {
       let projectId = this.state.id;
       //sort by date
       let mappedListOfReminders = this.state.reminders.sort((a, b) => a[3] > b[3]).map((reminder)=>{
-
+        console.log(reminder[3].getFullYear());
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
         }
@@ -327,7 +327,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.forceValidation({cardObject}, {reminder}, {projectId})}}>
+                  onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.changeStatus({cardObject}, {reminder}, {projectId}, 'ok')}}>
                   <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
               </Button>
             </Tooltip>}
@@ -337,7 +337,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to cancel validation of this reminder?')) this.forceValidation({cardObject}, {reminder}, {projectId})}}>
+                  onClick={() => { if (window.confirm('Are you sure you wish to cancel validation of this reminder?')) this.changeStatus({cardObject}, {reminder}, {projectId}, 'notok')}}>
                   <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>
               </Button>
             </Tooltip>}
@@ -346,13 +346,12 @@ class Reminder extends Component {
             <React.Fragment>
               <NewMailReminderDialog  projectId={this.props.id} reminderType={reminder[2]}/></React.Fragment>
             }
-            
             <Tooltip title="Add 1 year on reminder date" interactive>
               <Button
                   className="reminder-button" //  reminder-addyear-button"
                   size="small"
                   color="primary"
-                  // onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+                  onClick={() => this.setState(reminder[3])}>
                   >
                   <AddIcon/><small>1y</small>
               </Button>
@@ -441,7 +440,7 @@ class Reminder extends Component {
               size="small"
               color="primary"
               onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
-              <SaveIcon/> Save GoLive & Custom
+              <SaveIcon/> Save changes
           </Button>
         </div>
       </Card>
