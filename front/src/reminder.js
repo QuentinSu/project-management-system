@@ -16,6 +16,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
+import HighlightOff from '@material-ui/icons/HighlightOff'
 import List from '@material-ui/core/List';
 import { withStyles } from 'material-ui/styles';
 import PropTypes from 'prop-types';
@@ -300,19 +301,22 @@ class Reminder extends Component {
               {(remindValid || !shown) && reminder[2]}
               {autoRemind && reminder[2]=='3m' && '3 Months to Go'}
               {autoRemind && reminder[2]=='6m' && '6 Months to Go'}
-                <TextField disabled={shown}
-                    className='reminder-element-theme'
-                    type='date'
-                    style={{
-                      background: cololor,
-                    }}
-                    defaultValue={reminder[3]}
-                    InputProps={{
-                      className: classes.textField,
-                    }}
-                    onChange={(event) => (reminder[3]=event.target.value)}
-                    variant="outlined"  
-                />
+              <b>
+                  <TextField required='required' 
+                      disabled={shown}
+                      className='reminder-element-theme'
+                      type='date'
+                      style={{
+                        background: cololor,
+                      }}
+                      defaultValue={reminder[3]}
+                      InputProps={{
+                        className: classes.textField,
+                      }}
+                      onChange={(event) => (reminder[3]=event.target.value)}
+                      variant="outlined"
+                  />
+              </b>
             </MuiThemeProvider>
             <span>&nbsp;&nbsp;</span>
             <img className='timeline-reminders' src={process.env.PUBLIC_URL + '/time.png'}></img>
@@ -325,6 +329,16 @@ class Reminder extends Component {
                   color="primary"
                   onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.forceValidation({cardObject}, {reminder}, {projectId})}}>
                   <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
+              </Button>
+            </Tooltip>}
+            {reminder[1]=='ok' &&
+            <Tooltip title="Unvalidate reminder" interactive>
+              <Button
+                  className="reminder-button"
+                  size="small"
+                  color="primary"
+                  onClick={() => { if (window.confirm('Are you sure you wish to cancel validation of this reminder?')) this.forceValidation({cardObject}, {reminder}, {projectId})}}>
+                  <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>
               </Button>
             </Tooltip>}
             

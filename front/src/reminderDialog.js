@@ -173,7 +173,8 @@ class NewMailReminderDialog extends React.Component {
       mailto: [],
       name: '',
       template: [],
-      content: '',
+      // content: '',
+      selectedTemplate: '-1',
       status: 'notok',
     };
 
@@ -238,13 +239,20 @@ class NewMailReminderDialog extends React.Component {
   }
 
   templateUpdate(valueSelected) {
-    console.log(valueSelected);
+    console.log('update');
     var templateActive = this.state.template;
-    var nameTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).name;
-    var contentTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).content;
+    if(templateActive) {
+      var nameTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).name;
+      var contentTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).content;
 
-    this.setState({name:nameTemplate});
-    this.setState({content:contentTemplate});
+      this.setState({name: nameTemplate});
+      this.setState({content: contentTemplate});
+      this.setState({selectedTemplate:valueSelected});
+
+      this.forceUpdate();
+    } else {
+      console.log('unable to update the template');
+    }
   }
 
   handleClickOpen = () => {
@@ -275,7 +283,7 @@ class NewMailReminderDialog extends React.Component {
     });
 
     let mappedMenuItem = this.state.template.map((templateItem)=>{
-      console.log(templateItem.id);
+      // console.log(templateItem.id);
       return (
         <MenuItem tabIndex={templateItem.id} value={templateItem.id} >{templateItem.name}</MenuItem>
       )
@@ -310,7 +318,8 @@ class NewMailReminderDialog extends React.Component {
                   autoFocus
                   fullWidth
                   options={this.state.template}
-                  value='-1'
+                  value={this.state.selectedTemplate}
+                  defaultValue='-1'
                   onChange={(event) => {this.templateUpdate(event.target.value)}}
                   name="template"
                   inputProps={{
@@ -330,6 +339,7 @@ class NewMailReminderDialog extends React.Component {
               margin="dense"
               id="name"
               label="Object"
+              value={this.state.name}
               onChange = {(event) => this.setState({name:event.target.value})}
               fullWidth
             />
@@ -339,6 +349,7 @@ class NewMailReminderDialog extends React.Component {
               label="Body"
               multiline
               rows="15"
+              value={this.state.content}
               onChange = {(event) => this.setState({content:event.target.value})}
               fullWidth
             />
@@ -347,11 +358,11 @@ class NewMailReminderDialog extends React.Component {
             <Button onClick={() => this.setState({ open: false })} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body="+this.state.content}}>Open Mail manager</Button> 
+            <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body=<html>"+this.state.content+"</html>"}}>Open Mail manager</Button> 
             <Button 
               onClick={this.saveRemind}
               color="primary">
-              Validate Reminder
+              Mark reminder as Sent
             </Button>
           </DialogActions>
         </Dialog>
