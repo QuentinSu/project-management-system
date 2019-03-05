@@ -228,7 +228,6 @@ class NewMailReminderDialog extends React.Component {
                 name: templateItem.name,
                 content: templateItem.content,
             }));
-            console.log('plop');
             self.setState({template:newTemplateItems});
             // console.log("Mail to :"+this.state.mailto);
             }
@@ -249,7 +248,6 @@ class NewMailReminderDialog extends React.Component {
       this.setState({content: contentTemplate});
       this.setState({selectedTemplate:valueSelected});
 
-      this.forceUpdate();
     } else {
       console.log('unable to update the template');
     }
@@ -288,7 +286,6 @@ class NewMailReminderDialog extends React.Component {
         <MenuItem tabIndex={templateItem.id} value={templateItem.id} >{templateItem.name}</MenuItem>
       )
     });
-    console.log('TEMPLATE'+JSON.stringify(this.state.template));
     return (
       <React.Fragment>
         <Tooltip title="Manage mail reminder" interactive>

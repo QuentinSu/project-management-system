@@ -56,8 +56,8 @@ class Reminder extends Component {
       }
     }
 
-    changeStatus(cardObject, reminder, projectId, targetStatus) {
-      var self = cardObject['cardObject'];
+    changeStatus(reminder, projectId, targetStatus) {
+      var self = this;
       axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'reminder/'+reminder["reminder"][0],
@@ -69,12 +69,11 @@ class Reminder extends Component {
           }).then(function (response) {
               if(response.status === 200){
                 reminder["reminder"][1]=targetStatus;
-                cardObject['cardObject'].forceUpdate();
+                self.forceUpdate();
               }
           }).catch(function (error) {
             console.log('error on forcing reminder change status');
         });
-      self.forceUpdate();
     }
 
     colorReminder(nameCard, reminder) {
@@ -131,14 +130,20 @@ class Reminder extends Component {
       })
           .then(function (response) {
             if(response.status === 200){
+              console.log(response.data.reminders);
               //this.setState({reminders: response.data.reminders});
-              callback(response.data.reminders);
-              // this.forceUpdate();
+              callback(response.data.reminders)
+              //this.forceUpdate();
             }
       })
           .catch(function (error) {
+            console.log('bug dans la matrice');
       });
       //this.props.handleRemindersChange();
+  }
+
+  handleDateChangeRaw = (e) => {
+    e.preventDefault();
   }
 
   deleteReminder(cardObject, reminder) {
@@ -152,15 +157,15 @@ class Reminder extends Component {
           }
         }).then(function (response) {
             if(response.status === 200){
+              this.handleReminderChange('deleteReminder', null);
               cardObject['cardObject'].forceUpdate();
             }
         }).catch(function (error) {
           console.log('error on delete reminder');
       });
-    self.forceUpdate();
   }
 
-    saveReminder(projectid, reminders, golive) {
+    saveReminder(projectid, remindersTab, golive) {
       // project element update : golive (so reminder 3m and 6m date too)
       var self = this;
       axios({
@@ -173,14 +178,13 @@ class Reminder extends Component {
           }
       }).then(function (response) {
           if(response.status === 200){
-              this.forceUpdate();
               self.props.handleProjectsChange();
           }
       }).catch(function (error) {
       });
 
       //custom reminder update/add
-      reminders.forEach(function(remind) {
+      remindersTab.forEach(function(remind) {
         if(remind[2]!="3m" && remind[2]!="6m") {
           axios({
             method: 'put', //you can set what request you want to be
@@ -196,99 +200,59 @@ class Reminder extends Component {
           }).then(function (response) {
               if(response.status === 200){
                 this.setState({openSaveNotification: true});
+                // this.handleReminderChange();
               }
           }).catch(function (error) {
           });
         }
       });
-      this.props.handleRemindersChange();
-      self.forceUpdate();
+      // self.forceUpdate();
+      this.setState({reminders:remindersTab});
+      this.forceUpdate();
+
     }
 
-    // countReminderState(id, name, reminders) {
-    //   if(reminders[0]!=='empty') {
-    //       var cardReminderStateEntete = new Array();
-    //       cardReminderStateEntete[0] = id;
-    //       cardReminderStateEntete[1] = name;
 
-    //       var cardReminderLateState = new Array();
-    //       cardReminderLateState.push('late');
-    //       var cardReminderValidatedState = new Array();
-    //       cardReminderValidatedState.push('validated');
-    //       var cardReminderSoonState = new Array();
-    //       cardReminderSoonState.push('soon');
-    //       var cardReminderActiveState = new Array();
-    //       cardReminderActiveState.push('active');
+    formatDateAddOneYear(dateString, reminder) {
+      var d = new Date(dateString),
+          month = '' + (d.getMonth()+1), //january is 0
+          day = '' + d.getDate(),
+          year = d.getFullYear()+1;
 
-    //       cardReminderLateState = cardReminderStateEntete.concat(cardReminderLateState);
-    //       cardReminderValidatedState = cardReminderStateEntete.concat(cardReminderValidatedState);
-    //       cardReminderSoonState =  cardReminderStateEntete.concat(cardReminderSoonState);
-    //       cardReminderActiveState =  cardReminderStateEntete.concat(cardReminderActiveState);
+          console.log(d);
+  
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      console.log([year, month, day].join('-'));
+      return [year, month, day].join('-');
+      //this.props.handleRemindersChange();
+      // return [year, month, day].join('-');
+    }
 
-    //       var cardReminderLateNb = 0;
-    //       var cardReminderValidatedNb = 0;
-    //       var cardReminderSoonNb = 0;
-    //       var cardReminderActiveNb = 0;
-
-    //       for(var i=0; i<reminders.length; i++) {
-    //         switch (reminders[i][4]) {
-    //           case 'late':
-    //             cardReminderLateNb++;
-    //             break;
-    //           case 'validated':
-    //             cardReminderValidatedNb++;
-    //             break;
-    //           case 'soon':
-    //             cardReminderSoonNb++;
-    //             break;
-    //           case 'active':
-    //             cardReminderActiveNb++;
-    //             break;
-    //         }
-    //       }
-    //       cardReminderLateState.push(cardReminderLateNb);
-    //       cardReminderValidatedState.push(cardReminderValidatedNb);
-    //       cardReminderSoonState.push(cardReminderSoonNb);
-    //       cardReminderActiveState.push(cardReminderActiveNb);
-          
-    //       cardReminderLateNb!==0 ? remindersState.push(cardReminderLateState) : null;
-    //       cardReminderValidatedNb!==0 ? remindersState.push(cardReminderValidatedState) : null;
-    //       cardReminderSoonNb!==0 ? remindersState.push(cardReminderSoonState) : null;
-    //       cardReminderActiveNb!==0 ? remindersState.push(cardReminderActiveState) : null;
-    //   }
-    // }
-
-    // remindersStats() {
-    //   reminderStatLate = 0;
-    //   reminderStatActive = 0;
-    //   reminderStatSoon = 0;
-    //   reminderStatValidated = 0;
-    //   remindersState.forEach(function(remind) {
-    //     switch (remind[2]) { 
-    //       case 'late':
-    //         reminderStatLate++;
-    //         break;
-    //       case 'active':
-    //         reminderStatActive++;
-    //         break;
-    //       case 'soon':
-    //         reminderStatSoon++;
-    //         break;
-    //       case 'validated':
-    //         reminderStatValidated++;
-    //         break;
-    //     }
-    //   });
-    // }
+    modifyDate (reminder, value) {
+      let tmpTabReminders = Object.create(this.state.reminders);
+      let wait = true;
+      //console.log(JSON.stringify(tmpTabReminders));
+      //tmpTabReminders.reminder[3] = value;
+      // setTimeout(function() { //Start the timer
+      //   wait=false; //After 3 second, stop waiting
+      // }.bind(this), 3000);
+      //if(!wait) {
+        this.setState({reminders:tmpTabReminders});
+      //}
+      /*le pb cest que dans reminders j'ai plein de reminder eux meme qui sont des tableaux*/ 
+      //oui value c'est la date d'un des reminder (un des reminder//[3] oui mais cdans la fonction je sais pas de quel reminder ça vient )
+    }
 
     render() {
       const classes = this.props;
       let nameCard = this.state.name;
       let cardObject = this;
       let projectId = this.state.id;
+      let myTab = [...this.state.reminders];
       //sort by date
-      let mappedListOfReminders = this.state.reminders.sort((a, b) => a[3] > b[3]).map((reminder)=>{
-        console.log(reminder[3].getFullYear());
+      let mappedListOfReminders = myTab.sort((a, b) => a[3] > b[3]).map((reminder)=>{
+      //let mappedListOfReminders = myTab.map((reminder)=>{
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
         }
@@ -302,18 +266,21 @@ class Reminder extends Component {
               {autoRemind && reminder[2]=='3m' && '3 Months to Go'}
               {autoRemind && reminder[2]=='6m' && '6 Months to Go'}
               <b>
-                  <TextField required='required' 
+                  <TextField
                       disabled={shown}
                       className='reminder-element-theme'
                       type='date'
                       style={{
                         background: cololor,
                       }}
-                      defaultValue={reminder[3]}
+                      value={reminder[3]}
+                      required={true}
                       InputProps={{
                         className: classes.textField,
                       }}
-                      onChange={(event) => (reminder[3]=event.target.value)}
+                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value)} }
+                      onChangeRaw={this.handleDateChangeRaw}
+                      /* ok je teste */
                       variant="outlined"
                   />
               </b>
@@ -327,7 +294,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.changeStatus({cardObject}, {reminder}, {projectId}, 'ok')}}>
+                  onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) {this.changeStatus({reminder}, {projectId}, 'ok'); this.setState({reminders:myTab}); this.forceUpdate()}}}>
                   <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
               </Button>
             </Tooltip>}
@@ -337,7 +304,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to cancel validation of this reminder?')) this.changeStatus({cardObject}, {reminder}, {projectId}, 'notok')}}>
+                  onClick={() => { if (window.confirm('Are you sure you wish to cancel validation of this reminder?')) this.changeStatus({reminder}, {projectId}, 'notok')}}>
                   <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>
               </Button>
             </Tooltip>}
@@ -346,16 +313,16 @@ class Reminder extends Component {
             <React.Fragment>
               <NewMailReminderDialog  projectId={this.props.id} reminderType={reminder[2]}/></React.Fragment>
             }
+            {!autoRemind &&
             <Tooltip title="Add 1 year on reminder date" interactive>
               <Button
                   className="reminder-button" //  reminder-addyear-button"
                   size="small"
                   color="primary"
-                  onClick={() => this.setState(reminder[3])}>
-                  >
+                  onClick={(event) => {reminder[3]=this.formatDateAddOneYear(reminder[3], reminder); this.setState({reminders:myTab})}}>
                   <AddIcon/><small>1y</small>
               </Button>
-            </Tooltip>
+            </Tooltip>}
             {!autoRemind &&
             <Tooltip title="Delete custom reminder" interactive>
               <Button
@@ -371,6 +338,7 @@ class Reminder extends Component {
           </div>
         )
     })
+
     let mappedEoys = this.state.eoys.sort((a, b) => a[1] > b[1]).map((eoy)=>{
       if(eoy != 'noCompaniesLinked') {
         return (
@@ -439,7 +407,7 @@ class Reminder extends Component {
           <Button
               size="small"
               color="primary"
-              onClick={() => this.saveReminder(this.state.id, this.state.reminders, this.state.goLiveDate)}>
+              onClick={() => this.saveReminder(this.state.id, myTab, this.state.goLiveDate)}>
               <SaveIcon/> Save changes
           </Button>
         </div>
@@ -473,12 +441,11 @@ class Reminders extends Component {
             .then(function (response) {
               if(response.status === 200){
                 self.setState({reminders:response.data});
-                this.forceUpdate();
+                self.forceUpdate();
               }
             })
             .catch(function (error) {
-              console.log('tu es un dieu');
-              console.log(error.response);
+              console.log(error);
             });
             return 'blup';
     }

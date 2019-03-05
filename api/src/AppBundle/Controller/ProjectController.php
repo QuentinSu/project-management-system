@@ -202,13 +202,18 @@ class ProjectController extends RestServiceController
       $sixMToGo=date("Y-m-d", strtotime($goLiveDate. '-6 month'));
       $reminders = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($id)));
       foreach ($reminders as $row) {
+        $previousDate = $row->getDeadline();
         if($row->getType()==='3m') {
           $row->setDeadline($threeMToGo);
-          $row->setStatus('notok'); //reminders updated so new validation mandatory
+          if ($previousDate !== $threeMToGo) {
+            $row->setStatus('notok'); //reminders updated so new validation mandatory
+          }
         }
         if($row->getType()==='6m') {
           $row->setDeadline($sixMToGo);
-          $row->setStatus('notok'); //reminders updated so new validation mandatory
+          if ($previousDate !== $sixMToGo) {
+            $row->setStatus('notok'); //reminders updated so new validation mandatory
+          }
         }
       }
 
