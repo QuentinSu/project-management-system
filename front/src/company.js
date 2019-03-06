@@ -235,6 +235,7 @@ class Companies extends Component {
                     company.hidden = true;  
                 }
             }
+            /** STATS CONTROL */
             //si a la base l'item etait caché
             if(initialState) {
                 // s'il y a eu un changement l'item est apparru donc on incremente
@@ -311,11 +312,11 @@ class Companies extends Component {
         <Paper color="primary" className='company-stats' square={false}>
             <Typography className='company-stats-nb'>You have <b>{nbClients}</b> clients</Typography>
         </Paper>
-         <FormControlLabel 
+         {/* <FormControlLabel 
                     className="company-active-filter"
                     control={<Switch checked={this.state.checked} defaultChecked={true} onChange={this.onChange} onClick={event => this.filterInactiveCompanies(event.target.checked)}
                              />} 
-                    label="Show inactive" />
+                    label="Show inactive" /> */}
         </div>
         <br></br>
         </div>

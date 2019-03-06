@@ -42,6 +42,158 @@ var reminderStatActive;
 var stats = "";
 var firstRender=true;
 
+
+// CLASS TO RENDER ALL THE REMINDERS CARD
+
+class Reminders extends Component {
+  constructor(props){
+    super(props);
+    this.state={
+        remindersCard: [],
+        trigger: true
+    }
+  };
+
+  handleRemindersChange() {
+      var self = this;
+      axios({
+          method: 'get', //you can set what request you want to be
+          url: apiBaseUrl+'reminder',
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(function (response) {
+            if(response.status === 200){
+              self.setState({remindersCard:response.data});
+              self.forceUpdate();
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+          return 'blup';
+  }
+
+  componentDidMount() {
+      var self = this;
+      axios({
+          method: 'get', //you can set what request you want to be
+          url: apiBaseUrl+'reminder',
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(function (response) {
+            if(response.status === 200){
+              self.setState({remindersCard:response.data});
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+  }
+
+  filterReminders(label) {
+      let newReminders = this.state.remindersCard.slice();
+      
+      console.log(newReminders);
+      newReminders.map((reminder)=>{
+        //mandatory because of the first passage here
+        if(reminder.hidden == undefined) {
+          reminder.hidden = false;
+        }
+        console.log(reminder.name);
+        console.log(label);
+          if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
+              reminder.hidden = false;
+          } else {
+              reminder.hidden = true;
+          }
+      });
+      this.setState({remindersCard: newReminders}); 
+  }
+
+  forceRegenAutoReminders() {
+    var self = this;
+      axios({
+          method: 'put', //you can set what request you want to be
+          url: apiBaseUrl+'reminder/autoregen',
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('session'),
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(function (response) {
+            if(response.status === 200){
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+  }
+
+  render(){
+      // var test = this.getDetailledReminder();
+      let mappedReminders = this.state.remindersCard.map((reminder)=>{
+        return <Reminder   key={reminder.id}
+                          eoys={reminder.eoys}
+                          reminders={reminder.reminders}
+                          id={reminder.id}
+                          name={reminder.name}
+                          status={reminder.status}
+                          goLiveDate={reminder.go_live_date}
+                          hidden={reminder.hidden ? reminder.hidden : false}
+                          handleRemindersChange={this.handleRemindersChange.bind(this)}
+              />     
+      })
+
+
+      var legendText = <div><br/>
+                        <b><h4>Legend</h4></b>
+                        <Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Validated<br/>
+                        <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Late<br/>
+                        <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days)<br/>
+                        <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Active<br/>
+                      </div>
+
+      var advancedFunction = <div>
+                              <div>
+                                <b><h4>Advanced function</h4></b>
+                                <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
+                                {/* Insert here other advanced function buttons */}
+                              </div>
+                              {legendText}
+                            </div>
+
+
+      return(
+          <div>
+              <div className='project-header'>
+                  <input
+                      placeholder="Search (e.g: name, special reminder, date)"
+                      handleRemindersChange={this.handleRemindersChange.bind(this)}
+                      onChange={event => this.filterReminders(event.target.value)}
+                  />
+              </div>
+              <div>
+                <div className='reminder-legend'>
+                <Tooltip title={advancedFunction} interactive>
+                  <Paper square={false}>Advanced functions & Legend</Paper>
+                </Tooltip>
+                </div>
+              </div>
+              <br/><p></p>
+              {mappedReminders}
+          </div>
+      );
+  }
+}
+
+export default Reminders;
+
 class Reminder extends Component {
     constructor(props){
       super(props);
@@ -53,7 +205,6 @@ class Reminder extends Component {
           eoys: props.eoys,
           status: props.status,
           openSaveNotification: false,
-          hidden: false
       }
     }
 
@@ -360,8 +511,8 @@ class Reminder extends Component {
     var backTimeUrl= process.env.PUBLIC_URL + "/time.png";
     
     return (
-      <div>
-      <Card className="reminder-card" hidden={this.props.hidden}>
+      <div hidden={this.props.hidden}> 
+      <Card className="reminder-card">
       {/* <ReminderSaveNotification 
                   open={this.state.openSaveNotification} 
                   message={'Reminder saved: ' + this.state.name}
@@ -408,144 +559,3 @@ class Reminder extends Component {
       );
     }
 }
-
-// CLASS TO RENDER ALL THE PROJECTS
-
-class Reminders extends Component {
-    constructor(props){
-      super(props);
-      this.state={
-          reminders: [],
-          trigger: true
-      }
-    };
-    handleRemindersChange() {
-        var self = this;
-        axios({
-            method: 'get', //you can set what request you want to be
-            url: apiBaseUrl+'reminder',
-            headers: {
-              Authorization: 'Bearer ' + localStorage.getItem('session'),
-              'Content-Type': 'application/json; charset=utf-8'
-            }
-          })
-            .then(function (response) {
-              if(response.status === 200){
-                self.setState({reminders:response.data});
-                self.forceUpdate();
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-            return 'blup';
-    }
-
-    componentDidMount() {
-        var self = this;
-        axios({
-            method: 'get', //you can set what request you want to be
-            url: apiBaseUrl+'reminder',
-            headers: {
-              Authorization: 'Bearer ' + localStorage.getItem('session'),
-              'Content-Type': 'application/json; charset=utf-8'
-            }
-          })
-            .then(function (response) {
-              if(response.status === 200){
-                self.setState({reminders:response.data});
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-    }
-
-    filterReminders(label) {
-        let newReminders = this.state.reminders.slice();
-        newReminders.map((reminder)=>{
-            if (reminder.name.toUpperCase().includes(label.toUpperCase()) || reminder.type.toUpperCase().includes(label.toUpperCase())) {
-                reminder.hidden = false;
-            } else {
-                reminder.hidden = true;
-            }
-        })
-        this.setState({reminders: newReminders}); 
-    }
-
-    forceRegenAutoReminders() {
-      var self = this;
-        axios({
-            method: 'put', //you can set what request you want to be
-            url: apiBaseUrl+'reminder/autoregen',
-            headers: {
-              Authorization: 'Bearer ' + localStorage.getItem('session'),
-              'Content-Type': 'application/json; charset=utf-8'
-            }
-          })
-            .then(function (response) {
-              if(response.status === 200){
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-    }
-
-    render(){
-        // var test = this.getDetailledReminder();
-        let mappedReminders = this.state.reminders.map((reminder)=>{
-          return <Reminder   key={reminder.id}
-                            eoys={reminder.eoys}
-                            reminders={reminder.reminders}
-                            id={reminder.id}
-                            name={reminder.name}
-                            status={reminder.status}
-                            goLiveDate={reminder.go_live_date}
-                            hidden={reminder.hidden ? reminder.hidden : false}
-                            handleRemindersChange={this.handleRemindersChange.bind(this)}
-                />     
-        })
-
-
-        var legendText = <div><br/>
-                          <b><h4>Legend</h4></b>
-                          <Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Validated<br/>
-                          <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Late<br/>
-                          <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days)<br/>
-                          <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Active<br/>
-                        </div>
-
-        var advancedFunction = <div>
-                                <div>
-                                  <b><h4>Advanced function</h4></b>
-                                  <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
-                                  {/* Insert here other advanced function buttons */}
-                                </div>
-                                {legendText}
-                              </div>
-
-
-        return(
-            <div>
-                <div className='project-header'>
-                    <input
-                        placeholder="Search (e.g: name, special reminder, date)"
-                        onChange={event => this.filterReminders(event.target.value)}
-                    />
-                </div>
-                <div>
-                  <div className='reminder-legend'>
-                  <Tooltip title={advancedFunction} interactive>
-                    <Paper square={false}>Advanced functions & Legend</Paper>
-                  </Tooltip>
-                  </div>
-                </div>
-                <br/><p></p>
-                {mappedReminders}
-            </div>
-        );
-    }
-  }
-
-  export default Reminders;
