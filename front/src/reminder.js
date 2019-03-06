@@ -110,6 +110,7 @@ class Reminders extends Component {
           if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
               reminder.hidden = false;
           } else {
+              // if()
               reminder.hidden = true;
           }
       });
@@ -205,6 +206,7 @@ class Reminder extends Component {
           eoys: props.eoys,
           status: props.status,
           openSaveNotification: false,
+          thingstoSave : false,
       }
     }
 
@@ -372,6 +374,7 @@ class Reminder extends Component {
   
       if (month.length < 2) month = '0' + month;
       if (day.length < 2) day = '0' + day;
+      this.setState({thingstoSave:true});
       return [year, month, day].join('-');
       //this.props.handleRemindersChange();
       // return [year, month, day].join('-');
@@ -380,6 +383,7 @@ class Reminder extends Component {
     modifyDate (reminder, value) {
       let tmpTabReminders = Object.create(this.state.reminders);
       this.setState({reminders:tmpTabReminders});
+      this.setState({thingstoSave:true});
     }
 
     render() {
@@ -404,9 +408,13 @@ class Reminder extends Component {
         return (
           <div className='reminder-element'>
             <MuiThemeProvider>
+              <span className="textToCenter"><b>
               {(remindValid || !shown) && reminder[2]}
               {autoRemind && reminder[2]=='3m' && '3 Months to Go'}
               {autoRemind && reminder[2]=='6m' && '6 Months to Go'}
+              </b></span>
+
+              <span className="borderRadiusManager">
               <b>
                   <TextField
                       disabled={shown}
@@ -414,6 +422,7 @@ class Reminder extends Component {
                       type='date'
                       style={{
                         background: cololor,
+                        borderRadius: '20px',
                       }}
                       value={reminder[3]}
                       required={true}
@@ -421,11 +430,10 @@ class Reminder extends Component {
                         className: classes.textField,
                       }}
                       onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value)} }
-                      onChangeRaw={this.handleDateChangeRaw}
-                      /* ok je teste */
-                      variant="outlined"
+                      variant='outlined'
                   />
               </b>
+              </span>
             </MuiThemeProvider>
             <span>&nbsp;&nbsp;</span>
             <img className='timeline-reminders' src={process.env.PUBLIC_URL + '/time.png'}></img>
@@ -546,12 +554,25 @@ class Reminder extends Component {
               handleReminderChange={this.handleReminderChange.bind(this)}
 
           />
+          {this.state.thingstoSave &&
           <Button
               size="small"
-              color="primary"
-              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}>
+              style = {{
+                background:'#00984C'
+              }}
+              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}
+              variant="contained"
+              >
               <SaveIcon/> Save changes
-          </Button>
+          </Button>}
+          {!this.state.thingstoSave &&
+          <Button
+              size="small"
+              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}
+              >
+              <SaveIcon/> Save changes
+          </Button>}
+              
         </div>
       </Card>
       <br /> 

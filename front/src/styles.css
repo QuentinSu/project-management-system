@@ -151,6 +151,10 @@
 	display:inline-block;
 }
 
+.reminder-eoy:hover {
+	background: #fafafa;
+}
+
 .reminder-element {
 	margin-left: 0px;
 	vertical-align: middle;
@@ -160,7 +164,11 @@
 	display:inline-block;
 	margin-bottom: 10px;
 	border-radius: 4px;
+}
 
+.textToCenter {
+	position:relative;
+	margin-left: 20px;
 }
 
 .template-mail-selector {
@@ -171,7 +179,8 @@
 }
 
 .reminder-element:hover {
-	box-shadow: 0 7px 9px rgba(0,0,0,0.25), 0 4px 4px rgba(0,0,0,0.22)
+	background: #f2f2f2;
+	/* box-shadow: 0 7px 9px rgba(0,0,0,0.25), 0 4px 4px rgba(0,0,0,0.22) */
 	/* background: #d9d9d9 */
 }
 
@@ -199,6 +208,10 @@
 
 .button-advanced-reminder {
 	margin-bottom:100px;
+}
+
+.borderRadiusManager fieldset{
+	border-radius: 20px;
 }
 
 .reminder-element-theme input[type=date] {
