@@ -49,55 +49,79 @@ class CommandMail extends ContainerAwareCommand
 
     public function getRemindersOfTheDay() {
 
-        $reminders = [];
+        $remindersOfTheDay = [];
         $projects = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Project')->findAll();
 
         foreach ($projects as $cardReminder) {
-            $id = $cardReminder->getId();
             $name = $cardReminder->getName();
             $golive = $cardReminder->getGoLiveDate();
             $status = $cardReminder->getStatus();
             $remind = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Reminder')->findBy(array('project'=>($cardReminder->getId())));
-            if(!$remind) {
-                $remindResult = ['empty'];
-            } else {
+            if($remind) {
                 //$iterableResult = $remind->iterate();
+                $today = date("Y-m-d");
+                $todayTMS = strtotime($today);
+                
                 $remindResult = [];
                 foreach ($remind as $row) {
-                    //$remindResult .= 'c ';
-                    $remindInfos = [];
-                    array_push($remindInfos,$row->getId());
-                    array_push($remindInfos,$row->getStatus());
-                    array_push($remindInfos,$row->getType());
-                    array_push($remindInfos,$row->getDeadline());
-                    array_push($remindResult,$remindInfos);
+                    if($row->getStatus()!=='ok') {
+                        $deadline = $row->getDeadline();
+                        $deadlineTMS = strtotime($deadline);
+                        $deadlineTodayDifference = $deadlineTMS - $todayTMS;
+                        $remindInfos = [];
+                        /* late and today reminders */
+                        if($deadlineTodayDifference < 0) {
+                            array_push($remindInfos, 'late');
+                            array_push($remindInfos, $row->getType());
+                            array_push($remindInfos,$row->getDeadline());
+                            // $bodyMessage .= $row->getType()." late \n";
+                        } else if ($deadlineTodayDifference <86400) { //86400 sec = 1days
+                            array_push($remindInfos, 'today');
+                            array_push($remindInfos, $row->getType());
+                            array_push($remindInfos,$row->getDeadline());
+                        }
+                        // } else if ($deadlineTodayDifference < 1209600) { //1 209 600 = 14 days
+                        //     $bodyMessage .= $row->getType()." soon ! \n";
+                        // }
+                        
+                        // array_push($remindInfos,$row->getId());
+                        // array_push($remindInfos,$row->getStatus());
+                        // array_push($remindInfos,$row->getType());
+                        // array_push($remindInfos,$row->getDeadline());
+                        if(!empty($remindInfos)) {
+                            array_push($remindResult,$remindInfos);
+                        }
+                    }
                 }
-            }
-            //search company of each users, next find eoy of each companies and add their eoy in eoy return (often unique but smtimes plural). Finally eoy will containes list of [nameOfCompany, eoyOfCompany]
-            $userLinkToProject = $cardReminder->getUsers();
-            $companiesEoy = [];
-            foreach ($userLinkToProject as $user) {
-                $company = $user->getCompany();
-                $company ? ($companyEoy=$company->getEoy()) : ($companyEoy=null);
-                if ($company) {
-                    $companyInfo = [];
-                    array_push($companyInfo, $company->getName());
-                    array_push($companyInfo, $companyEoy);
-                    array_push($companiesEoy, $companyInfo);
-                }
-            }
-            if($companiesEoy) {
-                // $eoys = array_unique($companiesEoy, SORT_REGULAR);
-                $eoys=$companiesEoy;
-            } else {
-                $eoys = ['noCompaniesLinked'];
-            }
 
-            $newRemind = ['id'=>$id, 'name'=>$name, 'go_live_date'=>$golive, 'status'=>$status, 'reminders'=>$remindResult, 'eoys'=> $eoys];
-            //to add : eoy project->user->company
-            array_push($reminders,$newRemind);
+                if(!empty($remindResult)) {
+                    //search company of each users, next find eoy of each companies and add their eoy in eoy return (often unique but smtimes plural). Finally eoy will containes list of [nameOfCompany, eoyOfCompany]
+                    $userLinkToProject = $cardReminder->getUsers();
+                    $userToContact = [];
+                    foreach ($userLinkToProject as $user) {
+                        $nameUser = $user->getUsername();
+                        $email = $user->getEmail();
+                        $newUser = [];
+                        array_push($newUser, $nameUser);
+                        array_push($newUser, $email);
+                        if(!empty($newUser)) {
+                            array_push($userToContact, $newUser);
+                        }
+                    }
+                    $projectWithRemindersToSent = [];
+                    array_push($projectWithRemindersToSent, $name);
+                    array_push($projectWithRemindersToSent, $remindResult);
+                    array_push($projectWithRemindersToSent, $userToContact);
+
+                    array_push($remindersOfTheDay, $projectWithRemindersToSent);
+                    
+                    //$newRemind = ['id'=>$id, 'name'=>$name, 'go_live_date'=>$golive, 'status'=>$status, 'reminders'=>$remindResult, 'eoys'=> $eoys];
+                    //to add : eoy project->user->company
+                    //array_push($reminders,$newRemind);
+                }
+            }
         }
-        return $reminders;
+        return $remindersOfTheDay;
     }
 
     protected static $defaultName = 'app:send-daily-mail';
@@ -111,11 +135,14 @@ class CommandMail extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         //call getRemindersOfTheDay
-        $allreminder = $this->getRemindersOfTheDay();
-        $message = (new \Swift_Message('Reminder of the day '.date("d.m")))
-                    ->setFrom('crm.rhyswelsh@gmail.com')
-                    ->setTo('quentin.sutkowski@gmail.com')
-                    ->setBody('test body'.json_encode($allreminder));
-        $this->swiftMailerService->send($message);
+        $remindersOfTheDay = $this->getRemindersOfTheDay();
+        foreach ($remindersOfTheDay as &$clientReminders) {
+            $message = (new \Swift_Message('💡 Reminder of the day - '.$clientReminders[0].' - '.date("d.m")))
+                ->setFrom('crm.rhyswelsh@gmail.com')
+                ->setTo('quentin.sutkowski@gmail.com')
+                ->setBody(json_encode($clientReminders));
+            $this->swiftMailerService->send($message);
+        }
+        
     }
 }

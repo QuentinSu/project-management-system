@@ -299,7 +299,6 @@ class Reminder extends Component {
           .catch(function (error) {
             console.log(error);
       });
-      //this.props.handleRemindersChange();
   }
 
   deleteReminder(reminderId) {
@@ -366,7 +365,7 @@ class Reminder extends Component {
             remind[3]=self.formatDateRegen3m6mDate(golive, '6m');
           }
           
-          if(remind[3]!==InitialDate) {
+          if(remind[3]!=InitialDate) {
             remind[1]='notok';
           }
         }
