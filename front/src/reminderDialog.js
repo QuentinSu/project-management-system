@@ -62,8 +62,13 @@ export class NewReminderDialog extends React.Component {
         }).then(function (response) {
             if(response.status === 200){
                 self.setState({ open: false });
+                //var data = {status:self.state.status, type:self.state.type, deadline:self.state.deadline}
+                //let tmpTabReminders = Object.create(this.state.reminders);
+                //tmpTabReminders.concat(templateItem);
+                //console.log('plop');
                 var data = {status:self.state.status, type:self.state.type, deadline:self.state.deadline}
                 self.props.handleReminderChange('addRemind', data);
+                //self.props.handleReminderChange('addRemind', data);
             }
         }).catch(function (error) {
             console.log('coucou');

@@ -40,6 +40,7 @@ var reminderStatValidated;
 var reminderStatSoon;
 var reminderStatActive;
 var stats = "";
+var firstRender=true;
 
 class Reminder extends Component {
     constructor(props){
@@ -105,12 +106,10 @@ class Reminder extends Component {
       var self = this;
       switch(type) {
           case 'addRemind':
-              this.getReminders(this.state.id, function(newReminds) {
+          case 'deleteReminder':
+              this.getReminders(this, this.state.id, function(newReminds) {
                   self.setState({reminders: newReminds});
               });
-              this.props.handleRemindersChange();
-              break;
-          case 'deleteReminder':
               this.props.handleRemindersChange();
               break;
           default:
@@ -119,7 +118,8 @@ class Reminder extends Component {
       }
   }
 
-    getReminders(projectId, callback) {
+    getReminders(reminderThis, projectId, callback) {
+      var self = reminderThis;
       axios({
           method: 'get', //you can set what request you want to be
           url: apiBaseUrl+'reminder/'+projectId,
@@ -130,38 +130,39 @@ class Reminder extends Component {
       })
           .then(function (response) {
             if(response.status === 200){
-              console.log(response.data.reminders);
-              //this.setState({reminders: response.data.reminders});
-              callback(response.data.reminders)
-              //this.forceUpdate();
+              var remindersNewArray =[];
+              (response.data.reminders).forEach(function (remind) {
+                  var remindArray=[];
+                  remindArray.push(remind['id']);
+                  remindArray.push(remind['status']);
+                  remindArray.push(remind['type']);
+                  remindArray.push(remind['deadline']);
+                  remindersNewArray.push(remindArray);
+              });
+              self.setState({reminders:remindersNewArray});
             }
       })
           .catch(function (error) {
-            console.log('bug dans la matrice');
+            console.log(error);
       });
       //this.props.handleRemindersChange();
   }
 
-  handleDateChangeRaw = (e) => {
-    e.preventDefault();
-  }
-
-  deleteReminder(cardObject, reminder) {
-    var self = cardObject['cardObject'];
+  deleteReminder(reminderId) {
+    var self = this;
     axios({
           method: 'delete', //you can set what request you want to be
-          url: apiBaseUrl+'reminder/'+reminder["reminder"][0],
+          url: apiBaseUrl+'reminder/'+reminderId,
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('session'),
             'Content-Type': 'application/json; charset=utf-8'
           }
         }).then(function (response) {
             if(response.status === 200){
-              this.handleReminderChange('deleteReminder', null);
-              cardObject['cardObject'].forceUpdate();
+              self.handleReminderChange('deleteReminder', self.state.reminders);
             }
         }).catch(function (error) {
-          console.log('error on delete reminder');
+          console.log(error);
       });
   }
 
@@ -200,7 +201,6 @@ class Reminder extends Component {
           }).then(function (response) {
               if(response.status === 200){
                 this.setState({openSaveNotification: true});
-                // this.handleReminderChange();
               }
           }).catch(function (error) {
           });
@@ -218,12 +218,9 @@ class Reminder extends Component {
           month = '' + (d.getMonth()+1), //january is 0
           day = '' + d.getDate(),
           year = d.getFullYear()+1;
-
-          console.log(d);
   
       if (month.length < 2) month = '0' + month;
       if (day.length < 2) day = '0' + day;
-      console.log([year, month, day].join('-'));
       return [year, month, day].join('-');
       //this.props.handleRemindersChange();
       // return [year, month, day].join('-');
@@ -231,17 +228,7 @@ class Reminder extends Component {
 
     modifyDate (reminder, value) {
       let tmpTabReminders = Object.create(this.state.reminders);
-      let wait = true;
-      //console.log(JSON.stringify(tmpTabReminders));
-      //tmpTabReminders.reminder[3] = value;
-      // setTimeout(function() { //Start the timer
-      //   wait=false; //After 3 second, stop waiting
-      // }.bind(this), 3000);
-      //if(!wait) {
-        this.setState({reminders:tmpTabReminders});
-      //}
-      /*le pb cest que dans reminders j'ai plein de reminder eux meme qui sont des tableaux*/ 
-      //oui value c'est la date d'un des reminder (un des reminder//[3] oui mais cdans la fonction je sais pas de quel reminder ça vient )
+      this.setState({reminders:tmpTabReminders});
     }
 
     render() {
@@ -250,8 +237,12 @@ class Reminder extends Component {
       let cardObject = this;
       let projectId = this.state.id;
       let myTab = [...this.state.reminders];
+      if(firstRender) {
+        firstRender=false;
+        myTab.sort((a, b) => a[3] > b[3]);
+      }
       //sort by date
-      let mappedListOfReminders = myTab.sort((a, b) => a[3] > b[3]).map((reminder)=>{
+      let mappedListOfReminders = myTab.map((reminder)=>{
       //let mappedListOfReminders = myTab.map((reminder)=>{
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
@@ -313,7 +304,7 @@ class Reminder extends Component {
             <React.Fragment>
               <NewMailReminderDialog  projectId={this.props.id} reminderType={reminder[2]}/></React.Fragment>
             }
-            {!autoRemind &&
+            {!autoRemind && reminder[1]=='notok' &&
             <Tooltip title="Add 1 year on reminder date" interactive>
               <Button
                   className="reminder-button" //  reminder-addyear-button"
@@ -329,7 +320,7 @@ class Reminder extends Component {
                   className="reminder-button"// reminder-delete-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to delete this reminder?')) this.deleteReminder({cardObject}, {reminder})}}>
+                  onClick={() => { if (window.confirm('Are you sure you wish to delete this reminder?')) this.deleteReminder(reminder[0])}}>
     
                   <DeleteIcon style={{color: "#f44336"}} />
               </Button>
@@ -407,7 +398,7 @@ class Reminder extends Component {
           <Button
               size="small"
               color="primary"
-              onClick={() => this.saveReminder(this.state.id, myTab, this.state.goLiveDate)}>
+              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}>
               <SaveIcon/> Save changes
           </Button>
         </div>
@@ -466,7 +457,7 @@ class Reminders extends Component {
               }
             })
             .catch(function (error) {
-              console.log(error.response);
+              console.log(error);
             });
     }
 
@@ -497,7 +488,7 @@ class Reminders extends Component {
               }
             })
             .catch(function (error) {
-              console.log(error.response);
+              console.log(error);
             });
     }
 
