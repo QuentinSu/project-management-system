@@ -207,6 +207,7 @@ class Reminder extends Component {
           status: props.status,
           openSaveNotification: false,
           thingstoSave : false,
+          stat:[]
       }
     }
 
@@ -339,7 +340,7 @@ class Reminder extends Component {
 
       //custom reminder update/add
       remindersTab.forEach(function(remind) {
-        if(remind[2]!="3m" && remind[2]!="6m") {
+        if(remind[2]!=="3m" && remind[2]!=="6m") {
           axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'reminder/'+remind[0],
@@ -353,16 +354,47 @@ class Reminder extends Component {
             }
           }).then(function (response) {
               if(response.status === 200){
-                this.setState({openSaveNotification: true});
+                self.setState({openSaveNotification: true});
               }
           }).catch(function (error) {
           });
+        } else {
+          var InitialDate = remind[3];
+          if(remind[2]==='3m') {
+            remind[3]=self.formatDateRegen3m6mDate(golive, '3m');
+          } else if (remind[2]==='6m') {
+            remind[3]=self.formatDateRegen3m6mDate(golive, '6m');
+          }
+          
+          if(remind[3]!==InitialDate) {
+            remind[1]='notok';
+          }
         }
       });
       // self.forceUpdate();
       this.setState({reminders:remindersTab});
+      this.setState({thingstoSave:false});
       this.forceUpdate();
+    }
 
+    formatDateRegen3m6mDate(dateString, type) {
+      if(type = '3m') {
+        var d = new Date(dateString),
+            month = '' + (d.getMonth()+1-3), //january is 0
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+      } else if(type = '6m') {
+        var d = new Date(dateString),
+            month = '' + (d.getMonth()+1-6), //january is 0
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+      }
+  
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      return [year, month, day].join('-');
+      //this.props.handleRemindersChange();
+      // return [year, month, day].join('-');
     }
 
 
@@ -401,6 +433,7 @@ class Reminder extends Component {
       //let mappedListOfReminders = myTab.map((reminder)=>{
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
+
         }
         var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
         var shown = (autoRemind || reminder[1]==='ok');
@@ -533,7 +566,7 @@ class Reminder extends Component {
           </text>
           <TextField className='reminder-golive'
               type='date'
-              onChange={event => this.setState({goLiveDate:event.target.value})}
+              onChange={event => {this.setState({goLiveDate:event.target.value}); this.setState({thingstoSave:true})}}
               defaultValue={this.state.goLiveDate}
               label='Go Live Date'
           />
