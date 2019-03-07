@@ -114,7 +114,7 @@ class Reminders extends Component {
               reminder.hidden = true;
           }
       });
-      this.setState({remindersCard: newReminders}); 
+      this.setState({remindersCard: newReminders});
   }
 
   forceRegenAutoReminders() {
@@ -213,17 +213,32 @@ class Reminder extends Component {
 
     changeStatus(reminder, projectId, targetStatus) {
       var self = this;
+      if(reminder["reminder"] !== undefined) {
+        var remindId = reminder["reminder"][0];
+        var projectId = projectId["projectId"];
+        var remindType = reminder["reminder"][2];
+        var remindDeadline = reminder["reminder"][3];
+      } else {
+        var remindId = reminder[0];
+        var projectId = projectId;
+        var remindType = reminder[2];
+        var remindDeadline = reminder[3];
+      }
       axios({
             method: 'put', //you can set what request you want to be
-            url: apiBaseUrl+'reminder/'+reminder["reminder"][0],
-            data: {projectId:projectId["projectId"], status:targetStatus, type:reminder["reminder"][2], deadline:reminder["reminder"][3]},
+            url: apiBaseUrl+'reminder/'+remindId,
+            data: {projectId:projectId, status:targetStatus, type:remindType, deadline:remindDeadline},
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
             }
           }).then(function (response) {
               if(response.status === 200){
-                reminder["reminder"][1]=targetStatus;
+                if(reminder["reminder"] !== undefined) {
+                    reminder["reminder"][1]=targetStatus;
+                } else {
+                  reminder[1]=targetStatus;
+                }
                 self.forceUpdate();
               }
           }).catch(function (error) {
@@ -358,14 +373,16 @@ class Reminder extends Component {
           }).catch(function (error) {
           });
         } else {
-          var InitialDate = remind[3];
           if(remind[2]==='3m') {
+            var initialDate = remind[3];
             remind[3]=self.formatDateRegen3m6mDate(golive, '3m');
-          } else if (remind[2]==='6m') {
+          } else {
+            var initialDate = remind[3];
             remind[3]=self.formatDateRegen3m6mDate(golive, '6m');
           }
-          
-          if(remind[3]!=InitialDate) {
+          console.log('initial '+initialDate);
+          console.log('after '+remind[3]);
+          if(remind[3]!=initialDate) {
             remind[1]='notok';
           }
         }
@@ -377,22 +394,20 @@ class Reminder extends Component {
     }
 
     formatDateRegen3m6mDate(dateString, type) {
-      if(type = '3m') {
-        var d = new Date(dateString),
-            month = '' + (d.getMonth()+1-3), //january is 0
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-      } else if(type = '6m') {
-        var d = new Date(dateString),
-            month = '' + (d.getMonth()+1-6), //january is 0
-            day = '' + d.getDate(),
-            year = d.getFullYear();
+      var d = new Date(dateString);
+      var day = d.getDate();
+      var year = d.getFullYear();
+      if(type === '3m') {
+        var month = (d.getMonth()+1-3); //january is 0
+      } else if(type === '6m') {
+        var month = (d.getMonth()+1-6); //january is 0
       }
   
-      if (month.length < 2) month = '0' + month;
-      if (day.length < 2) day = '0' + day;
+      if (month.length < 10) month = parseInt('0' + month.concat,10);
+      if (day.length < 10) day = '0' + day;
+      console.log(type+' after : '+month);
       return [year, month, day].join('-');
-      //this.props.handleRemindersChange();
+      // this.props.handleRemindersChange();
       // return [year, month, day].join('-');
     }
 
@@ -411,13 +426,16 @@ class Reminder extends Component {
       // return [year, month, day].join('-');
     }
 
-    modifyDate (reminder, value) {
-      let tmpTabReminders = Object.create(this.state.reminders);
-      this.setState({reminders:tmpTabReminders});
+    modifyDate (reminder, value, myTab) {
+      //let tmpTabReminders = Object.create(this.state.reminders);
+      //tmpTabReminders.map((reminder))
+      //this.setState({reminders:tmpTabReminders});
+      this.setState({reminders:myTab});
       this.setState({thingstoSave:true});
     }
 
     render() {
+
       const classes = this.props;
       let nameCard = this.state.name;
       let cardObject = this;
@@ -426,10 +444,12 @@ class Reminder extends Component {
       if(firstRender) {
         firstRender=false;
         myTab.sort((a, b) => a[3] > b[3]);
+        this.setState({reminders:myTab});
       }
       //sort by date
       let mappedListOfReminders = myTab.map((reminder)=>{
       //let mappedListOfReminders = myTab.map((reminder)=>{
+        console.log(reminder[3]);
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
 
@@ -449,7 +469,6 @@ class Reminder extends Component {
               <span className="borderRadiusManager">
               <b>
                   <TextField
-                      disabled={shown}
                       className='reminder-element-theme'
                       type='date'
                       style={{
@@ -457,11 +476,10 @@ class Reminder extends Component {
                         borderRadius: '20px',
                       }}
                       value={reminder[3]}
-                      required={true}
                       InputProps={{
                         className: classes.textField,
                       }}
-                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value)} }
+                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab)} }
                       variant='outlined'
                   />
               </b>
@@ -493,7 +511,8 @@ class Reminder extends Component {
             
             {reminder[1]=='notok' &&
             <React.Fragment>
-              <NewMailReminderDialog  projectId={this.props.id} reminderType={reminder[2]}/></React.Fragment>
+              <NewMailReminderDialog  projectId={this.props.id}  reminder={reminder} reminders={this.state.reminders} myTab={myTab} changeStatus={this.changeStatus.bind(this)}
+                                      reminderType={reminder[2]}/></React.Fragment>
             }
             {!autoRemind && reminder[1]=='notok' &&
             <Tooltip title="Add 1 year on reminder date" interactive>
@@ -584,7 +603,6 @@ class Reminder extends Component {
               type={this.props.type}
               deadline={this.props.deadline}
               handleReminderChange={this.handleReminderChange.bind(this)}
-
           />
           {this.state.thingstoSave &&
           <Button

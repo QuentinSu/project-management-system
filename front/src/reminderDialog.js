@@ -25,6 +25,7 @@ import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import classNames from 'classnames';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 
 var config = require('./config.json');
@@ -71,7 +72,6 @@ export class NewReminderDialog extends React.Component {
                 //self.props.handleReminderChange('addRemind', data);
             }
         }).catch(function (error) {
-            console.log('coucou');
             alert("Bad request : the custom "+this.state.type+" for this project may be already exist");
         });
     }
@@ -181,6 +181,7 @@ class NewMailReminderDialog extends React.Component {
       // content: '',
       selectedTemplate: '-1',
       status: 'notok',
+      copied: false,
     };
 
   getMailTo() {
@@ -243,11 +244,16 @@ class NewMailReminderDialog extends React.Component {
   }
 
   templateUpdate(valueSelected) {
-    console.log('update');
+    console.log(valueSelected);
     var templateActive = this.state.template;
     if(templateActive) {
-      var nameTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).name;
-      var contentTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).content;
+      if(valueSelected !== '-1') {
+        var nameTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).name;
+        var contentTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).content;
+      } else {
+        var nameTemplate = '';
+        var contentTemplate = '';
+      }
 
       this.setState({name: nameTemplate});
       this.setState({content: contentTemplate});
@@ -263,6 +269,13 @@ class NewMailReminderDialog extends React.Component {
     this.getMailTo();
     this.getTemplate();
   };
+
+  forceValidation() {
+    var self = this;
+    self.props.changeStatus(self.props.reminder, self.props.projectId, 'ok'); 
+    // self.props.setState(self.props.reminders:self.props.myTab); 
+    self.forceUpdate();
+  }
 
   render() {
     const { classes, theme } = this.props;
@@ -317,7 +330,6 @@ class NewMailReminderDialog extends React.Component {
             <FormControl className="template-mail-selector" required width="20%">
                 <InputLabel>Base template</InputLabel>
                 <Select
-                  autoFocus
                   fullWidth
                   options={this.state.template}
                   value={this.state.selectedTemplate}
@@ -333,8 +345,8 @@ class NewMailReminderDialog extends React.Component {
                 </Select>
             </FormControl>
             <div className="user-recipient-list">
-              <Typography className="recipients-label">Recipients</Typography>
-              {mappedListOfRecipients}
+              <div className="user-recipient-list-label"><Typography>Recipients</Typography></div>
+              <div className="user-recipient-list-listRecip">{mappedListOfRecipients}</div>
             </div>
             <TextField
               autoFocus
@@ -357,12 +369,18 @@ class NewMailReminderDialog extends React.Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => this.setState({ open: false })} color="primary">
+            {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}  
+            <CopyToClipboard text={this.state.name+"\n\n"+this.state.content}
+                onCopy={() => this.setState({copied: true})}>
+                <Button variant='outlined'>Copy object & body</Button>
+            </CopyToClipboard><br/>
+            <Button variant='outlined' onClick={() => this.setState({ open: false })} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body=<html>"+this.state.content+"</html>"}}>Open Mail manager</Button> 
+            <Button variant='outlined' onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body=<html>"+this.state.content+"</html>"}}>Open Mail manager</Button> 
             <Button 
-              onClick={this.saveRemind}
+              variant='outlined'
+              onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.forceValidation() }}
               color="primary">
               Mark reminder as Sent
             </Button>

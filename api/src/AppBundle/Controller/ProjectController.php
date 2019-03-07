@@ -218,8 +218,12 @@ class ProjectController extends RestServiceController
       }
 
       $dbm->flush();
+      if($name) {
+        $this->notify('Project n°'.$project->getId().', name: '.'"'.$name.'"'.' modified');
+      } else {
+        $this->notify('Project n°'.$project->getId().' modified : action on reminder');
 
-      $this->notify('Project n°'.$project->getId().', name: '.'"'.$name.'"'.' modified');    
+      } 
 
       return new View("Project Updated Successfully", Response::HTTP_OK);;
     }
