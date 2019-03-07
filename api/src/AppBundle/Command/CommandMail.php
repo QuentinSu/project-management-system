@@ -74,14 +74,15 @@ class CommandMail extends ContainerAwareCommand
                             array_push($remindInfos, 'late');
                             array_push($remindInfos, $row->getType());
                             array_push($remindInfos,$row->getDeadline());
-                            // $bodyMessage .= $row->getType()." late \n";
+                            array_push($remindInfos, (int)(-$deadlineTodayDifference/86400));
+                            // $bodyMessage.= $row->getType()." late <br>";
                         } else if ($deadlineTodayDifference <86400) { //86400 sec = 1days
                             array_push($remindInfos, 'today');
                             array_push($remindInfos, $row->getType());
                             array_push($remindInfos,$row->getDeadline());
                         }
                         // } else if ($deadlineTodayDifference < 1209600) { //1 209 600 = 14 days
-                        //     $bodyMessage .= $row->getType()." soon ! \n";
+                        //     $bodyMessage.= $row->getType()." soon ! <br>";
                         // }
                         
                         // array_push($remindInfos,$row->getId());
@@ -133,16 +134,111 @@ class CommandMail extends ContainerAwareCommand
             ->setHelp('This command allows you to send automatic reminder mail to Rhys, everyday...');
     }
 
+    public function countReminders($tabReminders, $type) {
+        $countRemind = 0;
+        foreach ($tabReminders as &$reminder) {
+            if ($reminder[0] === $type) {
+                $countRemind++;
+            }
+        }
+        return $countRemind;
+    }
+
+    public function introBody($nbLateReminders, $nbDayReminders) {
+        $intro = "You have";
+        if($nbLateReminders !== 0) {
+            $intro.= " <b>".$nbLateReminders."</b> late reminder(s)";
+            if($nbDayReminders !== 0) {
+                $intro.= " and";
+            }
+        }
+        if ($nbDayReminders !== 0) {
+            $intro.= " <b>".$nbDayReminders."</b> day reminder(s)";
+        }
+        $intro.= " due !<br>";
+        return $intro;
+    }
+
+    public function contactBody($clientsTab) {
+        $contacts = "";
+        foreach ($clientsTab as &$contact) {
+            $contacts.= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            $contacts.= "<span style='font-size:150%'>&#129174;</span> <b>".$contact[0]."</b> < ".$contact[1]." ><br>";  #&#129174; -> array white on black composant
+        }
+        if ($contacts === "") {
+            return "No <b>Contacts</b> linked to this project yet.<br>";
+        } else {
+            return "<b>Contacts</b> linked to this project:<br>".$contacts;
+        }
+    }
+
+    public function listBody($tabReminders, $nbLate, $nbDay) {
+        $list = "";
+        $lateList = "";
+        $dayList = "";
+        foreach($tabReminders as &$remind) {
+            $dueDate = date("d-m-Y", strtotime($remind[2]));
+            if($remind[0] === 'late') {
+                $lateList.= "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $lateList.= "<span style='font-size:150%'>&#9873;</span> <b>".$remind[1]."</b> due on ".$dueDate." (<b>".$remind[3]." days</b> late).";
+            }
+            if($remind[0] === 'today') {
+                $dayList.= "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $dayList.= "<span style='font-size:150%'>&#9872;</span> <b>".$remind[1]."</b> due on ".$dueDate.".";
+            }
+        }
+
+        if($nbLate !== 0) {
+            $list.= "<b style='color:#f44336'>Late</b> reminders:";
+            $list.= $lateList."<br>";
+        }
+        if($nbDay !== 0) {
+            $list.= "<b style='color:#f6ae47'>Day</b> reminders:";
+            $list.= $dayList;
+        }
+
+        return $list;
+    }
+
+
+    public function footerBody() {
+        $footer = "______________________<br>";
+        $footer.= "This is an auto-generated email, you can't answer.<br>";
+        $footer.= "Rhys Welsh CRM";
+        return $footer;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output) {
         //call getRemindersOfTheDay
         $remindersOfTheDay = $this->getRemindersOfTheDay();
         foreach ($remindersOfTheDay as &$clientReminders) {
+            $nbLateReminders = $this->countReminders($clientReminders[1], 'late');
+            $nbDayReminders = $this->countReminders($clientReminders[1], 'today');
+
+            $introText = $this->introBody($nbLateReminders, $nbDayReminders);
+
+            $contacts = $this->contactBody($clientReminders[2]);
+
+            $listBody = $this->listBody($clientReminders[1], $nbLateReminders, $nbDayReminders);
+
+            $footerBody = $this->footerBody();
+
+            $body = "<html><body>".$introText."<br>".$contacts."<br>".$listBody."<br>".$footerBody."</body></hmtl>";
+            
             $message = (new \Swift_Message('💡 Reminder of the day - '.$clientReminders[0].' - '.date("d.m")))
                 ->setFrom('crm.rhyswelsh@gmail.com')
-                ->setTo('quentin.sutkowski@gmail.com')
-                ->setBody(json_encode($clientReminders));
+                ->setTo(array('quentin.sutkowski@gmail.com', 'quentin.sutkowski@hautsdefrance.fr'))
+                ->setBody($body, 'text/html');
             $this->swiftMailerService->send($message);
+
+            // if($clientReminders[0] === "The Art of Workshop") {
+            //     $message = (new \Swift_Message('💡 Reminder of the day - '.$clientReminders[0].' - '.date("d.m")))
+            //     ->setFrom('crm.rhyswelsh@gmail.com')
+            //     ->setTo(array('quentin.sutkowski@gmail.com', 'info@rhyswelsh.com'))
+            //     ->setBody($body, 'text/html');
+            //     $this->swiftMailerService->send($message);
+            // }
+
         }
-        
     }
 }

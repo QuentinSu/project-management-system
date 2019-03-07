@@ -284,7 +284,7 @@ class NewCompanyUserLinkDialog extends React.Component {
                         autoFocus
                         onChange={this.handleChange('multi')}
                         placeholder="Select users"
-                        ismulti
+                        isMulti
                         classes={classes}
                     />
                 </div>
