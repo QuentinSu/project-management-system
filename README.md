@@ -4,7 +4,7 @@
 
 Internal project for Rhys Welsh company.
 
-Project management software, react based for front-end and symfony base for back-end.
+Project management software, react based for front-end and symfony based for back-end.
 
 ## Credits
 
