@@ -99,19 +99,29 @@ class Reminders extends Component {
   filterReminders(label) {
       let newReminders = this.state.remindersCard.slice();
       
-      console.log(newReminders);
       newReminders.map((reminder)=>{
         //mandatory because of the first passage here
         if(reminder.hidden == undefined) {
           reminder.hidden = false;
         }
-        console.log(reminder.name);
-        console.log(label);
           if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
               reminder.hidden = false;
           } else {
-              // if()
-              reminder.hidden = true;
+               // else, we keep visible the reminder only if filter on reminders match /!\ test on presence of reminders on the reminder
+               if(reminder.reminders.length > 0) {
+                reminder.reminders.map((remind)=>{
+                  console.log(reminder.name+' - '+remind[2]);
+                  // remind[0] : id, 1 : status, 2 : type, 3 : deadline, 4 : color(validated, soon, late, active)
+                    if(remind[2].toUpperCase().includes(label.toUpperCase())) {
+                        console.log(reminder.name+' - i\'m one who stay!');
+                        reminder.hidden = false;
+                    } else {
+                        reminder.hidden = true;
+                    }
+                    });
+                } else {
+                  reminder.hidden = true;
+                }
           }
       });
       this.setState({remindersCard: newReminders});
@@ -380,8 +390,6 @@ class Reminder extends Component {
             var initialDate = remind[3];
             remind[3]=self.formatDateRegen3m6mDate(golive, '6m');
           }
-          console.log('initial '+initialDate);
-          console.log('after '+remind[3]);
           if(remind[3]!=initialDate) {
             remind[1]='notok';
           }
@@ -394,20 +402,31 @@ class Reminder extends Component {
     }
 
     formatDateRegen3m6mDate(dateString, type) {
-      var d = new Date(dateString);
-      var day = d.getDate();
-      var year = d.getFullYear();
-      if(type === '3m') {
-        var month = (d.getMonth()+1-3); //january is 0
-      } else if(type === '6m') {
-        var month = (d.getMonth()+1-6); //january is 0
+      if(type==='3m') {
+        var d = new Date(dateString),
+        month = '' + (d.getMonth()+1-3), //january is 0
+        day = '' + (d.getDate()),
+        year = d.getFullYear();
+      } else if(type==='6m'){
+        var d = new Date(dateString),
+        month = '' + (d.getMonth()+1-6), //january is 0
+        day = '' + (d.getDate()),
+        year = d.getFullYear();
       }
-  
-      if (month.length < 10) month = parseInt('0' + month.concat,10);
-      if (day.length < 10) day = '0' + day;
-      console.log(type+' after : '+month);
+
+      /**manage case of month before june (negative month otherwise) */
+      if((d.getMonth()+1)<7) {
+        if((d.getMonth()+1)<4 && type==='3m') {
+            month = 12+parseInt(month);
+        } else if(type==='6m'){
+            month = 12+parseInt(month);
+        }
+      }
+
+      month = ('0' + month).slice(-2);
+      day = ('0' + day).slice(-2);
       return [year, month, day].join('-');
-      // this.props.handleRemindersChange();
+      //this.props.handleRemindersChange();
       // return [year, month, day].join('-');
     }
 
@@ -415,7 +434,7 @@ class Reminder extends Component {
     formatDateAddOneYear(dateString, reminder) {
       var d = new Date(dateString),
           month = '' + (d.getMonth()+1), //january is 0
-          day = '' + d.getDate(),
+          day = '' + (d.getDate()+1),
           year = d.getFullYear()+1;
   
       if (month.length < 2) month = '0' + month;
@@ -449,7 +468,6 @@ class Reminder extends Component {
       //sort by date
       let mappedListOfReminders = myTab.map((reminder)=>{
       //let mappedListOfReminders = myTab.map((reminder)=>{
-        console.log(reminder[3]);
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
 
@@ -469,6 +487,7 @@ class Reminder extends Component {
               <span className="borderRadiusManager">
               <b>
                   <TextField
+                      disabled={shown}
                       className='reminder-element-theme'
                       type='date'
                       style={{
@@ -570,7 +589,7 @@ class Reminder extends Component {
     var backTimeUrl= process.env.PUBLIC_URL + "/time.png";
     
     return (
-      <div hidden={this.props.hidden}> 
+      <div hidden={this.props.hidden}>  
       <Card className="reminder-card">
       {/* <ReminderSaveNotification 
                   open={this.state.openSaveNotification} 
