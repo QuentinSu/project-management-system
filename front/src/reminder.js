@@ -35,13 +35,12 @@ var config = require('./config.json');
 const apiBaseUrl = config.apiBaseUrl;
 var remindersState = new Array();
 
-var reminderStatLate;
-var reminderStatValidated;
-var reminderStatSoon;
-var reminderStatActive;
-var stats = "";
+var reminderNb;
+var reminderLateNb;
+var reminderValidatedNb;
+var reminderSoonNb;
+var reminderActiveNb;
 var firstRender=true;
-
 
 // CLASS TO RENDER ALL THE REMINDERS CARD
 
@@ -67,13 +66,13 @@ class Reminders extends Component {
           .then(function (response) {
             if(response.status === 200){
               self.setState({remindersCard:response.data});
+              self.componentDidMount();
               self.forceUpdate();
             }
           })
           .catch(function (error) {
             console.log(error);
           });
-          return 'blup';
   }
 
   componentDidMount() {
@@ -86,45 +85,125 @@ class Reminders extends Component {
             'Content-Type': 'application/json; charset=utf-8'
           }
         })
-          .then(function (response) {
-            if(response.status === 200){
-              self.setState({remindersCard:response.data});
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        .then(function (response) {
+          if(response.status === 200){
+            self.setState({remindersCard:response.data});
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+  }
+
+  statsControl(initialVisibility, reminder) {
+    if(initialVisibility !== reminder.hidden) {
+      if(!reminder.hidden) {
+        reminder.reminders.map((remind)=>{
+          this.changeColorCheckStats(remind[4], 'unknow');
+        });
+      } else {
+        reminder.reminders.map((remind)=>{
+          this.changeColorCheckStats('delete', remind[4]);
+        });
+      } 
+    }
   }
 
   filterReminders(label) {
       let newReminders = this.state.remindersCard.slice();
-      
       newReminders.map((reminder)=>{
         //mandatory because of the first passage here
         if(reminder.hidden == undefined) {
+            reminderNb=0;
+            reminderActiveNb=0;
+            reminderSoonNb=0;
+            reminderLateNb=0;
+            reminderValidatedNb=0;
           reminder.hidden = false;
         }
-          if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
-              reminder.hidden = false;
-          } else {
-               // else, we keep visible the reminder only if filter on reminders match /!\ test on presence of reminders on the reminder
-               if(reminder.reminders.length > 0) {
-                reminder.reminders.map((remind)=>{
-                  console.log(reminder.name+' - '+remind[2]);
-                  // remind[0] : id, 1 : status, 2 : type, 3 : deadline, 4 : color(validated, soon, late, active)
-                    if(remind[2].toUpperCase().includes(label.toUpperCase())) {
-                        console.log(reminder.name+' - i\'m one who stay!');
-                        reminder.hidden = false;
-                    } else {
-                        reminder.hidden = true;
-                    }
-                    });
-                } else {
-                  reminder.hidden = true;
-                }
-          }
+        var initialState=reminder.hidden;
+        if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
+            reminder.hidden = false;
+        } else {
+              // else, we keep visible the reminder only if filter on reminders match /!\ test on presence of reminders on the reminder
+              if(reminder.reminders.length > 0) {
+              reminder.reminders.map((remind)=>{
+                // remind[0] : id, 1 : status, 2 : type, 3 : deadline, 4 : color(validated, soon, late, active)
+                  if(remind[2].toUpperCase().includes(label.toUpperCase())) {
+                    reminder.hidden = false;
+                  } else {
+                    reminder.hidden = true;
+                  }
+                  });
+              } else {
+                reminder.hidden = true;
+              }
+        }
+        /** STATS CONTROL */
+        this.statsControl(initialState, reminder);
+        
       });
       this.setState({remindersCard: newReminders});
+  }
+
+  changeColorCheckStats(newColor, initialColor) {
+    // console.log('je suis passé par ici avec une initial color : '+initialColor+' et une new color : '+newColor);
+    if(initialColor === 'unknow') {
+      reminderNb++;
+      switch(newColor) {
+        case 'validated':
+            reminderValidatedNb++;
+            break;
+        case 'late':
+            reminderLateNb++;
+            break;
+        case 'active':
+            reminderActiveNb++;
+            break;
+        case 'soon':
+            reminderSoonNb++;
+            break;
+        default:
+            break;
+      }
+    } else if(initialColor !== newColor){
+      switch(newColor) {
+        case 'validated':
+            reminderValidatedNb++;
+            break;
+        case 'late':
+            reminderLateNb++;
+            break;
+        case 'active':
+            reminderActiveNb++;
+            break;
+        case 'soon':
+            reminderSoonNb++;
+            break;
+        case 'delete':
+            reminderNb--;
+        default:
+            break;
+      }
+      switch(initialColor) {
+        case 'validated':
+            reminderValidatedNb--;
+            break;
+        case 'late':
+            reminderLateNb--;
+            break;
+        case 'active':
+            reminderActiveNb--;
+            break;
+        case 'soon':
+            reminderSoonNb--;
+            break;
+        default:
+            break;
+      }
+    }
+
+    console.log("reminderNb: "+reminderNb+"/ reminderValid: "+reminderValidatedNb+"/ reminderLate: "+reminderLateNb+"/ reminderSoon: "+reminderSoonNb+"/ reminderActive: "+reminderActiveNb);
   }
 
   forceRegenAutoReminders() {
@@ -147,6 +226,7 @@ class Reminders extends Component {
   }
 
   render(){
+
       // var test = this.getDetailledReminder();
       let mappedReminders = this.state.remindersCard.map((reminder)=>{
         return <Reminder   key={reminder.id}
@@ -158,9 +238,10 @@ class Reminders extends Component {
                           goLiveDate={reminder.go_live_date}
                           hidden={reminder.hidden ? reminder.hidden : false}
                           handleRemindersChange={this.handleRemindersChange.bind(this)}
-              />     
+                          changeColorCheckStats={this.changeColorCheckStats.bind(this)}
+                          filterReminders={this.filterReminders.bind(this)}
+              />
       })
-
 
       var legendText = <div><br/>
                         <b><h4>Legend</h4></b>
@@ -178,8 +259,6 @@ class Reminders extends Component {
                               </div>
                               {legendText}
                             </div>
-
-
       return(
           <div>
               <div className='project-header'>
@@ -195,6 +274,11 @@ class Reminders extends Component {
                   <Paper square={false}>Advanced functions & Legend</Paper>
                 </Tooltip>
                 </div>
+              </div>
+
+              <div>
+                {reminderNb}
+                <Paper square={false}>Nb Reminder {reminderNb}<br/>Nb Active {reminderActiveNb}</Paper>
               </div>
               <br/><p></p>
               {mappedReminders}
@@ -263,18 +347,26 @@ class Reminder extends Component {
       var remindDate = new Date(reminder["reminder"][3]);
 
       var remindDateLessFourteen = new Date(remindDate - 12096e5); //14 days in milliseconds
+      if(reminder["reminder"][4] === undefined) {
+        reminder["reminder"][4] = 'unknow';
+      }
+      var initialColor = reminder["reminder"][4];
       if(reminder["reminder"][1]=='ok') {
         reminder["reminder"][4] = 'validated';
+        this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
         return '#00984C';
       } else {
         if(remindDate < today) {
           reminder["reminder"][4] = 'late';
+          this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
           return '#f44336';
         } else if(today > remindDateLessFourteen){
           reminder["reminder"][4] = 'soon';
+          this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
           return '#f6ae47';
         } else {
           reminder["reminder"][4] = 'active';
+          this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
           return '#c9c9c9';
         }
       }
@@ -289,7 +381,11 @@ class Reminder extends Component {
               this.getReminders(this, this.state.id, function(newReminds) {
                   self.setState({reminders: newReminds});
               });
-              this.props.handleRemindersChange();
+              //this.props.handleRemindersChange();
+              (self.state.reminders).forEach(function (remind) {
+                console.log('im here');
+                self.props.changeColorCheckStats('delete', remind[4]);
+              });
               break;
           default:
               this.props.handleRemindersChange();
@@ -326,7 +422,7 @@ class Reminder extends Component {
       });
   }
 
-  deleteReminder(reminderId) {
+  deleteReminder(reminderId, reminderColor) {
     var self = this;
     axios({
           method: 'delete', //you can set what request you want to be
@@ -418,16 +514,16 @@ class Reminder extends Component {
       if((d.getMonth()+1)<7) {
         if((d.getMonth()+1)<4 && type==='3m') {
             month = 12+parseInt(month);
+            year = d.getFullYear()-1;
         } else if(type==='6m'){
             month = 12+parseInt(month);
+            year = d.getFullYear()-1;
         }
       }
 
       month = ('0' + month).slice(-2);
       day = ('0' + day).slice(-2);
       return [year, month, day].join('-');
-      //this.props.handleRemindersChange();
-      // return [year, month, day].join('-');
     }
 
 
@@ -441,20 +537,14 @@ class Reminder extends Component {
       if (day.length < 2) day = '0' + day;
       this.setState({thingstoSave:true});
       return [year, month, day].join('-');
-      //this.props.handleRemindersChange();
-      // return [year, month, day].join('-');
     }
 
     modifyDate (reminder, value, myTab) {
-      //let tmpTabReminders = Object.create(this.state.reminders);
-      //tmpTabReminders.map((reminder))
-      //this.setState({reminders:tmpTabReminders});
       this.setState({reminders:myTab});
       this.setState({thingstoSave:true});
     }
 
     render() {
-
       const classes = this.props;
       let nameCard = this.state.name;
       let cardObject = this;
@@ -464,13 +554,13 @@ class Reminder extends Component {
         firstRender=false;
         myTab.sort((a, b) => a[3] > b[3]);
         this.setState({reminders:myTab});
+        this.props.filterReminders('');;
       }
-      //sort by date
+      //sort by date  
       let mappedListOfReminders = myTab.map((reminder)=>{
       //let mappedListOfReminders = myTab.map((reminder)=>{
         if(reminder!=="empty") {
           var cololor = this.colorReminder({nameCard}, {reminder});
-
         }
         var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
         var shown = (autoRemind || reminder[1]==='ok');
@@ -483,7 +573,6 @@ class Reminder extends Component {
               {autoRemind && reminder[2]=='3m' && '3 Months to Go'}
               {autoRemind && reminder[2]=='6m' && '6 Months to Go'}
               </b></span>
-
               <span className="borderRadiusManager">
               <b>
                   <TextField
@@ -549,7 +638,7 @@ class Reminder extends Component {
                   className="reminder-button"// reminder-delete-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to delete this reminder?')) this.deleteReminder(reminder[0])}}>
+                  onClick={() => { if (window.confirm('Are you sure you wish to delete this reminder?')) this.deleteReminder(reminder[0], reminder[4])}}>
     
                   <DeleteIcon style={{color: "#f44336"}} />
               </Button>
