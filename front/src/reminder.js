@@ -258,7 +258,6 @@ class Reminders extends Component {
                               </div>
                               {legendText}
                             </div>
-      console.log('active tab '+activeTab.tabValue);
       return(
           <div>
               <div className='project-header' onChangeTa>
@@ -278,7 +277,7 @@ class Reminders extends Component {
 
               <div>
                 <Paper color="primary" className='reminder-stats' square={false} interactive>
-                  Nb reminders<br/>
+                  Stats reminders<br/>
                   
                   <Avatar className="reminder-stat-elem" style={{background: "#00984C", width: 30, height: 30}}>{reminderValidatedNb}</Avatar>
                   <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 30, height: 30}}>{reminderLateNb}</Avatar>
@@ -307,6 +306,7 @@ class Reminder extends Component {
           status: props.status,
           openSaveNotification: false,
           thingstoSave : false,
+          colorAvatar: "#00984C",
           stat:[]
       }
     }
@@ -346,8 +346,7 @@ class Reminder extends Component {
         });
     }
 
-    colorReminder(nameCard, reminder) {
-      var nameCard = nameCard["nameCard"];
+    colorReminder(reminder) {
       var today = new Date();
       today.setHours(0,0,0,0);
       var remindDate = new Date(reminder["reminder"][3]);
@@ -361,19 +360,28 @@ class Reminder extends Component {
       if(reminder["reminder"][1]=='ok') {
         reminder["reminder"][4] = 'validated';
         this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
-        return '#00984C';
+          return '#00984C';
       } else {
         if(remindDate < today) {
           reminder["reminder"][4] = 'late';
           this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
+          if((this.state.colorAvatar === '#c9c9c9' || this.state.colorAvatar === '#00984C' || this.state.colorAvatar === '#f6ae47') && this.state.colorAvatar !== '#f44336'){
+            this.setState({colorAvatar:'#f44336'});
+          }
           return '#f44336';
         } else if(today > remindDateLessFourteen){
           reminder["reminder"][4] = 'soon';
           this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
+          if((this.state.colorAvatar === '#c9c9c9' || this.state.colorAvatar === '#00984C')  && this.state.colorAvatar !== '#f6ae47') {
+            this.setState({colorAvatar:'#f6ae47'});
+          }
           return '#f6ae47';
         } else {
           reminder["reminder"][4] = 'active';
           this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
+          if(this.state.colorAvatar === '#00984C' && this.state.colorAvatar !== '#c9c9c9') {
+            this.setState({colorAvatar:'#c9c9c9'});
+          }
           return '#c9c9c9';
         }
       }
@@ -421,6 +429,7 @@ class Reminder extends Component {
                   remindersNewArray.push(remindArray);
               });
               self.setState({reminders:remindersNewArray});
+              this.colorAvatar(reminderThis);
             }
       })
           .catch(function (error) {
@@ -561,13 +570,14 @@ class Reminder extends Component {
         firstRender=false;
         myTab.sort((a, b) => a[3] > b[3]);
         this.setState({reminders:myTab});
-        this.props.filterReminders('');
+        this.props.filterReminders("");
       }
+
       //sort by date  
       let mappedListOfReminders = myTab.map((reminder)=>{
       //let mappedListOfReminders = myTab.map((reminder)=>{
         if(reminder!=="empty") {
-            var cololor = this.colorReminder({nameCard}, {reminder});
+            var cololor = this.colorReminder({reminder});
         }
         var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
         var shown = (autoRemind || reminder[1]==='ok');
@@ -693,7 +703,7 @@ class Reminder extends Component {
                   handleClose={() => {this.setState({openSaveNotification:false})}}
               /> */}
       <div className='reminder-details'>
-          <Avatar className='reminder-avatar' style={{background: "#00984C"}}>{this.state.reminders[0]==='empty' ? 0 : this.state.reminders.length}</Avatar>
+          <Avatar className='reminder-avatar' style={{background: this.state.colorAvatar}}>{this.state.reminders[0]==='empty' ? 0 : this.state.reminders.length}</Avatar>
           <text className='reminder-name'>
               {this.state.name}
           </text>

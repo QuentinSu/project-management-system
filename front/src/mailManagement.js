@@ -138,7 +138,7 @@ class MailsManagement extends Component {
                     <DialogContent>
                     <DialogContentText>
                         To create a new preformatted mail, please fill all fields<br></br>
-                        <small>You can go <a href="https://unicode-table.com/en/sets/" target="_blank">there</a> to pick emots and symbols for you content!</small>
+                        <small>You can go <a href="https://unicode-table.com/en/sets/" target="_blank">there</a> to pick emotes and symbols for your content!</small>
                     </DialogContentText>
                     <Select
                         className="type-select"
