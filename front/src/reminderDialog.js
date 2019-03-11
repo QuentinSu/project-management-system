@@ -69,6 +69,7 @@ export class NewReminderDialog extends React.Component {
                 //console.log('plop');
                 var data = {status:self.state.status, type:self.state.type, deadline:self.state.deadline}
                 self.props.handleReminderChange('addRemind', data);
+                self.props.props.filterReminders("");
                 //self.props.handleReminderChange('addRemind', data);
             }
         }).catch(function (error) {

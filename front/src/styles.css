@@ -226,6 +226,20 @@
 	opacity: 0.8;
 }
 
+.reminder-stats {
+	max-width: 30%;
+	min-width: 15%;
+	text-align: center;
+	float: right;
+	margin-top: -30px;
+	height: 60px;
+}
+
+.reminder-stat-elem {
+	float:left;
+	margin-left:25px;
+}
+
 .reminder-button {
 	height:100%;
 	font-size:small;

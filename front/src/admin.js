@@ -45,6 +45,8 @@ var advanced;
   ? advanced = false
   : advanced = true};
 
+var activeTab = '';
+
 /**
  * React component that represents a tab with a particular style
  */
@@ -76,6 +78,7 @@ class AdminDashboard extends Component {
    */
   handleChange = (event, tabValue) => {
     this.setState({ tabValue });
+    activeTab = {tabValue};
   };
 
 
@@ -119,8 +122,8 @@ class AdminDashboard extends Component {
                 </Tabs>
               ) : (
                 <Tabs className='dashboard-tabs' value={this.state.tabValue} onChange={this.handleChange}>
-                  <Tab label="Clients" />
-                  <Tab label="Reminders" />
+                  <Tab label="Clients"/>
+                  <Tab label="Reminders"/>
                   <Tab label="Servers" />
                   <Tab label="Marketing" />
                   <Tab label="Manage mail" />
@@ -140,3 +143,4 @@ class AdminDashboard extends Component {
 }
 
 export default AdminDashboard;
+export {activeTab};

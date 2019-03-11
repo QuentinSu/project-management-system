@@ -29,6 +29,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
+import {activeTab} from './admin.js';
 
 var config = require('./config.json');
 
@@ -41,6 +42,7 @@ var reminderValidatedNb;
 var reminderSoonNb;
 var reminderActiveNb;
 var firstRender=true;
+var firstGlobalRender=true;
 
 // CLASS TO RENDER ALL THE REMINDERS CARD
 
@@ -48,10 +50,11 @@ class Reminders extends Component {
   constructor(props){
     super(props);
     this.state={
-        remindersCard: [],
-        trigger: true
+      remindersCard: [],
+      trigger: true
     }
   };
+  
 
   handleRemindersChange() {
       var self = this;
@@ -111,14 +114,14 @@ class Reminders extends Component {
 
   filterReminders(label) {
       let newReminders = this.state.remindersCard.slice();
+      reminderNb= 0;
+      reminderLateNb=0;
+      reminderValidatedNb=0;
+      reminderSoonNb=0;
+      reminderActiveNb=0;
       newReminders.map((reminder)=>{
         //mandatory because of the first passage here
-        if(reminder.hidden == undefined) {
-            reminderNb=0;
-            reminderActiveNb=0;
-            reminderSoonNb=0;
-            reminderLateNb=0;
-            reminderValidatedNb=0;
+        if(reminder.hidden === undefined) {
           reminder.hidden = false;
         }
         var initialState=reminder.hidden;
@@ -139,58 +142,26 @@ class Reminders extends Component {
                 reminder.hidden = true;
               }
         }
-        /** STATS CONTROL */
-        this.statsControl(initialState, reminder);
+        reminder.reminders.map((remind)=>{
+          if(!reminder.hidden) {
+            this.changeColorCheckStats(remind[4], 'add');
+          }
+        });
+          //checkedReminder.push(remind[0])
         
       });
       this.setState({remindersCard: newReminders});
   }
 
-  changeColorCheckStats(newColor, initialColor) {
-    // console.log('je suis passé par ici avec une initial color : '+initialColor+' et une new color : '+newColor);
-    if(initialColor === 'unknow') {
-      reminderNb++;
+  changeColorCheckStats(newColor, action) {
+    if(action==='delete') {
+      reminderNb--;
       switch(newColor) {
         case 'validated':
-            reminderValidatedNb++;
+            reminderValidatedNb--; 
             break;
         case 'late':
-            reminderLateNb++;
-            break;
-        case 'active':
-            reminderActiveNb++;
-            break;
-        case 'soon':
-            reminderSoonNb++;
-            break;
-        default:
-            break;
-      }
-    } else if(initialColor !== newColor){
-      switch(newColor) {
-        case 'validated':
-            reminderValidatedNb++;
-            break;
-        case 'late':
-            reminderLateNb++;
-            break;
-        case 'active':
-            reminderActiveNb++;
-            break;
-        case 'soon':
-            reminderSoonNb++;
-            break;
-        case 'delete':
-            reminderNb--;
-        default:
-            break;
-      }
-      switch(initialColor) {
-        case 'validated':
-            reminderValidatedNb--;
-            break;
-        case 'late':
-            reminderLateNb--;
+            reminderLateNb--;   
             break;
         case 'active':
             reminderActiveNb--;
@@ -201,11 +172,28 @@ class Reminders extends Component {
         default:
             break;
       }
+    } else if (action==='add') {
+      reminderNb++;
+      switch(newColor) {
+        case 'validated':
+            reminderValidatedNb++; 
+            break;
+        case 'late':
+            reminderLateNb++;
+            break;
+        case 'active':
+            reminderActiveNb++;
+            break;
+        case 'soon':
+            reminderSoonNb++;
+            break;
+        default:
+            break;
+      }
+      // this.forceUpdate();
     }
-
-    console.log("reminderNb: "+reminderNb+"/ reminderValid: "+reminderValidatedNb+"/ reminderLate: "+reminderLateNb+"/ reminderSoon: "+reminderSoonNb+"/ reminderActive: "+reminderActiveNb);
   }
-
+  
   forceRegenAutoReminders() {
     var self = this;
       axios({
@@ -226,6 +214,17 @@ class Reminders extends Component {
   }
 
   render(){
+
+    if(activeTab.tabValue !== 1 && firstGlobalRender) {
+      reminderNb= 0,
+      reminderLateNb=0,
+      reminderValidatedNb=0,
+      reminderSoonNb=0,
+      reminderActiveNb=0;
+      //this.filterReminders('');
+      firstGlobalRender=false;
+      //firstGlobalRender=false;
+    }
 
       // var test = this.getDetailledReminder();
       let mappedReminders = this.state.remindersCard.map((reminder)=>{
@@ -259,9 +258,10 @@ class Reminders extends Component {
                               </div>
                               {legendText}
                             </div>
+      console.log('active tab '+activeTab.tabValue);
       return(
           <div>
-              <div className='project-header'>
+              <div className='project-header' onChangeTa>
                   <input
                       placeholder="Search (e.g: name, special reminder, date)"
                       handleRemindersChange={this.handleRemindersChange.bind(this)}
@@ -277,8 +277,14 @@ class Reminders extends Component {
               </div>
 
               <div>
-                {reminderNb}
-                <Paper square={false}>Nb Reminder {reminderNb}<br/>Nb Active {reminderActiveNb}</Paper>
+                <Paper color="primary" className='reminder-stats' square={false} interactive>
+                  Nb reminders<br/>
+                  
+                  <Avatar className="reminder-stat-elem" style={{background: "#00984C", width: 30, height: 30}}>{reminderValidatedNb}</Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 30, height: 30}}>{reminderLateNb}</Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#f6ae47", width: 30, height: 30}}>{reminderSoonNb}</Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#c9c9c9", width: 30, height: 30}}>{reminderActiveNb}</Avatar>
+                </Paper>
               </div>
               <br/><p></p>
               {mappedReminders}
@@ -351,22 +357,23 @@ class Reminder extends Component {
         reminder["reminder"][4] = 'unknow';
       }
       var initialColor = reminder["reminder"][4];
+      this.props.changeColorCheckStats(reminder["reminder"][4], 'delete');
       if(reminder["reminder"][1]=='ok') {
         reminder["reminder"][4] = 'validated';
-        this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
+        this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
         return '#00984C';
       } else {
         if(remindDate < today) {
           reminder["reminder"][4] = 'late';
-          this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
+          this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
           return '#f44336';
         } else if(today > remindDateLessFourteen){
           reminder["reminder"][4] = 'soon';
-          this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
+          this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
           return '#f6ae47';
         } else {
           reminder["reminder"][4] = 'active';
-          this.props.changeColorCheckStats(reminder["reminder"][4], initialColor);
+          this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
           return '#c9c9c9';
         }
       }
@@ -381,11 +388,10 @@ class Reminder extends Component {
               this.getReminders(this, this.state.id, function(newReminds) {
                   self.setState({reminders: newReminds});
               });
-              //this.props.handleRemindersChange();
               (self.state.reminders).forEach(function (remind) {
-                console.log('im here');
-                self.props.changeColorCheckStats('delete', remind[4]);
+                self.props.changeColorCheckStats(remind[4], 'delete');
               });
+              this.props.handleRemindersChange();
               break;
           default:
               this.props.handleRemindersChange();
@@ -434,6 +440,7 @@ class Reminder extends Component {
         }).then(function (response) {
             if(response.status === 200){
               self.handleReminderChange('deleteReminder', self.state.reminders);
+              this.props.filterReminders("");
             }
         }).catch(function (error) {
           console.log(error);
@@ -554,13 +561,13 @@ class Reminder extends Component {
         firstRender=false;
         myTab.sort((a, b) => a[3] > b[3]);
         this.setState({reminders:myTab});
-        this.props.filterReminders('');;
+        this.props.filterReminders('');
       }
       //sort by date  
       let mappedListOfReminders = myTab.map((reminder)=>{
       //let mappedListOfReminders = myTab.map((reminder)=>{
         if(reminder!=="empty") {
-          var cololor = this.colorReminder({nameCard}, {reminder});
+            var cololor = this.colorReminder({nameCard}, {reminder});
         }
         var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
         var shown = (autoRemind || reminder[1]==='ok');
@@ -587,7 +594,7 @@ class Reminder extends Component {
                       InputProps={{
                         className: classes.textField,
                       }}
-                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab)} }
+                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab);} }
                       variant='outlined'
                   />
               </b>
