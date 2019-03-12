@@ -389,7 +389,7 @@ class Companies extends Component {
                         defaultValue={new Date().getFullYear()+"-12-31"}
                         onChange = {(event) => this.setState({newEoy:event.target.value})} 
                     />
-
+                    &nbsp;
                     <TextField disabled
                         margin="dense"
                         id="status"

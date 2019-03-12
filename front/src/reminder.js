@@ -350,7 +350,6 @@ class Reminders extends Component {
               </div>
               <div>
                 <div className='reminder-filter-type'>
-                Show
                 <MuiThemeProvider theme={validated}>
                 <FormControlLabel 
                     className="reminder-validated-switch"

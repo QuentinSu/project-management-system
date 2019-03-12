@@ -12,6 +12,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
 var config = require('./config.json');
@@ -240,34 +244,32 @@ class Testimonials extends Component {
         var modified = new Date(this.state.modified);
         var parsedModify = modified.toLocaleString('en-GB', { timeZone: 'UTC' });
         return (
-            <Card className='testimonial-card'>
-        <div>
+          <div>
+            <ExpansionPanel className='testimonial-card'>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <h1>{this.state.author}</h1>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+            <span className='testimonial-fullwidth-div' style="width:100%">
             {!this.props.isClient &&
             <TextField 
                 disabled
                 defaultValue={this.state.id}
                 label='ID'
             />
-            }
+            }&nbsp;
             {!this.props.isClient &&
-            <TextField disabled fullWidth
-                defaultValue={parsedCreation}
-                label='Creation date'
-            />
-            }
-            {!this.props.isClient &&
-            <TextField disabled fullWidth
-                defaultValue={parsedModify}
-                label='Last modified'
-            />
-            }
-            {!this.props.isClient &&
-            <TextField fullWidth
+            <TextField 
                 onChange={event => this.setState({author:event.target.value})}
                 defaultValue={this.state.author}
                 label='Author'
+                className='testimonial-author'
             />
-            }
+            }</span> <span className='testimonial-fullwidth-div'>
+            {!this.props.isClient &&
+            <h5>Created: {parsedCreation} - Modified: {parsedModify}</h5>
+            }</span>
+            <div className='testimonial-fullwidth-div'>
             {!this.props.isClient &&
             <TextField fullWidth
                 onChange={event => this.setState({description:event.target.value})}
@@ -275,9 +277,9 @@ class Testimonials extends Component {
                 defaultValue={this.state.description}
                 label='Description'
             />
-            }
+            }</div>
             {this.props.isClient && 
-            <div>
+            <div className='testimonial-fullwidth-div'>
                 <Typography>
                 {this.state.description}
                 </Typography>
@@ -286,7 +288,7 @@ class Testimonials extends Component {
                 </Typography>
             </div>     
             }
-            </div>
+            
             {!this.props.isClient &&
             <div className='ticket-buttons'>
                 <Button 
@@ -327,7 +329,8 @@ class Testimonials extends Component {
                 </Dialog>
             </div>
             }
-        </Card>
+        </ExpansionPanelDetails></ExpansionPanel>
+        </div>
         );
     }
 
