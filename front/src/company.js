@@ -31,6 +31,29 @@ import Divider from '@material-ui/core/Divider';
 import CompanySaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
 import { array } from 'prop-types';
+import green from '@material-ui/core/colors/green';
+import Checkbox from '@material-ui/core/Checkbox';
+import { withStyles } from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      // light: will be calculated from palette.primary.main,
+      main: '#562342',
+      // dark: will be calculated from palette.primary.main,
+      // contrastText: will be calculated to contrast with palette.primary.main
+    },
+    secondary: {
+      main: '#00984C',
+      // dark: will be calculated from palette.secondary.main,
+      contrastText: '#ffcc00',
+    },
+    // error: will use the default color
+  },
+});
+
 
 //import Typography from '@material-ui/core/Typography';
 //import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
@@ -40,19 +63,6 @@ var nbClients;
 var once = false;
 const apiBaseUrl = config.apiBaseUrl;
 
-const styles = theme => ({
-    colorSwitchBase: {
-      color: purple[500],
-      '&$colorChecked': {
-        color: purple[500],
-        '& + $colorBar': {
-          backgroundColor: purple[500],
-        },
-      },
-    },
-    colorBar: {},
-    colorChecked: {},
-});
 //const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } });
 
 var today = new Date();
@@ -279,6 +289,9 @@ class Companies extends Component {
     }
 
     render(){
+
+        const classes = this.props;
+
         if (!localStorage.getItem('isAdvanced')) {
             window.location.href = '/admin'
         }
@@ -312,11 +325,16 @@ class Companies extends Component {
         <Paper color="primary" className='company-stats' square={false}>
             <Typography className='company-stats-nb'>You have <b>{nbClients}</b> clients</Typography>
         </Paper>
-         {/* <FormControlLabel 
+        <MuiThemeProvider theme={theme}>     
+        <FormControlLabel 
                     className="company-active-filter"
                     control={<Switch checked={this.state.checked} defaultChecked={true} onChange={this.onChange} onClick={event => this.filterInactiveCompanies(event.target.checked)}
-                             />} 
-                    label="Show inactive" /> */}
+                    classes={{
+                        root: classes.root,
+                        checked: classes.checked,
+                    }}        />} 
+            label="Show inactive" />
+            </MuiThemeProvider>
         </div>
         <br></br>
         </div>
@@ -659,16 +677,13 @@ class Companies extends Component {
                 />
             </div>
             <div className='company-actions'>
+            <MuiThemeProvider theme={theme}>
                 <FormControlLabel 
                     className="company-active-switch"
                     control={<Switch checked={this.state.status}
-                            classes={{
-                                switchBase: classes.colorSwitchBase,
-                                checked: classes.colorChecked,
-                                bar: classes.colorBar,
-                            }}
                             onChange = {(event) => this.setState({status:!this.state.status})} />} 
                     label="Active" />
+                    </MuiThemeProvider>
                 <Chip className='company-live' label={liveFrom} />
                 
                 <Button 

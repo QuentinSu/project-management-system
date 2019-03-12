@@ -80,14 +80,34 @@
 
 /** reminder element */
 
+.reminder-header {
+	display: block;
+	flex-wrap: wrap;
+	width:20%;
+}
+
+.reminder-header-search {
+	width:100%;
+}
+
 .reminder-legend {
-	min-width: 15%;
-	max-width: 20%;
+	display: block;
+	flex-wrap: wrap;
+	width:20%;
 	line-height: 30px;
-	margin-top: -30px;
-	float:left;
-	margin-left:260px;
+	margin-top: 15px;
+	/* margin-left:260px; */
 	text-align: center;	
+}
+
+
+.reminder-filter-type {
+	display: block;
+	flex-wrap: wrap;
+	width:25%;
+	margin-left: 22%;
+	margin-top:-72px;
+	border: 1px solid #c9c9c9 !important;
 }
 
 .reminder-card {
@@ -227,17 +247,17 @@
 }
 
 .reminder-stats {
-	max-width: 30%;
-	min-width: 15%;
+	width:20%;
 	text-align: center;
 	float: right;
-	margin-top: -30px;
+	margin-top: -45px;
 	height: 60px;
 }
 
 .reminder-stat-elem {
 	float:left;
-	margin-left:25px;
+	margin-left:13%;
+	text-align:center;
 }
 
 .reminder-button {

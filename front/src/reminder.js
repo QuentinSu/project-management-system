@@ -29,12 +29,35 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import {activeTab} from './admin.js';
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
 var remindersState = new Array();
+
+const late = createMuiTheme({
+  palette: {
+    primary: { main: '#f44336' }, // Purple and green play nicely together.
+  },
+});
+const validated = createMuiTheme({
+  palette: {
+    primary: { main: '#00984C' }, // Purple and green play nicely together.
+  },
+});
+const soon = createMuiTheme({
+  palette: {
+    primary: { main: '#f6ae47' }, // Purple and green play nicely together.
+  },
+});
+const active = createMuiTheme({
+  palette: {
+    primary: { main: '#c9c9c9' }, // Purple and green play nicely together.
+  },
+});
 
 var reminderNb;
 var reminderLateNb;
@@ -142,6 +165,7 @@ class Reminders extends Component {
                 reminder.hidden = true;
               }
         }
+        
         reminder.reminders.map((remind)=>{
           if(!reminder.hidden) {
             this.changeColorCheckStats(remind[4], 'add');
@@ -153,15 +177,61 @@ class Reminders extends Component {
       this.setState({remindersCard: newReminders});
   }
 
+  filterStateReminders(stateName, checkedState) {
+    let newReminders = this.state.remindersCard.slice();
+    newReminders.map((reminder)=>{
+        var initialState=reminder.hidden;
+        reminder.hidden=true;
+
+        if(reminder.hidden === undefined) {
+            reminder.hidden = false;
+        }
+        var other=[];
+        reminder.reminders.map((remind)=>{
+            if(!remind[5]) {
+              remind[5]='unknow';
+            }
+            if(remind[4]===stateName) {
+              if(checkedState) {
+                reminder.hidden=false;
+                remind[5]='on';
+              } else {
+                remind[5]='off';
+              }
+            }
+            other.push(remind[5]);
+            console.log('Other '+reminder.name+' '+other);
+        });
+
+        if(other.indexOf('on')!==-1 || other.indexOf('unknow')!==-1) {
+          reminder.hidden = false;
+        }
+
+        if(initialState !== reminder.hidden) {
+          reminder.reminders.map((remind)=>{
+            if(!reminder.hidden) {
+              this.changeColorCheckStats(remind[4], 'add');
+            }
+            else {
+              this.changeColorCheckStats(remind[4],'delete');
+            }
+          });
+        }
+    });
+    this.setState({remindersCard: newReminders});
+    return 
+  }
+
+
   changeColorCheckStats(newColor, action) {
     if(action==='delete') {
       reminderNb--;
       switch(newColor) {
         case 'validated':
-            reminderValidatedNb--; 
+            reminderValidatedNb--;
             break;
         case 'late':
-            reminderLateNb--;   
+            reminderLateNb--;
             break;
         case 'active':
             reminderActiveNb--;
@@ -215,6 +285,8 @@ class Reminders extends Component {
 
   render(){
 
+    const classes = this.props;
+
     if(activeTab.tabValue !== 1 && firstGlobalRender) {
       reminderNb= 0,
       reminderLateNb=0,
@@ -235,6 +307,7 @@ class Reminders extends Component {
                           name={reminder.name}
                           status={reminder.status}
                           goLiveDate={reminder.go_live_date}
+                          colorAvatar={reminder.colorAvatar}
                           hidden={reminder.hidden ? reminder.hidden : false}
                           handleRemindersChange={this.handleRemindersChange.bind(this)}
                           changeColorCheckStats={this.changeColorCheckStats.bind(this)}
@@ -260,10 +333,11 @@ class Reminders extends Component {
                             </div>
       return(
           <div>
-              <div className='project-header' onChangeTa>
+              <div className='reminder-header'>
                   <input
                       placeholder="Search (e.g: name, special reminder, date)"
                       handleRemindersChange={this.handleRemindersChange.bind(this)}
+                      class='reminder-header-search'
                       onChange={event => this.filterReminders(event.target.value)}
                   />
               </div>
@@ -274,7 +348,44 @@ class Reminders extends Component {
                 </Tooltip>
                 </div>
               </div>
-
+              <div>
+                <div className='reminder-filter-type'>
+                Show
+                <MuiThemeProvider theme={validated}>
+                <FormControlLabel 
+                    className="reminder-validated-switch"
+                    control={<Switch
+                            color="primary"
+                            defaultChecked={true}
+                            onClick={event => this.filterStateReminders('validated', event.target.checked)}  />} 
+                    label="Validated" />
+                </MuiThemeProvider><MuiThemeProvider theme={active}>
+                    <FormControlLabel 
+                    className="remindr-active-switch"
+                    control={<Switch 
+                            color="primary"
+                            defaultChecked={true}
+                            onClick={event => this.filterStateReminders('active', event.target.checked)} />} 
+                    label="Active" />
+                    </MuiThemeProvider><MuiThemeProvider theme={soon}>
+                    <FormControlLabel 
+                    className="remindr-soon-switch"
+                    control={<Switch 
+                            color="primary"
+                            defaultChecked={true}
+                            onClick={event => this.filterStateReminders('soon', event.target.checked)} />} 
+                    label="Soon" />
+                    </MuiThemeProvider><MuiThemeProvider theme={late}>
+                    <FormControlLabel 
+                    className="remindr-late-switch"
+                    control={<Switch 
+                            color="primary"
+                            defaultChecked={true}
+                            onClick={event => this.filterStateReminders('late', event.target.checked)} />} 
+                    label="Late" />
+                  </MuiThemeProvider>
+                </div>
+              </div>
               <div>
                 <Paper color="primary" className='reminder-stats' square={false} interactive>
                   Stats reminders<br/>
@@ -304,9 +415,9 @@ class Reminder extends Component {
           reminders: props.reminders,
           eoys: props.eoys,
           status: props.status,
+          colorAvatar: "#00984C",
           openSaveNotification: false,
           thingstoSave : false,
-          colorAvatar: "#00984C",
           stat:[]
       }
     }
@@ -429,7 +540,6 @@ class Reminder extends Component {
                   remindersNewArray.push(remindArray);
               });
               self.setState({reminders:remindersNewArray});
-              this.colorAvatar(reminderThis);
             }
       })
           .catch(function (error) {
