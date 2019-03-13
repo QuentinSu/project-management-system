@@ -244,13 +244,11 @@ class Testimonials extends Component {
         var modified = new Date(this.state.modified);
         var parsedModify = modified.toLocaleString('en-GB', { timeZone: 'UTC' });
         return (
-          <div>
             <ExpansionPanel className='testimonial-card'>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <h1>{this.state.author}</h1>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-            <span className='testimonial-fullwidth-div' style="width:100%">
             {!this.props.isClient &&
             <TextField 
                 disabled
@@ -264,31 +262,33 @@ class Testimonials extends Component {
                 defaultValue={this.state.author}
                 label='Author'
                 className='testimonial-author'
-            />
-            }</span> <span className='testimonial-fullwidth-div'>
+                fullWidth
+                />
+            }
+            </ExpansionPanelDetails><ExpansionPanelDetails>
             {!this.props.isClient &&
-            <h5>Created: {parsedCreation} - Modified: {parsedModify}</h5>
-            }</span>
-            <div className='testimonial-fullwidth-div'>
+            <h5 disabled>Created: {parsedCreation} - Modified: {parsedModify}</h5>
+            }
+            </ExpansionPanelDetails><ExpansionPanelDetails>
             {!this.props.isClient &&
             <TextField fullWidth
                 onChange={event => this.setState({description:event.target.value})}
                 multiline
                 defaultValue={this.state.description}
                 label='Description'
-            />
-            }</div>
-            {this.props.isClient && 
-            <div className='testimonial-fullwidth-div'>
+            />}
+            {this.props.isClient &&
+              <div>
                 <Typography>
                 {this.state.description}
                 </Typography>
                 <Typography color="textSecondary">
                     Author: {this.state.author}
-                </Typography>
-            </div>     
+                </Typography> 
+              </div>
             }
-            
+            </ExpansionPanelDetails><ExpansionPanelDetails>
+
             {!this.props.isClient &&
             <div className='ticket-buttons'>
                 <Button 
@@ -330,7 +330,6 @@ class Testimonials extends Component {
             </div>
             }
         </ExpansionPanelDetails></ExpansionPanel>
-        </div>
         );
     }
 
