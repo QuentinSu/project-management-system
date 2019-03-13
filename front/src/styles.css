@@ -235,9 +235,14 @@
 }
 
 
-.reminder-element-theme input[type=date] {
+
+.reminder-element-theme input {
 	color: #ffffff;
-	padding-left:17%;
+	text-align: center;
+}
+
+.reminder-element-theme input[type=date] {
+	padding-left:18%;
 }
 
 .reminder-action-buttons {

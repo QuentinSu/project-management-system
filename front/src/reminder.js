@@ -583,8 +583,8 @@ class Reminder extends Component {
       }).catch(function (error) {
       });
 
-      //custom reminder update/add
-      remindersTab.forEach(function(remind) {
+       //custom reminder update/add
+       remindersTab.forEach(function(remind) {
         if(remind[2]!=="3m" && remind[2]!=="6m") {
           axios({
             method: 'put', //you can set what request you want to be
@@ -604,14 +604,14 @@ class Reminder extends Component {
           }).catch(function (error) {
           });
         } else {
+          var InitialDate = remind[3];
           if(remind[2]==='3m') {
-            var initialDate = remind[3];
             remind[3]=self.formatDateRegen3m6mDate(golive, '3m');
-          } else {
-            var initialDate = remind[3];
+          } else if (remind[2]==='6m') {
             remind[3]=self.formatDateRegen3m6mDate(golive, '6m');
           }
-          if(remind[3]!=initialDate) {
+          
+          if(remind[3]!==InitialDate) {
             remind[1]='notok';
           }
         }
@@ -620,42 +620,62 @@ class Reminder extends Component {
       this.setState({reminders:remindersTab});
       this.setState({thingstoSave:false});
       this.forceUpdate();
-    }
+  }
+
+    // formatDateRegen3m6mDate(dateString, type) {
+    //   if(type==='3m') {
+    //     var d = new Date(dateString),
+    //     month = '' + (d.getMonth()+1-3), //january is 0
+    //     day = '' + (d.getDate()),
+    //     year = d.getFullYear();
+    //   } else if(type==='6m'){
+    //     var d = new Date(dateString),
+    //     month = '' + (d.getMonth()+1-6), //january is 0
+    //     day = '' + (d.getDate()),
+    //     year = d.getFullYear();
+    //   }
+
+    //   /**manage case of month before june (negative month otherwise) */
+    //   if((d.getMonth()+1)<7) {
+    //     if((d.getMonth()+1)<4 && type==='3m') {
+    //         month = 12+parseInt(month);
+    //         year = d.getFullYear()-1;
+    //     } else if(type==='6m'){
+    //         month = 12+parseInt(month);
+    //         year = d.getFullYear()-1;
+    //     }
+    //   }
+
+    //   month = ('0' + month).slice(-2);
+    //   day = ('0' + day).slice(-2);
+    //   return [year, month, day].join('-');
+    // }
 
     formatDateRegen3m6mDate(dateString, type) {
-      if(type==='3m') {
+      if(type = '3m') {
         var d = new Date(dateString),
-        month = '' + (d.getMonth()+1-3), //january is 0
-        day = '' + (d.getDate()),
-        year = d.getFullYear();
-      } else if(type==='6m'){
+            month = '' + (d.getMonth()+1-3), //january is 0
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+      } else if(type = '6m') {
         var d = new Date(dateString),
-        month = '' + (d.getMonth()+1-6), //january is 0
-        day = '' + (d.getDate()),
-        year = d.getFullYear();
+            month = '' + (d.getMonth()+1-6), //january is 0
+            day = '' + d.getDate(),
+            year = d.getFullYear();
       }
 
-      /**manage case of month before june (negative month otherwise) */
-      if((d.getMonth()+1)<7) {
-        if((d.getMonth()+1)<4 && type==='3m') {
-            month = 12+parseInt(month);
-            year = d.getFullYear()-1;
-        } else if(type==='6m'){
-            month = 12+parseInt(month);
-            year = d.getFullYear()-1;
-        }
-      }
-
-      month = ('0' + month).slice(-2);
-      day = ('0' + day).slice(-2);
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
       return [year, month, day].join('-');
+      //this.props.handleRemindersChange();
+      // return [year, month, day].join('-');
     }
 
 
     formatDateAddOneYear(dateString, reminder) {
       var d = new Date(dateString),
           month = '' + (d.getMonth()+1), //january is 0
-          day = '' + (d.getDate()+1),
+          day = '' + (d.getDate()),
           year = d.getFullYear()+1;
   
       if (month.length < 2) month = '0' + month;
@@ -675,11 +695,16 @@ class Reminder extends Component {
       let cardObject = this;
       let projectId = this.state.id;
       let myTab = [...this.state.reminders];
+      console.log('now '+myTab);
       if(firstRender) {
         firstRender=false;
         myTab.sort((a, b) => a[3] > b[3]);
         this.setState({reminders:myTab});
         this.props.filterReminders("");
+      }
+
+      if(!this.state.thingstoSave && this.state.thingstoSave!==null) {
+        myTab.sort((a, b) => a[3] > b[3]);
       }
 
       //sort by date  
@@ -691,6 +716,9 @@ class Reminder extends Component {
         var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
         var shown = (autoRemind || reminder[1]==='ok');
         var remindValid = (!autoRemind && reminder[1] === 'ok');
+        var date = reminder[3];
+        console.log('date '+typeof date);
+        console.log(typeof reminder[3]);
         return (
           <div className='reminder-element'>
             <MuiThemeProvider>
@@ -701,6 +729,7 @@ class Reminder extends Component {
               </b></span>
               <span className="borderRadiusManager">
               <b>
+                {!autoRemind &&
                   <TextField
                       disabled={shown}
                       className='reminder-element-theme'
@@ -710,12 +739,36 @@ class Reminder extends Component {
                         borderRadius: '20px',
                       }}
                       value={reminder[3]}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                       InputProps={{
                         className: classes.textField,
                       }}
-                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab);} }
+                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab); this.setState({reminders:myTab});}}
                       variant='outlined'
                   />
+                }
+                {autoRemind &&
+                  <TextField
+                      disabled={shown}
+                      className='reminder-element-theme'
+                      style={{
+                        background: cololor,
+                        borderRadius: '20px',
+                      }}
+                      value={reminder[3]}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      InputProps={{
+                        className: classes.textField,
+                        color: '#ffffff',
+                      }}
+                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab); this.setState({reminders:myTab});}}
+                      variant='outlined'
+                  />
+                }
               </b>
               </span>
             </MuiThemeProvider>
@@ -818,7 +871,7 @@ class Reminder extends Component {
           </text>
           <TextField className='reminder-golive'
               type='date'
-              onChange={event => {this.setState({goLiveDate:event.target.value}); this.setState({thingstoSave:true})}}
+              onChange={event => { this.setState({goLiveDate:event.target.value}); this.setState({thingstoSave:true});}}
               defaultValue={this.state.goLiveDate}
               label='Go Live Date'
           />
@@ -844,7 +897,7 @@ class Reminder extends Component {
               style = {{
                 background:'#00984C'
               }}
-              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}
+              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);}}
               variant="contained"
               >
               <SaveIcon/> Save changes
@@ -852,7 +905,8 @@ class Reminder extends Component {
           {!this.state.thingstoSave &&
           <Button
               size="small"
-              onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}
+              onClick={() => null}
+              //onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}
               >
               <SaveIcon/> Save changes
           </Button>}
