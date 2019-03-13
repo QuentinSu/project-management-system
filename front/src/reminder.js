@@ -622,53 +622,33 @@ class Reminder extends Component {
       this.forceUpdate();
   }
 
-    // formatDateRegen3m6mDate(dateString, type) {
-    //   if(type==='3m') {
-    //     var d = new Date(dateString),
-    //     month = '' + (d.getMonth()+1-3), //january is 0
-    //     day = '' + (d.getDate()),
-    //     year = d.getFullYear();
-    //   } else if(type==='6m'){
-    //     var d = new Date(dateString),
-    //     month = '' + (d.getMonth()+1-6), //january is 0
-    //     day = '' + (d.getDate()),
-    //     year = d.getFullYear();
-    //   }
-
-    //   /**manage case of month before june (negative month otherwise) */
-    //   if((d.getMonth()+1)<7) {
-    //     if((d.getMonth()+1)<4 && type==='3m') {
-    //         month = 12+parseInt(month);
-    //         year = d.getFullYear()-1;
-    //     } else if(type==='6m'){
-    //         month = 12+parseInt(month);
-    //         year = d.getFullYear()-1;
-    //     }
-    //   }
-
-    //   month = ('0' + month).slice(-2);
-    //   day = ('0' + day).slice(-2);
-    //   return [year, month, day].join('-');
-    // }
-
     formatDateRegen3m6mDate(dateString, type) {
-      if(type = '3m') {
+      if(type==='3m') {
         var d = new Date(dateString),
-            month = '' + (d.getMonth()+1-3), //january is 0
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-      } else if(type = '6m') {
+        month = '' + (d.getMonth()+1-3), //january is 0
+        day = '' + (d.getDate()),
+        year = d.getFullYear();
+      } else if(type==='6m'){
         var d = new Date(dateString),
-            month = '' + (d.getMonth()+1-6), //january is 0
-            day = '' + d.getDate(),
-            year = d.getFullYear();
+        month = '' + (d.getMonth()+1-6), //january is 0
+        day = '' + (d.getDate()),
+        year = d.getFullYear();
       }
 
-      if (month.length < 2) month = '0' + month;
-      if (day.length < 2) day = '0' + day;
+      /**manage case of month before june (negative month otherwise) */
+      if((d.getMonth()+1)<7) {
+        if((d.getMonth()+1)<4 && type==='3m') {
+            month = 12+parseInt(month);
+            year = d.getFullYear()-1;
+        } else if(type==='6m'){
+            month = 12+parseInt(month);
+            year = d.getFullYear()-1;
+        }
+      }
+
+      month = ('0' + month).slice(-2);
+      day = ('0' + day).slice(-2);
       return [year, month, day].join('-');
-      //this.props.handleRemindersChange();
-      // return [year, month, day].join('-');
     }
 
 
@@ -682,6 +662,13 @@ class Reminder extends Component {
       if (day.length < 2) day = '0' + day;
       this.setState({thingstoSave:true});
       return [year, month, day].join('-');
+    }
+
+    formatDateDBtoJs(dateString) {
+      var p = dateString.split(/\D/g);
+      if (p[1].length < 2) p[1] = '0' + p[1];
+      if (p[2].length < 2) p[2] = '0' + p[2];
+      return [p[2],p[1],p[0] ].join(" / ");
     }
 
     modifyDate (reminder, value, myTab) {
@@ -757,7 +744,7 @@ class Reminder extends Component {
                         background: cololor,
                         borderRadius: '20px',
                       }}
-                      value={reminder[3]}
+                      value={this.formatDateDBtoJs(reminder[3])}
                       InputLabelProps={{
                         shrink: true
                       }}

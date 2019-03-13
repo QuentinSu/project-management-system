@@ -364,6 +364,7 @@ class NewMailReminderDialog extends React.Component {
               label="Body"
               multiline
               rows="15"
+              InputLabelProps={{ shrink: true }}
               value={this.state.content}
               onChange = {(event) => this.setState({content:event.target.value})}
               fullWidth
