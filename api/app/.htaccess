@@ -1,9 +1,9 @@
 <IfModule mod_authz_core.c>
-    Require all allow
+    Require all denied
 </IfModule>
 <IfModule !mod_authz_core.c>
-    Order allow,deny
-    Allow from all
+    Order deny,allow
+    Deny from all
 </IfModule>
 
 

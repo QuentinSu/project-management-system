@@ -31,12 +31,22 @@ class Server
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $liveDate;
+    private $liveDate;//deprecated
 
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\ServerReminder", mappedBy="server", orphanRemoval=true)
      */
     private $serverReminders;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $created;
 
     public function __construct()
     {
@@ -111,6 +121,30 @@ class Server
                 $serverReminder->setServer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCreated(): ?string
+    {
+        return $this->created;
+    }
+
+    public function setCreated(string $created): self
+    {
+        $this->created = $created;
 
         return $this;
     }

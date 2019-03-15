@@ -36,6 +36,7 @@ import {activeTab} from './admin.js';
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
+
 var remindersState = new Array();
 
 const late = createMuiTheme({
@@ -682,7 +683,6 @@ class Reminder extends Component {
       let cardObject = this;
       let projectId = this.state.id;
       let myTab = [...this.state.reminders];
-      console.log('now '+myTab);
       if(firstRender) {
         firstRender=false;
         myTab.sort((a, b) => a[3] > b[3]);
@@ -704,8 +704,6 @@ class Reminder extends Component {
         var shown = (autoRemind || reminder[1]==='ok');
         var remindValid = (!autoRemind && reminder[1] === 'ok');
         var date = reminder[3];
-        console.log('date '+typeof date);
-        console.log(typeof reminder[3]);
         return (
           <div className='reminder-element'>
             <MuiThemeProvider>
@@ -887,7 +885,7 @@ class Reminder extends Component {
               onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);}}
               variant="contained"
               >
-              <SaveIcon/> Save changes
+              <SaveIcon/> Save
           </Button>}
           {!this.state.thingstoSave &&
           <Button
@@ -895,7 +893,7 @@ class Reminder extends Component {
               onClick={() => null}
               //onClick={() => {this.saveReminder(this.state.id, myTab, this.state.goLiveDate);  myTab.sort((a, b) => a[3] > b[3])}}
               >
-              <SaveIcon/> Save changes
+              <SaveIcon/> Save
           </Button>}
               
         </div>
