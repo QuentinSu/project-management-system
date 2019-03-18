@@ -51,11 +51,13 @@ class ServerController extends RestServiceController
       $data = new Server;
       $name = $request->get('name');
       $address = $request->get('address');
+      $comment = $request->get('comment');
 
       $monitoring = $request->get('monitoring');
       $firewall = $request->get('firewall');
       $backups = $request->get('backups');
       $local = $request->get('local');
+      $lastbu = $request->get('lastbu');
 
     if( empty($name) || empty($address) )
     {
@@ -63,6 +65,7 @@ class ServerController extends RestServiceController
     } 
       $data->setName($name);
       $data->setAddress($address);
+      $data->setComment($comment);
       $created = date('Y-m-d');
       $data->setCreated($created);
       $em = $this->getDoctrine()->getManager();
@@ -94,9 +97,15 @@ class ServerController extends RestServiceController
       $local ? $dataLocal->setStatus($local) : '0';
       $em->persist($dataLocal);
 
+      $dataLastbu = new ServerReminder;
+      $dataLastbu->setServer($data);
+      $dataLastbu->setType('Date last back up');
+      $lastbu ? $dataLastbu->setStatus($lastbu) : '0';
+      $em->persist($dataLastbu);
+
       $em->flush();
      
-      $this->notify('Server added');
+      //$this->notify('Server added');
       return new View("Server Added Successfully", Response::HTTP_OK);
     }
 
@@ -118,11 +127,13 @@ class ServerController extends RestServiceController
         
         $name = $request->get('name');
         $address = $request->get('address');
+        $comment = $request->get('comment');
 
         $dbm = $this->getDoctrine()->getManager();
 
         !empty($name) ? $server->setName($name) : 0;
         !empty($address) ? $server->setAddress($address) : 0;
+        !empty($address) ? $server->setComment($comment) : 0;
 
         $dbm->flush();
 
@@ -146,7 +157,7 @@ class ServerController extends RestServiceController
             return new View("not allowed", Response::HTTP_FORBIDDEN);
         }
         
-        $this->notify('Server n°'.$server->getId().' deleted');
+       // $this->notify('Server n°'.$server->getId().' deleted');
         $dbm = $this->getDoctrine()->getManager();
         $dbm->remove($server);
         $dbm->flush();

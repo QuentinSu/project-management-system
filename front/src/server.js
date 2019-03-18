@@ -18,6 +18,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import SaveIcon from '@material-ui/icons/Save';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import HighlightOff from '@material-ui/icons/HighlightOff';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Tooltip from '@material-ui/core/Tooltip';
 
 var config = require('./config.json');
 const apiBaseUrl = config.apiBaseUrl;
@@ -59,10 +62,12 @@ class Servers extends Component {
         open: false,
         newName: null,
         newAddress: '',
+        newComment: null,
         newMonitoring: 'yes',
         newFirewall: 'yes',
         newBackups: 'yes',
-        newLocal: 'yes'
+        newLocal: 'yes',
+        newLastbu: 'undefined'
         }
     };
 
@@ -133,10 +138,12 @@ class Servers extends Component {
             data: {
                 "name": this.state.newName,
                 "address": this.state.newAddress,
+                "comment": this.state.newComment,
                 "monitoring": this.state.newMonitoring,
                 "firewall": this.state.newFirewall,
                 "backups": this.state.newBackups,
                 "local": this.state.newLocal,
+                "lastbu": this.state.newLastbu,
             }
           })
             .then(function (response) {
@@ -154,6 +161,7 @@ class Servers extends Component {
           return <Testimonial   key={server.id}
                             id={server.id}
                             name={server.name}
+                            comment={server.comment}
                             serverReminders={server.serverReminders}
                             address={server.address}
                             created={server.created}
@@ -188,7 +196,7 @@ class Servers extends Component {
                         required
                         onChange = {(event) => this.setState({newName:event.target.value})}
                         fullWidth
-                    />
+                    /><br/>
                     <TextField
                         margin="dense"
                         id="address"
@@ -196,6 +204,16 @@ class Servers extends Component {
                         required
                         value={this.state.newAddress}
                         onChange = {event => this.handleChangeAddress(event.target.value)}
+                        fullWidth
+                    />
+                    <TextField
+                        margin="dense"
+                        id="comment"
+                        label="Comment"
+                        multiline
+                        rows='4'
+                        value={this.state.newComment}
+                        onChange = {event => this.setState({newComment:event.target.value})}
                         fullWidth
                     />
                     <FormControlLabel 
@@ -255,6 +273,7 @@ class Servers extends Component {
             id: props.id,
             name: props.name,
             address: props.address,
+            comment: props.comment,
             created: props.created,
             serverReminders: null,
             openDelete: false,
@@ -262,7 +281,9 @@ class Servers extends Component {
         }
     }
 
-    saveServer() {
+    saveServer(idServ, reminders) {
+
+        /** Server part */
         var self = this;
         axios({
             method: 'put', //you can set what request you want to be
@@ -273,7 +294,8 @@ class Servers extends Component {
             },
             data: {
                 "name": this.state.name,
-                "address": this.state.address
+                "address": this.state.address,
+                "comment": this.state.comment
             }
           })
             .then(function (response) {
@@ -283,6 +305,29 @@ class Servers extends Component {
             })
             .catch(function (error) {
             });
+        /** Server reminder part */
+        reminders.forEach(function(remind) {
+          axios({
+            method: 'put', //you can set what request you want to be
+            url: apiBaseUrl+ 'server/reminder/'+remind[0],
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('session'),
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            data: {
+                "status": remind[2]
+            }
+          })
+            .then(function (response) {
+              if(response.status === 200){
+                self.props.updateServers();
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        });
+        this.setState({thingstoSave:false});
     }
 
     getServerReminders() {
@@ -298,6 +343,7 @@ class Servers extends Component {
           .then(function (response) {
             if(response.status === 200){
               self.setState({serverReminders:response.data});
+              self.setState({thingstoSave:false});
             }
           })
           .catch(function (error) {
@@ -326,29 +372,117 @@ class Servers extends Component {
     }
 
     render() {
+      const classes = this.props;
       let mappedServerReminders;
         console.log('a '+this.state.serverReminders);
         if((this.state.serverReminders === null) || (this.state.serverReminders === undefined) && this.state.thingstoSave) {
             console.log('test');
-
             this.getServerReminders();
         }
 
         if(this.state.serverReminders !== null) {
             mappedServerReminders = this.state.serverReminders.map((reminder)=>{
-                return  <TextField
-                    className='reminder-element-theme'
-                    style={{
-                      background: '#456d68',
-                      borderRadius: '20px'
-                    }}
-                    value={reminder[3]}
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    onChange={(event) => {(reminder[3]=event.target.value);}}
-                    variant='outlined'
-                />
+               let cololor = "#c9c9c9";
+                if(reminder[2]==='yes') {
+                  cololor = "#00984C";
+                } else if(reminder[2]==='no') {
+                  cololor = "#f44336";
+                }
+                if(reminder[1]==='Date last back up') {
+                  return <div className='reminder-server-element'>
+                  <MuiThemeProvider>
+                  <span className="textToCenter"><b>
+                    {reminder[1]}
+                    </b></span>
+                    <span className="borderRadiusManager">
+                    <b>
+                    <TextField
+                      className='reminder-server-element-theme'
+                      type='date'
+                      style={{
+                        background: cololor,
+                        borderRadius: '20px',
+                      }}
+                      value={reminder[2]}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      InputProps={{
+                        className: classes.textField,
+                      }}
+                      onChange={(event) => {(reminder[2]=event.target.value); this.setState({thingstoSave:true});}}
+                      variant='outlined'
+                    />
+                    </b>
+                    </span>
+                  </MuiThemeProvider>
+                    <div className='reminder-action-buttons'>
+                        <Tooltip title="Reset data back-up" interactive>
+                          <Button
+                              className="reminder-server-button"
+                              size="small"
+                              color="primary"
+                              onClick={() => { if (window.confirm('Are you sure you wish to reset date of last back up?')) {reminder[2]=null;  this.setState({thingstoSave:true});this.forceUpdate();}}}>
+                              <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>Reset date
+                          </Button>
+                        </Tooltip>
+                    </div>
+                  </div>
+                } else {
+                  var labelReminder;
+                  if(reminder[1]==='Local') {
+                    labelReminder = 'Local backups';
+                  } else {
+                    labelReminder = reminder[1];
+                  } 
+                  return  <div className='reminder-server-element'>
+                    <MuiThemeProvider>
+                    <span className="textToCenter"><b>
+                      {reminder[1]}
+                      </b></span>
+                      <span className="borderRadiusManager">
+                        <b>
+                        <TextField
+                            disabled
+                            className='reminder-server-element-theme'
+                            style={{
+                              background: cololor,
+                              borderRadius: '20px'
+                            }}
+                            value={reminder[2].toUpperCase()}
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                            onChange={(event) => {(console.log(reminder[2]))}}
+                            variant='outlined'
+                        />
+                        </b>
+                      </span>
+                    </MuiThemeProvider>
+                      <div className='reminder-action-buttons'>
+                        {reminder[2]=='yes' &&
+                        <Tooltip title="Turn reminder on NO" interactive>
+                          <Button
+                              className="reminder-server-button"
+                              size="small"
+                              color="primary"
+                              onClick={() => { if (window.confirm('Are you sure you wish to change the state of this reminder?')) {reminder[2]='no';  this.setState({thingstoSave:true});this.forceUpdate();}}}>
+                              <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/> Turn NO
+                          </Button>
+                        </Tooltip>}
+                        {reminder[2]=='no' &&
+                        <Tooltip title="Turn reminder on YES" interactive>
+                          <Button
+                              className="reminder-server-button"
+                              size="small"
+                              color="primary"
+                              onClick={() => { if (window.confirm('Are you sure you wish to change the state of this reminder?')) {reminder[2]='yes';this.setState({thingstoSave:true}); this.forceUpdate();}}}>
+                              <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/> Turn YES
+                          </Button>
+                        </Tooltip>}
+                      </div>
+                    </div>
+                }
             })
             console.log('map' : mappedServerReminders);
 
@@ -364,8 +498,8 @@ class Servers extends Component {
              liveFrom += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
          }
          liveFrom = liveFrom + " old";
-
         return (
+          <div>
             <Card className="server-card">
             <div className='server-details'>
                 <Avatar className='server-avatar' style={{background: '#523642'}}>☺</Avatar>
@@ -381,19 +515,37 @@ class Servers extends Component {
                     label='IP Address'
                 />
             </div>
-            <div className='reminder-list'>
+            <div className='reminder-server-list'>
               {mappedServerReminders}
             </div>
-            <p>insert here reminders</p>
-
-            <div className='ticket-buttons'>
-                <Button 
-                    className="save-button"
-                    size="small"
-                    color="primary" 
-                    onClick={() => this.saveServer()}>
-                    <SaveIcon/> Save
-                </Button>
+            <div className="server-comment-div">
+                <TextField className='server-comment-text'
+                    onChange={event => { this.setState({comment:event.target.value}); this.setState({thingstoSave:true});}}
+                    defaultValue={this.state.comment}
+                    multiline
+                    rows='2'
+                    label='Comment'
+                />
+            </div>
+            <div className='ticket-server-buttons'>
+            {this.state.thingstoSave &&
+              <Button
+                  size="small"
+                  style = {{
+                    background:'#00984C'
+                  }}
+                  onClick={() => {this.saveServer(this.state.id, this.state.serverReminders);}}
+                  variant="contained"
+                  >
+                  <SaveIcon/> Save
+              </Button>}
+              {!this.state.thingstoSave &&
+              <Button
+                  size="small"
+                  onClick={() => null}
+                  >
+                  <SaveIcon/> Save
+              </Button>}<br></br><br></br>
                 <Button 
                     onClick={() => this.setState({ openDelete: true })} 
                     size="small"
@@ -424,7 +576,8 @@ class Servers extends Component {
                 </DialogActions>
                 </Dialog>
             </div>
-        </Card>
+        </Card><br/>
+        </div>
         );
     }
 

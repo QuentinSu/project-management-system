@@ -57,4 +57,30 @@ class ServerReminderController extends Controller
         //to add : eoy project->user->company
         return $remindResult;
     }
+
+    /**
+     * @Put("/server/reminder/{id}")
+     */
+    public function updateAction($id,Request $request) {
+        
+        $remind = $this->getDoctrine()->getRepository('AppBundle:ServerReminder')->find($id);
+        // Admin restriction for this view
+        if (!$this->getUser()->isAdmin()) {
+            return new View("not allowed", Response::HTTP_FORBIDDEN);
+        }
+        $dbm = $this->getDoctrine()->getManager();
+
+        if (empty($remind)) {
+            return new View("Server reminder not found", Response::HTTP_NOT_FOUND);
+        }
+        $status = $request->get('status');
+  
+        !empty($status) ? $remind->setStatus($status) : 'error';
+  
+        $dbm->flush();
+  
+        // $this->notify('Reminder n°'.$reminder->getId().', type: '.'"'.$type.'"'.' modified');    
+
+        return new View("Server reminder Updated Successfully", Response::HTTP_OK);
+    }
 }

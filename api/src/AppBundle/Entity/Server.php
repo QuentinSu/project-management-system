@@ -48,6 +48,11 @@ class Server
      */
     private $created;
 
+    /**
+     * @ORM\Column(type="string", length=1000, nullable=true)
+     */
+    private $comment;
+
     public function __construct()
     {
         $this->serverReminders = new ArrayCollection();
@@ -145,6 +150,18 @@ class Server
     public function setCreated(string $created): self
     {
         $this->created = $created;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
 
         return $this;
     }
