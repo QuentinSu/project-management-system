@@ -45,10 +45,12 @@ class ServerReminderController extends Controller
             $remindResult = [];
             foreach ($remind as $row) {
                 //$remindResult .= 'c ';
+                $row->getComment() ? $comment=$row->getComment() : $comment="none";
                 $remindInfos = [];
                 array_push($remindInfos,$row->getId());
                 array_push($remindInfos,$row->getType());
                 array_push($remindInfos,$row->getStatus());
+                array_push($remindInfos,$comment);
                 array_push($remindResult,$remindInfos);
             }
         }

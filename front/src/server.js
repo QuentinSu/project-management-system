@@ -256,9 +256,9 @@ class Servers extends Component {
             name: props.name,
             address: props.address,
             created: props.created,
-            serverReminders: ['ma', 'bite', 'sur', 'ton', 'epaule'],
+            serverReminders: null,
             openDelete: false,
-            thingstoSave: false
+            thingstoSave: true
         }
     }
 
@@ -295,13 +295,14 @@ class Servers extends Component {
               'Content-Type': 'application/json; charset=utf-8'
             }
           })
-            .then(function (response) {
-              if(response.status === 200){
-                this.setState({serverReminders:response.data});
-              }
-            })
-            .catch(function (error) {
-            });
+          .then(function (response) {
+            if(response.status === 200){
+              self.setState({serverReminders:response.data});
+            }
+          })
+          .catch(function (error) {
+            console.log(error);  
+          });
     }
 
     deleteServer() {
@@ -325,15 +326,33 @@ class Servers extends Component {
     }
 
     render() {
-        let mappedServerReminders;
-        if((this.state.serverReminders === null) || (this.state.serverReminders === undefined)) {
+      let mappedServerReminders;
+        console.log('a '+this.state.serverReminders);
+        if((this.state.serverReminders === null) || (this.state.serverReminders === undefined) && this.state.thingstoSave) {
+            console.log('test');
+
             this.getServerReminders();
+        }
+
+        if(this.state.serverReminders !== null) {
             mappedServerReminders = this.state.serverReminders.map((reminder)=>{
-                console.log("reminder"+JSON.stringify(reminder));
-                return(
-                    <p>{reminder[0]}</p>
-                )
-            });
+                return  <TextField
+                    className='reminder-element-theme'
+                    style={{
+                      background: '#456d68',
+                      borderRadius: '20px'
+                    }}
+                    value={reminder[3]}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    onChange={(event) => {(reminder[3]=event.target.value);}}
+                    variant='outlined'
+                />
+            })
+            console.log('map' : mappedServerReminders);
+
+            //this.setState({thingstoSave:false});
         }
 
          //Live from management
@@ -362,7 +381,9 @@ class Servers extends Component {
                     label='IP Address'
                 />
             </div>
-            {mappedServerReminders}
+            <div className='reminder-list'>
+              {mappedServerReminders}
+            </div>
             <p>insert here reminders</p>
 
             <div className='ticket-buttons'>
