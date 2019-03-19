@@ -138,3 +138,23 @@ export function ReminderSaveNotification(props) {
     </Snackbar>
 )
 }
+
+export function ServerSaveNotification(props) {
+  return (
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={props.open}
+        autoHideDuration={3000}
+        onClose={props.handleClose}
+      >
+        <MySnackbarContentWrapper
+          onClose={props.handleClose}
+          variant="success"
+          message={<span id="message-id">{props.message}</span>}
+        />
+      </Snackbar>
+  )
+}

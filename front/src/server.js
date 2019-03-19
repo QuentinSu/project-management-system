@@ -16,11 +16,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import SaveIcon from '@material-ui/icons/Save';
+import BlurOnIcon from '@material-ui/icons/BlurOn';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import HighlightOff from '@material-ui/icons/HighlightOff';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Tooltip from '@material-ui/core/Tooltip';
+import ServerSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
 const apiBaseUrl = config.apiBaseUrl;
@@ -158,7 +160,7 @@ class Servers extends Component {
 
     render(){
         let mappedServers = this.state.servers.map((server)=>{
-          return <Testimonial   key={server.id}
+          return <Server   key={server.id}
                             id={server.id}
                             name={server.name}
                             comment={server.comment}
@@ -211,7 +213,7 @@ class Servers extends Component {
                         id="comment"
                         label="Comment"
                         multiline
-                        rows='4'
+                        rows='2'
                         value={this.state.newComment}
                         onChange = {event => this.setState({newComment:event.target.value})}
                         fullWidth
@@ -266,7 +268,7 @@ class Servers extends Component {
   export default Servers;
 
 
-  class Testimonial extends Component {
+  class Server extends Component {
     constructor(props){
         super(props);
         this.state={
@@ -277,7 +279,8 @@ class Servers extends Component {
             created: props.created,
             serverReminders: null,
             openDelete: false,
-            thingstoSave: true
+            thingstoSave: true,
+            openSaveNotification: false
         }
     }
 
@@ -328,6 +331,7 @@ class Servers extends Component {
             });
         });
         this.setState({thingstoSave:false});
+        this.setState({openSaveNotification: true});
     }
 
     getServerReminders() {
@@ -501,8 +505,13 @@ class Servers extends Component {
         return (
           <div>
             <Card className="server-card">
+            <ServerSaveNotification 
+                        open={this.state.openSaveNotification} 
+                        message={'Server saved: ' + this.state.name}
+                        handleClose={() => {this.setState({openSaveNotification:false})}}
+                    />
             <div className='server-details'>
-                <Avatar className='server-avatar' style={{background: '#523642'}}>☺</Avatar>
+                <Avatar className='server-avatar' style={{background: '#00984C'}}><BlurOnIcon/></Avatar>
                 <b>
                 <TextField className='server-name'
                     onChange={event => { this.setState({name:event.target.value}); this.setState({thingstoSave:true});}}

@@ -307,18 +307,19 @@
 	opacity: 0.8;
 }
 
-
 .server-comment-div {
-	display: inline-block;
+	float: left;
 	width:20%;
-	margin-top:20px;
+	margin-top:10px;
+	min-height: 100px;
+	margin-bottom:10px;
 	border-radius: 15px;
 	border: 1px solid #c9c9c9;
 }
 
 .server-comment-text {
 	top: 5px;
-	left: 30px;
+	left: 15px;
 	width: 90%;
 	/* right: 30px; */
 }
