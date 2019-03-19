@@ -924,6 +924,27 @@
 	.company-logo {
 		display:none;
 	}
+
+	.server-details {
+		width: 150px;
+	}
+
+	.server-name {
+		width: 80% !important;
+		display:inline-block;
+		margin-top: 10px;
+		margin-bottom:10px;
+	}
+	
+	
+	.server-address {
+		width:80%;
+		margin-left: 15px !important;
+		display:inline-block;
+		margin-top:10px;
+	}
+	
+	
 }
 
 @media(max-width: 750px) {

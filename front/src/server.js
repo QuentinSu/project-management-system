@@ -523,6 +523,9 @@ class Servers extends Component {
                     defaultValue={this.state.address}
                     label='IP Address'
                 />
+                <div className="serve-livefrom"><b></b>
+                &nbsp;<Chip className='company-live' label={"LIVE FROM "+liveFrom} /></div>
+
             </div>
             <div className='reminder-server-list'>
               {mappedServerReminders}
