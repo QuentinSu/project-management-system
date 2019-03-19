@@ -9,6 +9,10 @@ use AppBundle\Entity\Reminder;
 use AppBundle\Controller\RestServiceController;
 use AppBundle\Controller\ReminderController;
 use FOS\RestBundle\View\View;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Post;
@@ -30,6 +34,8 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Security\Core\User\UserInterface;
+
+use AppBundle\Command\CommandMail;
 
 /**
  * @RouteResource("project", pluralize=false)
@@ -124,6 +130,17 @@ class ProjectController extends RestServiceController
      */
     public function postAction(Request $request)
     {
+
+      $application = new Application($this->get('kernel'));
+      $application->setAutoExit(false);//exit after run
+      $input = new ArrayInput([
+          'command' => 'app:send-daily-mail'
+      ]);
+      $output = new BufferedOutput();
+      $runCode = $application->run($input, $output);
+
+      $content = $output->fetch();
+      return new Response($content);
       // Admin restriction for this view
       if (!$this->getUser()->isAdmin()) {
         return new View("not allowed", Response::HTTP_FORBIDDEN);

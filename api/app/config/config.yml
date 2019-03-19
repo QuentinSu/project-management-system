@@ -112,9 +112,10 @@ lexik_jwt_authentication:
 # JMS Serializer
 jms_serializer: ~
 
+# ONLY AVAILABLE WITH SYMFONYCloud
 # #CRON
 # crons:
 #     mail_reminder:
 #             # every day at 3h45 AM
-#             spec: 25 12 * * *
+#             spec: 45 3 * * *
 #             cmd: php bin/console app:send-daily-mail

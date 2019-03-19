@@ -592,12 +592,8 @@ class User extends Component {
                         {parsedDate}
                     </Typography>
                     <span>&nbsp;&nbsp;</span>
-                    <Typography color="textSecondary">
-                        Role: 
-                    </Typography>
-                    <span>&nbsp;&nbsp;</span>
                     <Typography>
-                        {isAdmin ? 'Admin' : 'User'}
+                        {isAdmin ? <Chip className='admin-status' label='Admin' /> : <Chip className='user-status' label='User' />}
                     </Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>

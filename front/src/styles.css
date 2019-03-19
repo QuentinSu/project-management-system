@@ -535,6 +535,28 @@
     width: 100%;
 }
 
+
+.user-infos {
+	width: 50%;
+	float: left;
+}
+
+.user-status {
+	background: #538fef !important;
+	width:80px !important;
+	color: white !important;
+	font-size: 1.5em !important;
+	float:right !important;
+}
+
+.admin-status {
+	background: #ffa826 !important;
+	width:80px !important;
+	color: white !important;
+	font-size: 1.5em !important;
+	float:right !important;
+}
+
 .user-project-list {
     margin: 10px;
 }

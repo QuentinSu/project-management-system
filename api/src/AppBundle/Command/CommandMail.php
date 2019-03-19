@@ -209,6 +209,8 @@ class CommandMail extends ContainerAwareCommand
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
+
+        $this->get('logger')->error('JE SUIS ICIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII BRO');
         //call getRemindersOfTheDay
         $remindersOfTheDay = $this->getRemindersOfTheDay();
         foreach ($remindersOfTheDay as &$clientReminders) {
