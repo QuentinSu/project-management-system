@@ -392,11 +392,12 @@ class Servers extends Component {
                 } else if(reminder[2]==='no') {
                   cololor = "#f44336";
                 }
+                
                 if(reminder[1]==='Date last back up') {
                   return <div className='reminder-server-element'>
                   <MuiThemeProvider>
                   <span className="textToCenter"><b>
-                    {reminder[1]}
+                    Last Back up
                     </b></span>
                     <span className="borderRadiusManager">
                     <b>
@@ -436,13 +437,15 @@ class Servers extends Component {
                   var labelReminder;
                   if(reminder[1]==='Local') {
                     labelReminder = 'Local backups';
+                  } else if(reminder[1]==='BackUps'){
+                    labelReminder = 'Sucuri';
                   } else {
                     labelReminder = reminder[1];
                   } 
                   return  <div className='reminder-server-element'>
                     <MuiThemeProvider>
                     <span className="textToCenter"><b>
-                      {reminder[1]}
+                      {labelReminder}
                       </b></span>
                       <span className="borderRadiusManager">
                         <b>
