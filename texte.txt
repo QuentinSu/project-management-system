@@ -15,3 +15,11 @@ var created = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+'
 {"id":45,"name":"petitPedestre","description":"petitPedestre Ivain et Govin rpz","phone":"0101010101","users":[{"id":"32","username":"quentin","username_canonical":"quentin","email":"rhyswtesting@gmail.com","email_canonical":"rhyswtesting@gmail.com","enabled":true,"password":"$2y$13$Ymz/hv5X1lOQgKkyJueHNeWCns8NaJvTGfnhw/JyAR5CLxgZe7nh6","last_login":"2019-02-07T09:31:24+00:00","groups":[],"roles":["ROLE_ADMIN","ROLE_ADVANCED"]}],"creation":"2019-02-07 10:04:27"}
 
 [{"value":44,"label":"Rhys Welsh"},{"value":45,"label":"petitPedestre"}]
+
+{
+    "apiBaseUrl":"http://127.0.0.1:8001/",
+    "prodUrl":"localhost:3000",
+    "devUrl":"localhost:3000",
+    "localUrl":"http://127.0.0.1:8001/",
+    "acceptedFiles": ".gif, .png, .jpg, .bmp, .txt, .doc, .xls, .csv, .pdf, .zip, .psd, .ai, .mp3, .mp4, .indd"
+}

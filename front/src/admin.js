@@ -91,6 +91,9 @@ class AdminDashboard extends Component {
     if (!localStorage.getItem('isAdmin')) {
       window.location.href = '/client'
     }
+
+    var isAdvanced = localStorage.getItem('isAdvanced');
+
     return (
         <div className='Tabs'>
             <AppBar position="static">
@@ -98,7 +101,8 @@ class AdminDashboard extends Component {
             <Notifications/>
             {localStorage.getItem('isAdvanced') &&
             <MuiThemeProvider theme={whiteTheme} >
-              <Button  size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
+              {isAdvanced &&
+              <Button size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 <div id='advanced-but-dashboard-long-text'>
                 { advanced
@@ -110,7 +114,7 @@ class AdminDashboard extends Component {
                   ? <StarHalf />
                   : <StarIcon />
                 }</div>
-              </Button>
+              </Button>}
             </MuiThemeProvider>}
             <UserMenu username={localStorage.getItem('username')}/>
               {/* If you are in class view, we show projects/users/testimaniols, else advanced admin view (clients, reminders, ...) */}

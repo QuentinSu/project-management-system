@@ -145,30 +145,23 @@ class CommandMail extends ContainerAwareCommand
     }
 
     public function introBody($nbLateReminders, $nbDayReminders) {
-        $intro = "You have";
-        if($nbLateReminders !== 0) {
-            $intro.= " <b>".$nbLateReminders."</b> late reminder(s)";
-            if($nbDayReminders !== 0) {
-                $intro.= " and";
-            }
-        }
-        if ($nbDayReminders !== 0) {
-            $intro.= " <b>".$nbDayReminders."</b> day reminder(s)";
-        }
-        $intro.= " due !<br>";
+        $intro = "<div style=\"background:black; color:white; font-size:150%; border-radius:4px; width:60%;\">&nbsp;You have";
+        $nbTotReminders = $nbLateReminders+$nbDayReminders;
+        $intro.= " <span style=\"background:white; color:black\">&nbsp;<b>".$nbTotReminders."</b>&nbsp;</span> reminder(s)";
+        $intro.= " that are now due ! <span style=\"color:red\"><b>ACTION REQUIRED</b></span></div><br>";
         return $intro;
     }
 
-    public function contactBody($clientsTab) {
+    public function contactBody($nameClient, $clientsTab) {
         $contacts = "";
         foreach ($clientsTab as &$contact) {
             $contacts.= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $contacts.= "<span style='font-size:150%'>&#129174;</span> <b>".$contact[0]."</b> < ".$contact[1]." ><br>";  #&#129174; -> array white on black composant
         }
         if ($contacts === "") {
-            return "No <b>Contacts</b> linked to this project yet.<br>";
+            return "<b>".$nameClient."</b>: no contacts linked<br>";
         } else {
-            return "<b>Contacts</b> linked to this project:<br>".$contacts;
+            return "<b>".$nameClient."</b> contact(s):<br>".$contacts;
         }
     }
 
@@ -177,24 +170,35 @@ class CommandMail extends ContainerAwareCommand
         $lateList = "";
         $dayList = "";
         foreach($tabReminders as &$remind) {
+
+            if($remind[1]==='3m') {
+                $nameRemind = '3 month reminder';
+            } else if($remind[1]==='6m') {
+                $nameRemind = '6 month reminder';
+            } else {
+                $nameRemind = $remind[1];
+            }
+
             $dueDate = date("d-m-Y", strtotime($remind[2]));
             if($remind[0] === 'late') {
-                $lateList.= "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                $lateList.= "<span style='font-size:150%'>&#9873;</span> <b>".$remind[1]."</b> due on ".$dueDate." (<b>".$remind[3]." days</b> late).";
+                $lateList.= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $lateList.= "<span>&#128903;</span> <span style=\"font-size:110%\"><b>".$nameRemind."</b></span> due on ".$dueDate." <span style=\"font-size:90%\">(<b>".$remind[3]." days</b> late). <a href=\"https://clients.rhyswelsh.com/admin/advanced\">(click here for email text)</a></span>";
+                $lateList.= "<br>";
             }
             if($remind[0] === 'today') {
-                $dayList.= "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                $dayList.= "<span style='font-size:150%'>&#9872;</span> <b>".$remind[1]."</b> due on ".$dueDate.".";
+                $dayList.= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $dayList.= "<span>&#128903;</span> <span style=\"font-size:110%\"><b>".$nameRemind."</b></span> due on ".$dueDate.".<span style=\"font-size:90%\"> <a href=\"https://clients.rhyswelsh.com/admin/advanced\">(click here for email text)</a></span>";
+                $dayList.= "<br>";
             }
         }
 
         if($nbLate !== 0) {
-            $list.= "<b style='color:#f44336'>Late</b> reminders:";
-            $list.= $lateList."<br>";
+            $list.= "<b>Late</b> reminders:";
+            $list.= "<div style=\"background:tomato;border-radius:4px;border: 1px solid black;width:60%;\">".$lateList."</div><br>";
         }
         if($nbDay !== 0) {
-            $list.= "<b style='color:#f6ae47'>Day</b> reminders:";
-            $list.= $dayList;
+            $list.= "<b>Day</b> reminders:";
+            $list.= "<div style=\"background:orange;border-radius:4px;border: 1px solid black;width:60%;\">".$dayList."</div><br>";
         }
 
         return $list;
@@ -204,13 +208,12 @@ class CommandMail extends ContainerAwareCommand
     public function footerBody() {
         $footer = "______________________<br>";
         $footer.= "This is an auto-generated email, you can't answer.<br>";
-        $footer.= "Rhys Welsh CRM";
+        $footer.= "<b>Rhys Welsh CRM</b>";
         return $footer;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
 
-        $this->get('logger')->error('JE SUIS ICIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII BRO');
         //call getRemindersOfTheDay
         $remindersOfTheDay = $this->getRemindersOfTheDay();
         foreach ($remindersOfTheDay as &$clientReminders) {
@@ -219,15 +222,15 @@ class CommandMail extends ContainerAwareCommand
 
             $introText = $this->introBody($nbLateReminders, $nbDayReminders);
 
-            $contacts = $this->contactBody($clientReminders[2]);
+            $contacts = $this->contactBody($clientReminders[0], $clientReminders[2]);
 
             $listBody = $this->listBody($clientReminders[1], $nbLateReminders, $nbDayReminders);
 
             $footerBody = $this->footerBody();
 
-            $body = "<html><body>".$introText."<br>".$contacts."<br>".$listBody."<br>".$footerBody."</body></hmtl>";
+            $body = "<html><body style=\"color:black;\">".$introText.$contacts."<br>".$listBody."<br>".$footerBody."</body></hmtl>";
             
-            $message = (new \Swift_Message('💡 Reminder of the day - '.$clientReminders[0].' - '.date("d.m")))
+            $message = (new \Swift_Message("💡 ".$clientReminders[0].' - reminders '.date("d.m")))
                 ->setFrom('crm.rhyswelsh@gmail.com')
                 ->setTo(array('quentin.sutkowski@gmail.com', 'quentin.sutkowski@hautsdefrance.fr'))
                 ->setBody($body, 'text/html');

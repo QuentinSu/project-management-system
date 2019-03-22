@@ -56,6 +56,7 @@ class Login extends Component {
     if(previousSession) {
       this.checkLogs(null);
     }
+    var isAdvanced = localStorage.getItem('isAdvanced');
     return (
       <div className={advanced ? "mainlog" : ""}>
       <Dialog open={this.state.open}>
@@ -71,17 +72,16 @@ class Login extends Component {
         <DialogTitle>Already log in. Connection in progress</DialogTitle>
           <CircularProgress/>
       </Dialog> */}
-      <Button  size="small" variant="contained" color={advanced ? "secondary" : "primary"} className='advanced-but' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '?adv') : this.setState(window.location.href = testurl) }}>
+      {isAdvanced &&
+      <Button size="small" variant="contained" color={advanced ? "secondary" : "primary"} className='advanced-but' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '?adv') : this.setState(window.location.href = testurl) }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 { advanced
-                  ? 'Switch to classic'
-                  : 'Switch to advanced'
+                  ? 'DASHBOARD'
+                  : 'ADMIN PANEL'
                 }
-      </Button>
+      </Button>}
       <Card className='login-form'>
-        <CardMedia title="Rhys Welsh Logo" className="logo-login">
-          <img alt='rhysw_logo' src={process.env.PUBLIC_URL + '/rw.png'}/>
-        </CardMedia>
+        <CardMedia title="Rhys Welsh Logo" className="logo-login" image={process.env.PUBLIC_URL + '/rw.png'} />
         <CardContent>
           <TextField
             label="Username"
@@ -105,7 +105,7 @@ class Login extends Component {
               ref="remember_me" 
               label="Remember Me"
               checked={this.state.remember_me} 
-              value={this.state.remember_me} 
+              // value={this.state.remember_me} 
               onChange={(event) => this.setState({remember_me:event.target.checked})} /><br/>
             <Button  
               className="login-button"
