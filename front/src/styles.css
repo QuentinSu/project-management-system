@@ -90,7 +90,11 @@
 	width:100%;
 }
 
-.reminder-legend {
+.header-search {
+	line-height:200%;
+}
+
+.reminder-key {
 	display: block;
 	flex-wrap: wrap;
 	width:20%;
@@ -103,7 +107,7 @@
 
 .reminder-filter-type {
 	padding: 10px 10px 10px 10px;
-	max-width:25%;
+	max-width:32%;
 	margin-left: 22%;
 	margin-top:-72px;
 	border: 1px solid #c9c9c9 !important;
@@ -325,11 +329,22 @@
 }
 
 .reminder-stats {
-	width:20%;
+	width:27%;
 	text-align: center;
 	float: right;
 	margin-top: -70px;
 	height: 60px;
+	font-size:80% !important;
+}
+
+.stats-nb {
+	font-size:80% !important;
+}
+
+.reminder-stat-elem-first {
+	float:left;
+	margin-left:5%;
+	text-align:center;
 }
 
 .reminder-stat-elem {
@@ -700,6 +715,11 @@
 
 .checklist-list-item {
 	width: 80%;
+}
+
+.text-dropzone-company {
+	font-size: 75%;
+	margin-left:10%;
 }
 
 .company-stats {

@@ -72,14 +72,13 @@ class Login extends Component {
         <DialogTitle>Already log in. Connection in progress</DialogTitle>
           <CircularProgress/>
       </Dialog> */}
-      {isAdvanced &&
       <Button size="small" variant="contained" color={advanced ? "secondary" : "primary"} className='advanced-but' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '?adv') : this.setState(window.location.href = testurl) }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 { advanced
-                  ? 'DASHBOARD'
-                  : 'ADMIN PANEL'
+                  ? 'ADMIN PANEL'
+                  : 'USER PANEL'
                 }
-      </Button>}
+      </Button>
       <Card className='login-form'>
         <CardMedia title="Rhys Welsh Logo" className="logo-login" image={process.env.PUBLIC_URL + '/rw.png'} />
         <CardContent>

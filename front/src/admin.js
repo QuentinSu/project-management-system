@@ -92,7 +92,24 @@ class AdminDashboard extends Component {
       window.location.href = '/client'
     }
 
-    var isAdvanced = localStorage.getItem('isAdvanced');
+    if(localStorage.getItem('isAdvanced')) {
+        console.log(localStorage.getItem('isAdvanced'));
+        var buttonPanel = <Button size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
+        {/* if on advanced : button to return classical; else button to go advanced mode */}
+        <div id='advanced-but-dashboard-long-text'>
+        { advanced
+          ? 'ADMIN PANEL'
+          : 'USER PANEL'
+        }</div>
+        <div id='advanced-but-dashboard-short-text' >
+        { advanced
+          ? <StarHalf />
+          : <StarIcon />
+        }</div>
+      </Button>
+    } else {
+      var buttonPanel = <Typography className='advanced-but-dashboard'>Dashboard</Typography>
+    }
 
     return (
         <div className='Tabs'>
@@ -101,20 +118,7 @@ class AdminDashboard extends Component {
             <Notifications/>
             {localStorage.getItem('isAdvanced') &&
             <MuiThemeProvider theme={whiteTheme} >
-              {isAdvanced &&
-              <Button size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
-                {/* if on advanced : button to return classical; else button to go advanced mode */}
-                <div id='advanced-but-dashboard-long-text'>
-                { advanced
-                  ? 'DASHBOARD'
-                  : 'ADMIN PANEL'
-                }</div>
-                <div id='advanced-but-dashboard-short-text' >
-                { advanced
-                  ? <StarHalf />
-                  : <StarIcon />
-                }</div>
-              </Button>}
+              {buttonPanel}
             </MuiThemeProvider>}
             <UserMenu username={localStorage.getItem('username')}/>
               {/* If you are in class view, we show projects/users/testimaniols, else advanced admin view (clients, reminders, ...) */}

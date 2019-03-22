@@ -213,6 +213,7 @@ class Companies extends Component {
                 self.setState({ open: false });
                 self.handleCompaniesChange();
                 this.setState({openSaveNotification: true});
+                nbClients++;
               }
             })
             .catch(function (error) {
@@ -320,6 +321,7 @@ class Companies extends Component {
         <input
             placeholder="Search (name, phone, username)"
             updateCompanies={this.updateCompanies.bind(this)}
+            className='header-search'
             onChange={event =>this.filterCompanies(event.target.value)}
         />
         <Paper color="primary" className='company-stats' square={false}>
@@ -364,6 +366,7 @@ class Companies extends Component {
                     <TextField
                         style={{height:'175px'}}
                         multiline
+                        rows='7'
                         margin="dense"
                         id="description"
                         label="Description"
@@ -546,6 +549,7 @@ class Companies extends Component {
                 self.props.updateCompanies();
                 this.setState({openSaveNotification: true});
                 self.setState({ openDelete: true });
+                nbClients--;
                 
               }
             })
@@ -726,7 +730,7 @@ class Companies extends Component {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
                 <Dropzone className='dropzone-square' accept={config.acceptedFiles} onDrop={(files, rejected) => {this.onDrop(files)}} >
-                    <p>Drop file or click to add/update company logo (max: 10M, .png or .jpg).<br/>Best if close to square format</p>
+                    <span className='text-dropzone-company'><p>Drop file or click to add/update company logo (max: 10M, .png or .jpg).<br/>Best if close to square format - Please refresh after change</p></span>
                 </Dropzone>
                 <div className="company-users-card">
                 <Card>

@@ -317,11 +317,11 @@ class Reminders extends Component {
       })
 
       var legendText = <div><br/>
-                        <b><h4>Legend</h4></b>
-                        <Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Validated<br/>
-                        <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Late<br/>
-                        <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days)<br/>
-                        <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Active<br/>
+                        <b><h4>Key</h4></b>
+                        <Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Completed reminders<br/>
+                        <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Overdue reminders<br/>
+                        <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days) reminders<br/>
+                        <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Future reminders<br/>
                       </div>
 
       var advancedFunction = <div>
@@ -338,14 +338,14 @@ class Reminders extends Component {
                   <input
                       placeholder="Search (e.g: name, special reminder, date)"
                       handleRemindersChange={this.handleRemindersChange.bind(this)}
-                      class='reminder-header-search'
+                      className='reminder-header-search header-search'
                       onChange={event => this.filterReminders(event.target.value)}
                   />
               </div>
               <div>
-                <div className='reminder-legend'>
+                <div className='reminder-key'>
                 <Tooltip title={advancedFunction} interactive>
-                  <Paper square={false}>Advanced functions & Legend</Paper>
+                  <Paper square={false}>Advanced functions & Key</Paper>
                 </Tooltip>
                 </div>
               </div>
@@ -358,7 +358,7 @@ class Reminders extends Component {
                             color="primary"
                             defaultChecked={true}
                             onClick={event => this.filterStateReminders('validated', event.target.checked)}  />} 
-                    label="Validated" />
+                    label="Completed" />
                 </MuiThemeProvider><MuiThemeProvider theme={active}>
                     <FormControlLabel 
                     className="remindr-active-switch"
@@ -382,7 +382,7 @@ class Reminders extends Component {
                             color="primary"
                             defaultChecked={true}
                             onClick={event => this.filterStateReminders('late', event.target.checked)} />} 
-                    label="Late" />
+                    label="Overdue" />
                   </MuiThemeProvider>
                 </div>
               </div>
@@ -390,10 +390,10 @@ class Reminders extends Component {
                 <Paper color="primary" className='reminder-stats' square={false} interactive>
                   Stats reminders<br/>
                   
-                  <Avatar className="reminder-stat-elem" style={{background: "#00984C", width: 30, height: 30}}>{reminderValidatedNb}</Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 30, height: 30}}>{reminderLateNb}</Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#f6ae47", width: 30, height: 30}}>{reminderSoonNb}</Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#c9c9c9", width: 30, height: 30}}>{reminderActiveNb}</Avatar>
+                  <Avatar className="reminder-stat-elem-first" style={{background: "#00984C", width: 50, height: 30}}><span>{reminderValidatedNb}</span></Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 50, height: 30}}>{reminderLateNb}</Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#f6ae47", width: 50, height: 30}}>{reminderSoonNb}</Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#c9c9c9", width: 50, height: 30}}>{reminderActiveNb}</Avatar>
                 </Paper>
               </div>
               <br/><p></p>
