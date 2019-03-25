@@ -403,13 +403,16 @@ class Companies extends Component {
 
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={() => this.setState({ open: false })} color="primary">
+                    <Button onClick={() => this.setState({ open: false })} variant='outlined' color="secondary">
                         Cancel
                     </Button>
                     
                     <Button 
                         onClick={() => this.saveNewCompany()}
-                        color="primary">
+                        style = {{
+                            background:'#00984C',
+                            color: '#ffffff'
+                          }}>
                         Save
                     </Button>
                     </DialogActions>
@@ -460,6 +463,7 @@ class Companies extends Component {
             status: props.status,
             eoy: props.eoy,
             users: props.users,
+            thingstoSave:false,
             openDelete: false,
             openSaveNotification: false
         }
@@ -532,6 +536,7 @@ class Companies extends Component {
             .catch(function (error) {
             });
         self.forceUpdate();
+        this.setState({thingstoSave:false});
     }
 
     deleteCompany() {
@@ -645,20 +650,20 @@ class Companies extends Component {
             </div>
             <div className='company-details'>
                 <TextField className='company-name'
-                    onChange={event => this.setState({name:event.target.value})}
+                    onChange={event => {this.setState({name:event.target.value});;this.setState({thingstoSave:true});}}
                     defaultValue={this.state.name}
                     label='Name'
                 />
 
                 <TextField className='company-eoy'
                     type='date'
-                    onChange={event => this.setState({eoy:event.target.value})}
+                    onChange={event => {this.setState({eoy:event.target.value});this.setState({thingstoSave:true});}}
                     defaultValue={this.state.eoy}   
                     label='EOY'
                 />
 
                 <TextField className='company-phone' 
-                    onChange={event => this.setState({phone:event.target.value})}
+                    onChange={event => {this.setState({phone:event.target.value});this.setState({thingstoSave:true});}}
                     defaultValue={this.state.phone}
                     label='Phone'
                 />
@@ -672,7 +677,7 @@ class Companies extends Component {
             <div className='company-description' >
                 <TextField
                     className='company-description-text'
-                    onChange={event => this.setState({description:event.target.value})}
+                    onChange={event => {this.setState({description:event.target.value});this.setState({thingstoSave:true});}}
                     onClick ={(event)=>"event.stopPropagation()"}
                     multiline
                     rows='4'
@@ -685,18 +690,29 @@ class Companies extends Component {
                 <FormControlLabel 
                     className="company-active-switch"
                     control={<Switch checked={this.state.status}
-                            onChange = {(event) => this.setState({status:!this.state.status})} />} 
+                            onChange = {(event) => {this.setState({status:!this.state.status}); ;this.setState({thingstoSave:true});}} />} 
                     label="Active" />
                     </MuiThemeProvider>
                 <Chip className='company-live' label={liveFrom} />
                 
-                <Button 
-                    className="company-save-button"
+                {this.state.thingstoSave &&
+                <Button
                     size="small"
-                    color="primary" 
-                    onClick={() => this.saveCompany()}>
-                    <SaveIcon/> Save changes
-                </Button>
+                    style = {{
+                        background:'#00984C'
+                    }}
+                    onClick={() => this.saveCompany()}
+                    variant="contained"
+                    >
+                    <SaveIcon/> Save
+                </Button>}
+                {!this.state.thingstoSave &&
+                <Button
+                    size="small"
+                    onClick={() => null}
+                    >
+                    <SaveIcon/> Save
+                </Button>}
                 <Button 
                     onClick={() => this.setState({ openDelete: true })} 
                     size="small"

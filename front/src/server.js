@@ -7,6 +7,8 @@ import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
@@ -25,6 +27,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ServerSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
+var nbServers;
+var once = false;
 const apiBaseUrl = config.apiBaseUrl;
 
 function dateDiff(date) {
@@ -104,6 +108,10 @@ class Servers extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
+                if(!once) {
+                  once = true;
+                  nbServers = response.data.length;
+                }
                 self.setState({servers:response.data});
               }
             })
@@ -152,10 +160,42 @@ class Servers extends Component {
               if(response.status === 200){
                 self.setState({ open: false });
                 self.updateServers();
+                nbServers++;
               }
             })
             .catch(function (error) {
             });
+    }
+
+    filterServers(searchString) {
+      let newServers = this.state.servers.slice();
+      newServers.map((server)=>{
+          //mandatory because of the first passage here
+          if(server.hidden == undefined) {
+              server.hidden = false;
+          }
+          var initialState=server.hidden;
+          if (server.name.toUpperCase().includes(searchString.toUpperCase()) || server.address.toUpperCase().includes(searchString.toUpperCase()) || server.comment.toUpperCase().includes(searchString.toUpperCase())) {
+              // if the searchString correspond with company name or phone useless to filter on users
+              server.hidden = false;
+          } else {
+              server.hidden = true;
+          }
+          /** STATS CONTROL */
+          //si a la base l'item etait caché
+          if(initialState) {
+              // s'il y a eu un changement l'item est apparru donc on incremente
+              if(initialState!==server.hidden) {
+                  nbServers++;
+              }
+          } else {
+              //sinon litem etait visible. En cas de changement on decremente
+              if(initialState!==server.hidden) {
+                  nbServers--;
+              }
+          }
+      })
+      this.setState({servers: newServers});
     }
 
     render(){
@@ -167,6 +207,7 @@ class Servers extends Component {
                             serverReminders={server.serverReminders}
                             address={server.address}
                             created={server.created}
+                            hidden={server.hidden ? server.hidden : false}
                             updateServers={this.updateServers.bind(this)}
                 />     
         })
@@ -180,6 +221,16 @@ class Servers extends Component {
         return(
             <div>
                 {button}
+                <div className='server-header'>
+                  <input
+                      placeholder="Search (name, address, comment)"
+                      className='header-search'
+                      onChange={event =>this.filterServers(event.target.value)}
+                  />
+                  <Paper color="primary" className='server-stats' square={false}>
+                      <Typography className='server-stats-nb'>You have <b>{nbServers}</b> servers</Typography>
+                  </Paper>
+                </div>
                 <Dialog
                     open={this.state.open}
                     aria-labelledby="form-dialog-title"
@@ -369,6 +420,7 @@ class Servers extends Component {
               if(response.status === 200){
                 self.setState({ openDelete: false });
                 self.props.updateServers();
+                nbServers--;
               }
             })
             .catch(function (error) {
@@ -473,7 +525,7 @@ class Servers extends Component {
                               className="reminder-server-button"
                               size="small"
                               color="primary"
-                              onClick={() => { if (window.confirm('Are you sure you wish to change the state of this reminder?')) {reminder[2]='no';  this.setState({thingstoSave:true});this.forceUpdate();}}}>
+                              onClick={() => { {reminder[2]='no';  this.setState({thingstoSave:true});this.forceUpdate();}}}>
                               <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/> Turn NO
                           </Button>
                         </Tooltip>}
@@ -483,7 +535,7 @@ class Servers extends Component {
                               className="reminder-server-button"
                               size="small"
                               color="primary"
-                              onClick={() => { if (window.confirm('Are you sure you wish to change the state of this reminder?')) {reminder[2]='yes';this.setState({thingstoSave:true}); this.forceUpdate();}}}>
+                              onClick={() => { {reminder[2]='yes';this.setState({thingstoSave:true}); this.forceUpdate();}}}>
                               <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/> Turn YES
                           </Button>
                         </Tooltip>}
@@ -506,7 +558,7 @@ class Servers extends Component {
          }
          liveFrom = liveFrom + " old";
         return (
-          <div>
+          <div hidden={this.props.hidden}>  
             <Card className="server-card">
             <ServerSaveNotification 
                         open={this.state.openSaveNotification} 
@@ -547,7 +599,8 @@ class Servers extends Component {
               <Button
                   size="small"
                   style = {{
-                    background:'#00984C'
+                    background:'#00984C',
+                    color: '#ffffff'
                   }}
                   onClick={() => {this.saveServer(this.state.id, this.state.serverReminders);}}
                   variant="contained"

@@ -554,6 +554,7 @@
 	display:inline-block;
 	margin-top:20px;
 	margin-right:10px;
+	margin-left: 10px;
 }
 
 .project-details {
@@ -737,14 +738,14 @@
 	margin-left:10%;
 }
 
-.company-stats {
+.company-stats, .server-stats {
 	width: 15%;
 	float: right;
 	text-align:center;
 	background:#f44336;
 }
 
-.company-stats-nb {
+.company-stats-nb, .server-stats-nb {
 	display:block;
 	text-align:center;
 	padding-top:15px;

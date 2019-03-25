@@ -237,7 +237,7 @@ class ProjectController extends RestServiceController
       !empty($status) ? $project->setStatus($status) : 0;
       !empty($goLiveDate) ? $project->setGoLiveDate($goLiveDate) : date("Y-m-d");
 
-      //update of 3m and 6m linked reminders
+      //update of 3m, 6m & bday linked reminders
       $threeM=date("Y-m-d", strtotime($goLiveDate. '+3 month'));
       $sixM=date("Y-m-d", strtotime($goLiveDate. '+6 month'));
       $bdayDate=date("Y-m-d", strtotime($goLiveDate. '+1 year'));
@@ -440,7 +440,7 @@ class ProjectController extends RestServiceController
             $this->postAutoReminderBDay($proj);
           }
 
-        }
+        } 
         
         return new View("Deleted successfully", Response::HTTP_OK);
     }

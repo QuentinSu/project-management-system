@@ -318,6 +318,7 @@ class NewMailReminderDialog extends React.Component {
         <Dialog
           maxWidth="lg"
           fullWidth
+          onBackdropClick={() => {this.setState({open:false});this.handleClose}}
           open={this.state.open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
@@ -371,19 +372,23 @@ class NewMailReminderDialog extends React.Component {
             />
           </DialogContent>
           <DialogActions>
-            {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}  
+            {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null} 
+            <Button onClick={() => this.setState({ open: false })} variant='outlined' color="secondary">
+              Cancel
+            </Button> 
             <CopyToClipboard text={this.state.name+"\n\n"+this.state.content}
                 onCopy={() => this.setState({copied: true})}>
                 <Button variant='outlined'>Copy object & body</Button>
             </CopyToClipboard><br/>
-            <Button variant='outlined' onClick={() => this.setState({ open: false })} color="secondary">
-              Cancel
-            </Button>
+            
             <Button variant='outlined' onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body=<html>"+this.state.content+"</html>"}}>Open Mail manager</Button> 
             <Button
               variant='outlined'
               onClick={() => { this.forceValidation() }}
-              color="primary">
+              style = {{
+                background:'#00984C',
+                color: '#ffffff'
+              }}>
               Mark reminder as Sent
             </Button>
           </DialogActions>
