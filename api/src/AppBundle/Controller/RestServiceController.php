@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Entity\Notification;
 use AppBundle\Entity\Server;
 use AppBundle\Entity\ServerReminder;
 use AppBundle\Controller\RestServiceController;
@@ -21,6 +22,7 @@ use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Event\FormEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 class RestServiceController extends FOSRestController
 {

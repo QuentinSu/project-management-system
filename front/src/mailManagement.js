@@ -134,7 +134,7 @@ class MailsManagement extends Component {
                     aria-labelledby="form-dialog-title"
                     fullWidth
                 >
-                    <DialogTitle id="new-project-dialog-title">New Testimonial</DialogTitle>
+                    <DialogTitle id="new-project-dialog-title">New template</DialogTitle>
                     <DialogContent>
                     <DialogContentText>
                         To create a new preformatted mail, please fill all fields<br></br>

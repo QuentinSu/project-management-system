@@ -318,10 +318,10 @@ class Reminders extends Component {
 
       var legendText = <div><br/>
                         <b><h4>Key</h4></b>
-                        <Avatar style={{background: "#00984C", width: 20, height: 20}}></Avatar>Completed reminders<br/>
-                        <Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar>Overdue reminders<br/>
-                        <Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar>Soon (-14 days) reminders<br/>
-                        <Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar>Future reminders<br/>
+                        <span className="key-line"><Avatar className="key-line-avatar" style={{background: "#00984C", width: 20, height: 20}}/><span className="key-line-text">Completed reminders</span></span>
+                        <span className="key-line"><Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar><span className="key-line-text">Overdue reminders</span></span>
+                        <span className="key-line"><Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar><span className="key-line-text">Soon (-14 days) reminders</span></span>
+                        <span className="key-line"><Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar><span className="key-line-text">Future reminders</span></span>
                       </div>
 
       var advancedFunction = <div>
@@ -390,10 +390,10 @@ class Reminders extends Component {
                 <Paper color="primary" className='reminder-stats' square={false} interactive>
                   Stats reminders<br/>
                   
-                  <Avatar className="reminder-stat-elem-first" style={{background: "#00984C", width: 50, height: 30}}><span>{reminderValidatedNb}</span></Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 50, height: 30}}>{reminderLateNb}</Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#f6ae47", width: 50, height: 30}}>{reminderSoonNb}</Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#c9c9c9", width: 50, height: 30}}>{reminderActiveNb}</Avatar>
+                  <Avatar className="reminder-stat-elem-first" style={{background: "#00984C", width: 50, height: 30}}><span className="stats-nb">{reminderValidatedNb}</span></Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 50, height: 30}}><span className="stats-nb">{reminderLateNb}</span></Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#f6ae47", width: 50, height: 30}}><span className="stats-nb">{reminderSoonNb}</span></Avatar>
+                  <Avatar className="reminder-stat-elem" style={{background: "#c9c9c9", width: 50, height: 30}}><span className="stats-nb">{reminderActiveNb}</span></Avatar>
                 </Paper>
               </div>
               <br/><p></p>
@@ -424,6 +424,7 @@ class Reminder extends Component {
 
     changeStatus(reminder, projectId, targetStatus) {
       var self = this;
+      console.log('that one '+reminder["reminder"]);
       if(reminder["reminder"] !== undefined) {
         var remindId = reminder["reminder"][0];
         var projectId = projectId["projectId"];
@@ -586,7 +587,7 @@ class Reminder extends Component {
 
        //custom reminder update/add
        remindersTab.forEach(function(remind) {
-        if(remind[2]!=="3m" && remind[2]!=="6m") {
+        if(remind[2]!=="3m" && remind[2]!=="6m" && remind[2]!=="bday") {
           axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'reminder/'+remind[0],
@@ -700,7 +701,7 @@ class Reminder extends Component {
         if(reminder!=="empty") {
             var cololor = this.colorReminder({reminder});
         }
-        var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m');
+        var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m'||reminder[2]==='bday');
         var shown = (autoRemind || reminder[1]==='ok');
         var remindValid = (!autoRemind && reminder[1] === 'ok');
         var date = reminder[3];
@@ -709,8 +710,9 @@ class Reminder extends Component {
             <MuiThemeProvider>
               <span className="textToCenter"><b>
               {(remindValid || !shown) && reminder[2]}
-              {autoRemind && reminder[2]=='3m' && '3 Months to Go'}
-              {autoRemind && reminder[2]=='6m' && '6 Months to Go'}
+              {autoRemind && reminder[2]=='3m' && '3 Months'}
+              {autoRemind && reminder[2]=='6m' && '6 Months'}
+              {autoRemind && reminder[2]=='bday' && 'Birthday'}
               </b></span>
               <span className="borderRadiusManager">
               <b>
@@ -766,7 +768,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) {this.changeStatus({reminder}, {projectId}, 'ok'); this.setState({reminders:myTab}); this.forceUpdate()}}}>
+                  onClick={() => { {this.changeStatus({reminder}, {projectId}, 'ok'); this.setState({reminders:myTab}); this.forceUpdate()}}}>
                   <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
               </Button>
             </Tooltip>}
@@ -776,7 +778,7 @@ class Reminder extends Component {
                   className="reminder-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to cancel validation of this reminder?')) this.changeStatus({reminder}, {projectId}, 'notok')}}>
+                  onClick={() => { this.changeStatus({reminder}, {projectId}, 'notok')}}>
                   <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>
               </Button>
             </Tooltip>}
@@ -854,10 +856,12 @@ class Reminder extends Component {
           <text className='reminder-name'>
               {this.state.name}
           </text>
+          {/* finally, golivedate can be just set on project tab. Go live date permit calcul of auto reminders (3m/6m/bday) -> we increment these at each website birthday */}
           <TextField className='reminder-golive'
               type='date'
-              onChange={event => { this.setState({goLiveDate:event.target.value}); this.setState({thingstoSave:true});}}
-              defaultValue={this.state.goLiveDate}
+              disabled
+              //onChange={event => { this.setState({goLiveDate:event.target.value}); this.setState({thingstoSave:true});}}
+              value={this.state.goLiveDate}
               label='Go Live Date'
           />
         </div>

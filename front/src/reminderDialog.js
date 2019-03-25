@@ -376,13 +376,13 @@ class NewMailReminderDialog extends React.Component {
                 onCopy={() => this.setState({copied: true})}>
                 <Button variant='outlined'>Copy object & body</Button>
             </CopyToClipboard><br/>
-            <Button variant='outlined' onClick={() => this.setState({ open: false })} color="primary">
+            <Button variant='outlined' onClick={() => this.setState({ open: false })} color="secondary">
               Cancel
             </Button>
             <Button variant='outlined' onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body=<html>"+this.state.content+"</html>"}}>Open Mail manager</Button> 
-            <Button 
+            <Button
               variant='outlined'
-              onClick={() => { if (window.confirm('Are you sure you wish to force validation of this reminder?')) this.forceValidation() }}
+              onClick={() => { this.forceValidation() }}
               color="primary">
               Mark reminder as Sent
             </Button>

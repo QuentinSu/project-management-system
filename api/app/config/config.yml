@@ -75,7 +75,7 @@ nelmio_cors:
         allow_origin: ['*', 'localhost']
         allow_headers: ['*', 'localhost']
         allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-        max_age: 3600
+        max_age: 18000
         hosts: []
         origin_regex: false
  
