@@ -6,6 +6,8 @@ use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\SupportTicket;
 use AppBundle\Entity\Reminder;
+use AppBundle\Entity\Server;
+use AppBundle\Entity\ServerReminder;
 use AppBundle\Controller\RestServiceController;
 use AppBundle\Controller\ReminderController;
 use FOS\RestBundle\View\View;
@@ -147,22 +149,59 @@ class ProjectController extends RestServiceController
     return new View("Reminder auto Birthday Added Successfully", Response::HTTP_OK);
 }
 
+  public function createProjectServer(Project $project) {
+    $data = new Server;
+
+    $data->setName($project->getName().' server');
+    $data->setAddress('127.0.0.1');
+    $data->setComment('Automatically created server for '.$project->getName().' project');
+    $created = date('Y-m-d');
+    $data->setCreated($created);
+    $em = $this->getDoctrine()->getManager();
+    $em->persist($data);
+    $em->flush();
+    $lastId = $data->getId();
+
+    $dataMonitoring = new ServerReminder;
+    $dataMonitoring->setServer($data);
+    $dataMonitoring->setType('Monitoring');
+    $dataMonitoring->setStatus('no');
+    $em->persist($dataMonitoring);
+
+    $dataFirewall = new ServerReminder;
+    $dataFirewall->setServer($data);
+    $dataFirewall->setType('Firewall');
+    $dataFirewall->setStatus('no');
+    $em->persist($dataFirewall);
+
+    $dataBackUps = new ServerReminder;
+    $dataBackUps->setServer($data);
+    $dataBackUps->setType('BackUps');
+    $dataBackUps->setStatus('no');
+    $em->persist($dataBackUps);
+
+    $dataLocal = new ServerReminder;
+    $dataLocal->setServer($data);
+    $dataLocal->setType('Local');
+    $dataLocal->setStatus('no');
+    $em->persist($dataLocal);
+
+    $dataLastbu = new ServerReminder;
+    $dataLastbu->setServer($data);
+    $dataLastbu->setType('Date last back up');
+    $dataLastbu->setStatus(null);
+    $em->persist($dataLastbu);
+
+    $em->flush();
+   
+    //$this->notify('Server added');
+  }
+
     /**
      * @Post("/project")
      */
     public function postAction(Request $request)
     {
-
-      $application = new Application($this->get('kernel'));
-      $application->setAutoExit(false);//exit after run
-      $input = new ArrayInput([
-          'command' => 'app:send-daily-mail'
-      ]);
-      $output = new BufferedOutput();
-      $runCode = $application->run($input, $output);
-
-      $content = $output->fetch();
-      return new Response($content);
       // Admin restriction for this view
       if (!$this->getUser()->isAdmin()) {
         return new View("not allowed", Response::HTTP_FORBIDDEN);
@@ -204,6 +243,8 @@ class ProjectController extends RestServiceController
       $this->postAutoReminder6M($project);
       $this->postAutoReminder3M($project);
       $this->postAutoReminderBDay($project);
+
+      $this->createProjectServer($project);
 
       $this->notify('Project created with name: '.$name); 
 
