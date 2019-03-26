@@ -5,7 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\Company;
+use AppBundle\Entity\Reminder;
 use AppBundle\Controller\RestServiceController;
+use AppBundle\Controller\ReminderController;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -27,6 +29,8 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Security\Core\User\UserInterface;
+
+use Psr\Log\LoggerInterface;
 
 /**
  * @RouteResource("profile", pluralize=false)
@@ -130,7 +134,7 @@ class RestProfileController extends RestServiceController implements ClassResour
      * @ParamConverter("project", class="AppBundle:Project")
      * @ParamConverter("user", class="AppBundle:User")
      */
-    public function addProjectAction(Project $project, UserInterface $user)
+    public function addProjectAction(Project $project, UserInterface $user, LoggerInterface $logger)
     {
         // Admin restriction for this view
         if (!$this->getUser()->isAdmin()) {
@@ -142,6 +146,26 @@ class RestProfileController extends RestServiceController implements ClassResour
         /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
         $userManager = $this->get('fos_user.user_manager');
         $userManager->updateUser($user);
+        $company = $user->getCompany();
+        $logger->error('Hey, the company of this guy is :'.$company->getId());
+        if($user->getCompany()) {
+            $existingRemind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($project->getId())));
+            if($existingRemind) {
+                // $type = $existingRemind->getType();
+                // $nb_link
+            } else {
+                $data = new Reminder();
+                $data->setProject($project);
+                $data->setStatus('notok');
+                $data->setType('eoy_'.$company->getId().'_1'); //eoy_[idcompany]_[nbOfUsersLinkingProject&Company]
+                $data->setDeadline(date("Y-m-d", strtotime($company->getEoy(). '-3 week')));
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($reminder);
+
+                $em->flush();
+            }
+            
+        }
 
         $this->notify('Project n°'.$project->getId().' added on username: '.$user->getUsername()); 
 

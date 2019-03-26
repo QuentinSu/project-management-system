@@ -327,7 +327,7 @@ class Companies extends Component {
         <Paper color="primary" className='company-stats' square={false}>
             <Typography className='company-stats-nb'>You have <b>{nbClients}</b> clients</Typography>
         </Paper>
-        <MuiThemeProvider theme={theme}>     
+        <MuiThemeProvider theme={theme}>
         <FormControlLabel 
                     className="company-active-filter"
                     control={<Switch checked={this.state.checked} defaultChecked={true} onChange={this.onChange} onClick={event => this.filterInactiveCompanies(event.target.checked)}

@@ -98,8 +98,8 @@ class ReminderController extends Controller
                 }
             }
             if($companiesEoy) {
-                // $eoys = array_unique($companiesEoy, SORT_REGULAR);
-                $eoys=$companiesEoy;
+                $eoys = array_unique($companiesEoy, SORT_REGULAR);
+                // $eoys=$companiesEoy;
             } else {
                 $eoys = ['noCompaniesLinked'];
             }
