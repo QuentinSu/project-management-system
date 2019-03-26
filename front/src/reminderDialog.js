@@ -381,7 +381,7 @@ class NewMailReminderDialog extends React.Component {
                 <Button variant='outlined'>Copy object & body</Button>
             </CopyToClipboard><br/>
             
-            <Button variant='outlined' onClick={() => { if (window.confirm('Open extern app ?')) window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body=<html>"+this.state.content+"</html>"}}>Open Mail manager</Button> 
+            <Button variant='outlined' onClick={() => { window.location.href = "mailto:"+recipientString+"?subject="+this.state.name+"&body="+encodeURIComponent(this.state.content)}}>Open Mail manager</Button> 
             <Button
               variant='outlined'
               onClick={() => { this.forceValidation() }}
