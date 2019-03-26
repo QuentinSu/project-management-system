@@ -137,7 +137,6 @@ class Servers extends Component {
 
     saveNewServer() {
         var self = this;
-        console.log('local status'+this.state.newLocal);
         axios({
             method: 'post', //you can set what request you want to be
             url: apiBaseUrl+'server',
@@ -430,9 +429,7 @@ class Servers extends Component {
     render() {
       const classes = this.props;
       let mappedServerReminders;
-        console.log('a '+this.state.serverReminders);
         if((this.state.serverReminders === null) || (this.state.serverReminders === undefined) && this.state.thingstoSave) {
-            console.log('test');
             this.getServerReminders();
         }
 
@@ -543,8 +540,6 @@ class Servers extends Component {
                     </div>
                 }
             })
-            console.log('map' : mappedServerReminders);
-
             //this.setState({thingstoSave:false});
         }
 

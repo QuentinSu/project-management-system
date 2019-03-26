@@ -125,6 +125,55 @@ class RestProfileController extends RestServiceController implements ClassResour
         );
     }
 
+
+    public function createEoyReminder(Company $company, Project $project) {
+        $exist = false;
+        $eoyCompRemindName = 'eoy_'.$company->getId().'_';
+        $existingRemind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($project->getId())));
+        $dbm = $this->getDoctrine()->getManager();
+        foreach ($existingRemind as $row) {
+            if(strstr($row->getType(), $eoyCompRemindName)) {
+                $nbLink=str_replace($eoyCompRemindName, '', $row->getType());
+                $exist = true;
+                $nbLink=(int)$nbLink;
+                $nbLink++;
+                $row->setType('eoy_'.$company->getId().'_'.$nbLink); 
+            }
+        }
+        $dbm->flush();                                                                                                                                                          
+        if(!$exist) {
+            $data = new Reminder();
+            $data->setProject($project);
+            $data->setStatus('notok');
+            $data->setType('eoy_'.$company->getId().'_1'); //eoy_[idcompany]_[nbOfUsersLinkingProject&Company]
+            $data->setDeadline(date("Y-m-d", strtotime($company->getEoy(). '-3 week')));
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($data);
+            $em->flush();
+        }
+    }
+
+    public function deleteEoyReminder(Company $company, Project $project) {
+        $eoyCompRemindName = 'eoy_'.$company->getId().'_';
+        $existingRemind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($project->getId())));
+        $dbm = $this->getDoctrine()->getManager();
+        foreach ($existingRemind as $row) {
+            if(strstr($row->getType(), $eoyCompRemindName)) {
+                $nbLink=str_replace($eoyCompRemindName, '', $row->getType());
+                $nbLink=(int)$nbLink;
+                $nbLink--;
+                if($nbLink === 0) {
+                    // $this->notify('Reminder n°'.$reminder->getId().' deleted'); 
+                    $dbm->remove($row);
+                } else {
+                    $row->setType('eoy_'.$company->getId().'_'.$nbLink);
+                }
+            }
+        }
+        $dbm->flush();                                                                                                                                  
+
+    }
+
     /**
      * @Put("/profile/{user}/project/{project}")
      * 
@@ -148,23 +197,8 @@ class RestProfileController extends RestServiceController implements ClassResour
         $userManager->updateUser($user);
         $company = $user->getCompany();
         $logger->error('Hey, the company of this guy is :'.$company->getId());
-        if($user->getCompany()) {
-            $existingRemind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($project->getId())));
-            if($existingRemind) {
-                // $type = $existingRemind->getType();
-                // $nb_link
-            } else {
-                $data = new Reminder();
-                $data->setProject($project);
-                $data->setStatus('notok');
-                $data->setType('eoy_'.$company->getId().'_1'); //eoy_[idcompany]_[nbOfUsersLinkingProject&Company]
-                $data->setDeadline(date("Y-m-d", strtotime($company->getEoy(). '-3 week')));
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($reminder);
-
-                $em->flush();
-            }
-            
+        if($company) {
+            $this->createEoyReminder($company, $project);
         }
 
         $this->notify('Project n°'.$project->getId().' added on username: '.$user->getUsername()); 
@@ -193,6 +227,7 @@ class RestProfileController extends RestServiceController implements ClassResour
         /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
         $userManager = $this->get('fos_user.user_manager');
         $userManager->updateUser($user);
+        $this->deleteEoyReminder($user->getCompany(), $project);
 
         $this->notify('Project n°'.$project->getId().' removed from username: '.$user->getUsername()); 
 
@@ -226,8 +261,16 @@ class RestProfileController extends RestServiceController implements ClassResour
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($user->getId());
         if (empty($user)) {
             return new View("User not found", Response::HTTP_NOT_FOUND);
+        } else {
+            $initialCompany=$user->getCompany();
+            $initialCompanyId=$initialCompany->getId(); 
+            if($initialCompanyId) {
+                $projects = $user->getProjects();
+                foreach($projects as $project) {
+                    $this->deleteEoyReminder($initialCompany, $project);
+                }
+            }
         }
-
         if($roles) $user->setRoles($roles);
         if($enabled) $user->setEnabled($enabled);
         if($email) $user->setEmail($email);
@@ -237,6 +280,11 @@ class RestProfileController extends RestServiceController implements ClassResour
         if($companyId) {
             $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($companyId);
             $user->setCompany($company);
+            //foreach project linked with this user, we call createReminderEoy
+            $projects = $user->getProjects();
+            foreach($projects as $project) {
+                $this->createEoyReminder($company, $project);
+            }
         } else {
             $user->setCompany(null);
         }

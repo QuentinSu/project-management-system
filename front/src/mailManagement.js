@@ -151,8 +151,9 @@ class MailsManagement extends Component {
                         }}
                         fullWidth
                     >
-                        <MenuItem value='3m'>3 months to go</MenuItem>
-                        <MenuItem value='6m'>6 months to go</MenuItem>
+                        <MenuItem value='3m'>3 months</MenuItem>
+                        <MenuItem value='6m'>6 months</MenuItem>
+                        <MenuItem value='bday'>Birthday</MenuItem>
                         <MenuItem value='custom'>Custom template</MenuItem>
                     </Select>
                     <TextField
@@ -273,8 +274,9 @@ class MailsManagement extends Component {
                       id: "type",
                   }}
                   >
-                  <MenuItem value='3m'>3 months to go</MenuItem>
-                  <MenuItem value='6m'>6 months to go</MenuItem>
+                  <MenuItem value='3m'>3 months</MenuItem>
+                  <MenuItem value='6m'>6 months</MenuItem>
+                  <MenuItem value='bday'>Birthday</MenuItem>
                   <MenuItem value='custom'>Custom template</MenuItem>
               </Select>
             </FormControl>

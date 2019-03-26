@@ -312,7 +312,7 @@ class Reminders extends Component {
       var advancedFunction = <div>
                               <div>
                                 <b><h4>Advanced function</h4></b>
-                                <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all 3m and 6m reminders?')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
+                                <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all auto reminders? (3m,6m, bday, eoy)')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
                                 {/* Insert here other advanced function buttons */}
                               </div>
                               {legendText}
@@ -572,7 +572,7 @@ class Reminder extends Component {
 
        //custom reminder update/add
        remindersTab.forEach(function(remind) {
-        if(remind[2]!=="3m" && remind[2]!=="6m" && remind[2]!=="bday") {
+        if(remind[2]!=="3m" && remind[2]!=="6m" && remind[2]!=="bday" && !(remind[2].indexOf("eoy_")) && !(remind[2].indexOf(projectid)) ) {
           axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'reminder/'+remind[0],
@@ -590,17 +590,6 @@ class Reminder extends Component {
               }
           }).catch(function (error) {
           });
-        } else {
-          var InitialDate = remind[3];
-          if(remind[2]==='3m') {
-            remind[3]=self.formatDateRegen3m6mDate(golive, '3m');
-          } else if (remind[2]==='6m') {
-            remind[3]=self.formatDateRegen3m6mDate(golive, '6m');
-          }
-          
-          if(remind[3]!==InitialDate) {
-            remind[1]='notok';
-          }
         }
       });
       // self.forceUpdate();
@@ -609,34 +598,6 @@ class Reminder extends Component {
       this.forceUpdate();
   }
 
-    formatDateRegen3m6mDate(dateString, type) {
-      if(type==='3m') {
-        var d = new Date(dateString),
-        month = '' + (d.getMonth()+1-3), //january is 0
-        day = '' + (d.getDate()),
-        year = d.getFullYear();
-      } else if(type==='6m'){
-        var d = new Date(dateString),
-        month = '' + (d.getMonth()+1-6), //january is 0
-        day = '' + (d.getDate()),
-        year = d.getFullYear();
-      }
-
-      /**manage case of month before june (negative month otherwise) */
-      if((d.getMonth()+1)<7) {
-        if((d.getMonth()+1)<4 && type==='3m') {
-            month = 12+parseInt(month);
-            year = d.getFullYear()-1;
-        } else if(type==='6m'){
-            month = 12+parseInt(month);
-            year = d.getFullYear()-1;
-        }
-      }
-
-      month = ('0' + month).slice(-2);
-      day = ('0' + day).slice(-2);
-      return [year, month, day].join('-');
-    }
 
 
     formatDateAddOneYear(dateString, reminder) {
@@ -686,7 +647,8 @@ class Reminder extends Component {
         if(reminder!=="empty") {
             var cololor = this.colorReminder({reminder});
         }
-        var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m'||reminder[2]==='bday');
+        var isEoy = (reminder[2].indexOf("eoy_")===0);
+        var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m'||reminder[2]==='bday'||isEoy);
         var shown = (autoRemind || reminder[1]==='ok');
         var remindValid = (!autoRemind && reminder[1] === 'ok');
         var date = reminder[3];
@@ -695,9 +657,10 @@ class Reminder extends Component {
             <MuiThemeProvider>
               <span className="textToCenter"><b>
               {(remindValid || !shown) && reminder[2]}
-              {autoRemind && reminder[2]=='3m' && '3 Months'}
-              {autoRemind && reminder[2]=='6m' && '6 Months'}
-              {autoRemind && reminder[2]=='bday' && 'Birthday'}
+              {autoRemind && reminder[2]==='3m' && '3 Months'}
+              {autoRemind && reminder[2]==='6m' && '6 Months'}
+              {autoRemind && reminder[2]==='bday' && 'Birthday'}
+              {autoRemind && isEoy && 'EOY soon'}
               </b></span>
               <span className="borderRadiusManager">
               <b>
