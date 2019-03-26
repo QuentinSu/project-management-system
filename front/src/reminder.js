@@ -1,33 +1,18 @@
 import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import StarIcon from '@material-ui/icons/Star';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Link, NavLink } from 'react-router-dom';
 import axios from 'axios';
-import {DeleteProjectDialog, NewProjectDialog, NotifyUsersDialog} from './projectDialog.js'
 import Card from '@material-ui/core/Card';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import HighlightOff from '@material-ui/icons/HighlightOff'
-import List from '@material-ui/core/List';
-import { withStyles } from 'material-ui/styles';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -815,7 +800,7 @@ class Reminder extends Component {
     })
 
     let mappedEoys = this.state.eoys.sort((a, b) => a[1] > b[1]).map((eoy)=>{
-      if(eoy != 'noCompaniesLinked') {
+      if(eoy !== 'noCompaniesLinked') {
         return (
           <div className='reminder-eoy'>
           <MuiThemeProvider>
@@ -840,8 +825,6 @@ class Reminder extends Component {
 
     // this.countReminderState(this.state.id, this.state.name, this.state.reminders);
     // this.remindersStats();
-
-    var backTimeUrl= process.env.PUBLIC_URL + "/time.png";
     
     return (
       <div hidden={this.props.hidden}>  

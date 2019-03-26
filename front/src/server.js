@@ -264,7 +264,7 @@ class Servers extends Component {
                         id="comment"
                         label="Comment"
                         multiline
-                        rows='2'
+                        rows='4'
                         value={this.state.newComment}
                         onChange = {event => this.setState({newComment:event.target.value})}
                         fullWidth
@@ -590,7 +590,7 @@ class Servers extends Component {
                     onChange={event => { this.setState({comment:event.target.value}); this.setState({thingstoSave:true});}}
                     defaultValue={this.state.comment}
                     multiline
-                    rows='2'
+                    rows='4'
                     label='Comment'
                 />
             </div>

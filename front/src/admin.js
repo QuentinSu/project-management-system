@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import StarIcon from '@material-ui/icons/StarRounded';
-import StarHalf from '@material-ui/icons/StarHalfRounded'
-import { Link, NavLink } from 'react-router-dom';
+import StarHalf from '@material-ui/icons/StarHalfRounded';
 import AppBar from 'material-ui/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
@@ -91,10 +90,10 @@ class AdminDashboard extends Component {
     if (!localStorage.getItem('isAdmin')) {
       window.location.href = '/client'
     }
-
+    var buttonPanel;
     if(localStorage.getItem('isAdvanced')) {
         console.log(localStorage.getItem('isAdvanced'));
-        var buttonPanel = <Button size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
+        buttonPanel = <Button size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
         {/* if on advanced : button to return classical; else button to go advanced mode */}
         <div id='advanced-but-dashboard-long-text'>
         { advanced
@@ -108,7 +107,7 @@ class AdminDashboard extends Component {
         }</div>
       </Button>
     } else {
-      var buttonPanel = <Typography className='advanced-but-dashboard'>Dashboard</Typography>
+      buttonPanel = <Typography className='advanced-but-dashboard'>Dashboard</Typography>
     }
 
     return (
