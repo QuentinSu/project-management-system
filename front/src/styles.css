@@ -481,11 +481,32 @@
     flex-wrap: wrap;
 	margin-left:50px !important;
 	top:0px;
-	
 }
+
+.company-actions-switches {
+	display:inline-block;
+	flex-wrap: wrap;
+	padding-left:0 !important;
+	top: 0px;
+	width:50%;
+}
+
+.company-actions-buttons {
+	margin-right:0 !important;
+	min-width:30%;
+	max-width:50%;
+	top: 0px;
+}
+
 .company-active-switch {
-	width: 50%;
-	padding-left:10px;
+	display:inline-block;
+	width: 100%;
+	text-align:right;
+	margin-right:0px;
+}
+
+.company-active-switch-icon {
+	margin-left:0px;
 }
 
 .company-active-filter {
@@ -493,22 +514,28 @@
 	width: 10%;
 }
 
+.company-actions-buttons-elem {
+	float:right;
+	width:70%;
+}
+
 .company-live {
 	/* 	width:35%; */
 	height:50px;
 	margin-top:25px;
-	min-width:30%;
+	width:100%;
 	background: linear-gradient(to right bottom, #ffffff, #c9c9c9) !important;
 	font-weight: bold;
 }
 
 .company-save-button {
-	
+	width:100%;
+	margin-top:10px !important;
 }
 
 .company-delete-button {
-	display: flex;
-	flex-wrap: wrap;
+	width:100%;
+	margin-top: 10px !important;
 }
 
 /** end */

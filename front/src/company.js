@@ -20,6 +20,8 @@ import Chip from '@material-ui/core/Chip';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
+import PeopleIcon from '@material-ui/icons/People';
+import BookIcon from '@material-ui/icons/Book';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -41,7 +43,7 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       // light: will be calculated from palette.primary.main,
-      main: '#562342',
+      main: '#b5aa55',
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
     },
@@ -50,13 +52,12 @@ const theme = createMuiTheme({
       // dark: will be calculated from palette.secondary.main,
       contrastText: '#ffcc00',
     },
-    // error: will use the default color
+    disabled: {
+        main: '#569864',
+    },
+    //error: will use the default color
   },
 });
-
-
-//import Typography from '@material-ui/core/Typography';
-//import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
 var config = require('./config.json');
 var nbClients;
@@ -134,6 +135,8 @@ class Companies extends Component {
           newPhone: null,
           newCreation: created,
           newStatus: true,
+          newTestimonial: false,
+          newSocial: false,
           newEoy: null
           //users: ????,
       }
@@ -205,6 +208,8 @@ class Companies extends Component {
                 "phone": this.state.newPhone,
                 "creation": this.state.newCreation,
                 "status": this.state.newStatus,
+                "testimonial": this.state.newTestimonial,
+                "social": this.state.newSocial,
                 "eoy": this.state.newEoy
             }
           })
@@ -304,6 +309,8 @@ class Companies extends Component {
                             phone={company.phone}
                             creation={company.creation}
                             status={company.status}
+                            testimonial={company.testimonial}
+                            social={company.social}
                             eoy={company.eoy}
                             users={company.users}
                             hidden={company.hidden ? company.hidden : false}
@@ -333,6 +340,7 @@ class Companies extends Component {
                     control={<Switch checked={this.state.checked} defaultChecked={true} onChange={this.onChange} onClick={event => this.filterInactiveCompanies(event.target.checked)}
                     classes={{
                         root: classes.root,
+                        disabled: classes.disabled,
                         checked: classes.checked,
                     }}        />} 
             label="Show inactive" />
@@ -400,6 +408,20 @@ class Companies extends Component {
                         defaultValue='active'
                         onChange = {(event) => this.setState({newStatus:event.target.value})}
                     />
+                    <TextField disabled
+                        margin="dense"
+                        id="testimonial"
+                        label="Testimonial"
+                        defaultValue='active'
+                        onChange = {(event) => this.setState({newTestimonial:event.target.value})}
+                    />
+                    <TextField disabled
+                        margin="dense"
+                        id="social"
+                        label="Social"
+                        defaultValue='active'
+                        onChange = {(event) => this.setState({newSocial:event.target.value})}
+                    />
 
                     </DialogContent>
                     <DialogActions>
@@ -461,6 +483,8 @@ class Companies extends Component {
             phone: props.phone,
             creation: props.creation,
             status: props.status,
+            testimonial: props.testimonial,
+            social: props.social,
             eoy: props.eoy,
             users: props.users,
             thingstoSave:false,
@@ -508,7 +532,6 @@ class Companies extends Component {
 
     saveCompany() {
         var self = this;
-        console.log('Status:'+this.state.status)
         axios({
             method: 'put', //you can set what request you want to be
             url: apiBaseUrl+'company/'+this.state.id,
@@ -522,6 +545,8 @@ class Companies extends Component {
                 "phone":this.state.phone,
                 "creation":this.state.creation,
                 "status": this.state.status,
+                "testimonial": this.state.testimonial,
+                "social": this.state.social,
                 "eoy": this.state.eoy
             }
           })
@@ -686,13 +711,34 @@ class Companies extends Component {
                 />
             </div>
             <div className='company-actions'>
+            <div className='company-actions-switches'>
             <MuiThemeProvider theme={theme}>
-                <FormControlLabel 
-                    className="company-active-switch"
+            <span className="company-active-switch">
+                <FormControlLabel
+                    labelPlacement='start'
+                    fullWidth
                     control={<Switch checked={this.state.status}
-                            onChange = {(event) => {this.setState({status:!this.state.status}); ;this.setState({thingstoSave:true});}} />} 
-                    label="Active" />
+                            onChange = {(event) => {this.setState({status:!this.state.status});this.setState({thingstoSave:true});}} />} 
+                    label="Active" /></span>
+                    <span className="company-active-switch">
+                    <BookIcon className="company-active-switch-icon"/>
+                     <FormControlLabel 
+                    labelPlacement='start'
+                    fullWidth
+                    control={<Switch checked={this.state.testimonial}
+                            onChange = {(event) => {this.setState({testimonial:!this.state.testimonial});this.setState({thingstoSave:true});}} />} 
+                    label="Testimonial request" /></span>
+                    <span className="company-active-switch">
+                    <PeopleIcon className="company-active-switch-icon"/>
+                     <FormControlLabel
+                    labelPlacement='start'
+                    control={<Switch checked={this.state.social}
+                            onChange = {(event) => {this.setState({social:!this.state.social});this.setState({thingstoSave:true});}} />} 
+                    label="Following on socials" /></span>
                     </MuiThemeProvider>
+                </div>
+                <div className="company-actions-buttons">
+                <div className="company-actions-buttons-elem">
                 <Chip className='company-live' label={liveFrom} />
                 
                 {this.state.thingstoSave &&
@@ -701,6 +747,7 @@ class Companies extends Component {
                     style = {{
                         background:'#00984C'
                     }}
+                    className="company-save-button"
                     onClick={() => this.saveCompany()}
                     variant="contained"
                     >
@@ -709,6 +756,7 @@ class Companies extends Component {
                 {!this.state.thingstoSave &&
                 <Button
                     size="small"
+                    className="company-save-button"
                     onClick={() => null}
                     >
                     <SaveIcon/> Save
@@ -720,6 +768,8 @@ class Companies extends Component {
                     className='company-delete-button'>
                     <DeleteIcon /> Delete
                 </Button>
+                </div>
+                </div>
                 <Dialog
                     open={this.state.openDelete}
                     aria-labelledby="form-dialog-title"

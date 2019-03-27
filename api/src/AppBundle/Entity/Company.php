@@ -44,7 +44,7 @@ class Company
     private $dateCreation;  // deprecated but imposssible to remove (metadata issue...)
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\user", mappedBy="company")
+     * @ORM\OneToMany(targetEntity="User", mappedBy="company")
      */
     private $users;
 
@@ -67,6 +67,16 @@ class Company
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $eoy;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $testimonial;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $social;
 
     public function __construct()
     {
@@ -205,6 +215,30 @@ class Company
     public function setEoy(?string $eoy): self
     {
         $this->eoy = $eoy;
+
+        return $this;
+    }
+
+    public function getTestimonial(): ?int
+    {
+        return $this->testimonial;
+    }
+
+    public function setTestimonial(int $testimonial): self
+    {
+        $this->testimonial = $testimonial;
+
+        return $this;
+    }
+
+    public function getSocial(): ?int
+    {
+        return $this->social;
+    }
+
+    public function setSocial(int $social): self
+    {
+        $this->social = $social;
 
         return $this;
     }

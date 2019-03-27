@@ -4,7 +4,10 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Entity\Company;
+use AppBundle\Entity\Reminder;
+use AppBundle\Entity\Project;
 use AppBundle\Controller\RestServiceController;
+use AppBundle\Controller\ReminderController;
 use AppBundle\Repository\CompanyRepository;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations;
@@ -70,6 +73,8 @@ class CompanyController extends Controller
       $description = $request->get('description');
       $phone = $request->get('phone');
       $status = $request->get('status');
+      $testimonial = $request->get('testimonial');
+      $social = $request->get('social');
       $eoy = $request->get('eoy');
       $user = $request->get('user');
       $creation = $request->get('creation'); // to test
@@ -82,6 +87,8 @@ class CompanyController extends Controller
       $data->setPhone($phone);
       $data->setCreation($creation);
       $data->setStatus($status);
+      $data->setTestimonial($testimonial);
+      $data->setSocial($social);
 
       !empty($eoy) ? $data->setEoy($eoy) : $data->setEoy(date("Y").'-12-31');
       if($user) {
@@ -93,6 +100,54 @@ class CompanyController extends Controller
       $em->flush();
     //$this->notify('Company added');
       return new View("Company Added Successfully", Response::HTTP_OK);
+    }
+
+    public function createEoyReminder(Company $company, Project $project) {
+        $exist = false;
+        $eoyCompRemindName = 'eoy_'.$company->getId().'_';
+        $existingRemind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($project->getId())));
+        $dbm = $this->getDoctrine()->getManager();
+        foreach ($existingRemind as $row) {
+            if(strstr($row->getType(), $eoyCompRemindName)) {
+                $nbLink=str_replace($eoyCompRemindName, '', $row->getType());
+                $exist = true;
+                $nbLink=(int)$nbLink;
+                $nbLink++;
+                $row->setType('eoy_'.$company->getId().'_'.$nbLink); 
+            }
+        }
+        $dbm->flush();                                                                                                                                                          
+        if(!$exist) {
+            $data = new Reminder();
+            $data->setProject($project);
+            $data->setStatus('notok');
+            $data->setType('eoy_'.$company->getId().'_1'); //eoy_[idcompany]_[nbOfUsersLinkingProject&Company]
+            $data->setDeadline(date("Y-m-d", strtotime($company->getEoy(). '-3 week')));
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($data);
+            $em->flush();
+        }
+    }
+
+    public function deleteEoyReminder(Company $company, Project $project) {
+        $eoyCompRemindName = 'eoy_'.$company->getId().'_';
+        $existingRemind = $this->getDoctrine()->getRepository('AppBundle:Reminder')->findBy(array('project'=>($project->getId())));
+        $dbm = $this->getDoctrine()->getManager();
+        foreach ($existingRemind as $row) {
+            if(strstr($row->getType(), $eoyCompRemindName)) {
+                $nbLink=str_replace($eoyCompRemindName, '', $row->getType());
+                $nbLink=(int)$nbLink;
+                $nbLink--;
+                if($nbLink === 0) {
+                    // $this->notify('Reminder n°'.$reminder->getId().' deleted'); 
+                    $dbm->remove($row);
+                } else {
+                    $row->setType('eoy_'.$company->getId().'_'.$nbLink);
+                }
+            }
+        }
+        $dbm->flush();                                                                                                                                  
+
     }
 
     /** 
@@ -118,6 +173,11 @@ class CompanyController extends Controller
 
         !empty($company) ? $company->addUser($user) : NULL;
         $user->setCompany($company);
+        //foreach project linked with this user, we call createReminderEoy
+        $projects = $user->getProjects();
+        foreach($projects as $project) {
+            $this->createEoyReminder($company, $project);
+        }
         $dbm->persist($company);
         $dbm->flush();
 
@@ -147,6 +207,13 @@ class CompanyController extends Controller
 
         $user->setCompany(null);
         $company->removeUser($user);
+
+        //management of eoy reminder linked
+        $projects = $user->getProjects();
+        foreach($projects as $project) {
+            $this->deleteEoyReminder($company, $project);
+        }
+
         $dbm->persist($company);
         $dbm->persist($user);
         $dbm->flush();
@@ -172,7 +239,7 @@ class CompanyController extends Controller
         } 
 
         // Admin restriction for this view
-        if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
+        if (!$this->getUser()->isAdmin()) {
             return new View("not allowed", Response::HTTP_FORBIDDEN);
         }
         
@@ -181,7 +248,11 @@ class CompanyController extends Controller
         $phone = $request->get('phone');
         $creation = $request->get('creation');
         $status = $request->get('status');
+        $testimonial = $request->get('testimonial');
+        $social = $request->get('social');
         $eoy = $request->get('eoy');
+
+        $initialEoy = $company->getEoy();
 
         $dbm = $this->getDoctrine()->getManager();
 
@@ -192,8 +263,22 @@ class CompanyController extends Controller
         !empty($eoy) ? $company->setEoy($eoy) : date("Y").'-12-31';
 
         $company->setStatus($status);
+        $company->setTestimonial($testimonial);
+        $company->setSocial($social);
 
         $dbm->flush();
+
+        //if eoy change, we update the reminder (turn notok and date update)
+        if($initialEoy !== $company->getEoy()) {
+            $users = $company->getUsers();
+            foreach($users as $user) {
+                $projects = $user->getProjects();
+                foreach($projects as $project) {
+                    $this->deleteEoyReminder($company, $project);
+                    $this->createEoyReminder($company, $project);
+                }
+            }
+        }
 
         // $this->notify('Company ID'.$company->getId().' modified');
 

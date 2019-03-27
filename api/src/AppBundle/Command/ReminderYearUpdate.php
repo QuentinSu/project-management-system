@@ -50,9 +50,9 @@ class ReminderYearUpdate extends ContainerAwareCommand
 
     protected function configure() {
         $this
-            ->setDescription('Check each day if (bday project + 2 weeks) is reach to regen auto reminders.')
+            ->setDescription('Check each day if (bday project + 2 weeks) is reached to regen auto reminders. + 3weeks for eoyreminder')
 
-            ->setHelp('This command allows you to regenerate date of automatic reminders when bday project + 2 weeks is reached...');
+            ->setHelp('This command allows you to regenerate date of automatic reminders when bday project + 2 weeks is reached (3 for eoy)...');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
@@ -67,15 +67,17 @@ class ReminderYearUpdate extends ContainerAwareCommand
             $bdayPlus2Weeks;
             $remind = $this->getContainer()->get('doctrine')->getRepository('AppBundle:Reminder')->findBy(array('project'=>($cardReminder->getId())));
             if($remind) {
+                 //bday + 2 weeks reach
+                 $today = date("Y-m-d");
+
+                //3m, 6m & bday reminders
                 foreach ($remind as $row) {
                     if($row->getType()==='bday') {
                         $bdayPlus2Weeks = date("Y-m-d", strtotime($row->getDeadline(). '+2 week'));
                         break;
                     }
                 }
-                //bday + 2 weeks reach
-                $today = date("Y-m-d");
-                
+
                 if($today === $bdayPlus2Weeks) {
                     foreach ($remind as $row) {
                         if($row->getType()==='3m' || $row->getType()==='6m' || $row->getType()==='bday' ) {
@@ -85,6 +87,17 @@ class ReminderYearUpdate extends ContainerAwareCommand
                     }
                 }
 
+                //eoy reminders
+                foreach ($remind as $row) {
+                    if(strstr($row->getType(), 'eoy_')) {
+                        $bdayPlus3Weeks = date("Y-m-d", strtotime($row->getDeadline(). '+3 week'));
+                        if($today === $bdayPlus3Weeks) {
+                            $row->setDeadline(date("Y-m-d", strtotime($row->getDeadline(). '+1 year')));
+                            $row->setStatus('notok'); //reminders updated so new validation mandatory
+                        }
+                    }
+                }
+                
                 $dbm->flush();
             }
         }
