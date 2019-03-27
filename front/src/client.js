@@ -30,7 +30,7 @@ import Dropzone from 'react-dropzone'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import ProjectSaveNotification from './saveNotification.js';
+import ElementSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
 
@@ -252,7 +252,7 @@ class SupportTicket extends Component {
         })
         return (
             <div>
-            <ProjectSaveNotification 
+            <ElementSaveNotification 
                 open={this.state.openSaveNotification} 
                 message={'Ticket saved successfully'}
                 handleClose={() => {this.setState({openSaveNotification:false})}}

@@ -334,6 +334,7 @@ class Servers extends Component {
             serverReminders: null,
             openDelete: false,
             thingstoSave: true,
+            openReset: false,
             openSaveNotification: false
         }
     }
@@ -480,10 +481,33 @@ class Servers extends Component {
                               className="reminder-server-button"
                               size="small"
                               color="primary"
-                              onClick={() => { if (window.confirm('Are you sure you wish to reset date of last back up?')) {reminder[2]=null;  this.setState({thingstoSave:true});this.forceUpdate();}}}>
+                              onClick={() => { this.setState({openReset:true}) }}>
                               <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>Reset date
                           </Button>
                         </Tooltip>
+                        <Dialog
+                          open={this.state.openReset}
+                          onClose={this.handleClose}
+                          aria-labelledby="form-dialog-title"
+                            >
+                              <DialogTitle id="new-project-dialog-title">Reset Backup Date</DialogTitle>
+                              <DialogContent>
+                                <DialogContentText>
+                                  Are you really sure you want to reset back up date ?
+                                </DialogContentText>
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={() => this.setState({ openReset: false })} color="primary">
+                                  Cancel
+                                </Button>
+                                <Button
+                                  onClick={() => {reminder[2]=''; this.setState({thingstoSave:true});this.forceUpdate(); this.setState({openReset:false})}}
+                                  color="secondary"
+                                  variant="contained">
+                                  Reset
+                                </Button>
+                              </DialogActions>
+                            </Dialog>
                     </div>
                   </div>
                 } else {
@@ -578,7 +602,7 @@ class Servers extends Component {
                     label='IP Address'
                 />
                 <div className="serve-livefrom"><b></b>
-                &nbsp;<Chip className='company-live' label={"LIVE FROM "+liveFrom} /></div>
+                &nbsp;<Chip className='company-live' label={"SITE AGE "+liveFrom} /></div>
 
             </div>
             <div className='reminder-server-list'>

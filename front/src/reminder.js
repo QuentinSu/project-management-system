@@ -16,7 +16,13 @@ import Avatar from '@material-ui/core/Avatar';
 import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import {activeTab} from './admin.js';
+import ElementSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
 
@@ -301,20 +307,20 @@ class Reminders extends Component {
               />
       })
 
-      var legendText = <div><br/>
+      var legendText = <div>
                         <b><h4>Key</h4></b>
                         <span className="key-line"><Avatar className="key-line-avatar" style={{background: "#00984C", width: 20, height: 20}}/><span className="key-line-text">Completed reminders</span></span>
                         <span className="key-line"><Avatar style={{background: "#f44336", width: 20, height: 20}}></Avatar><span className="key-line-text">Overdue reminders</span></span>
-                        <span className="key-line"><Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar><span className="key-line-text">Soon (-14 days) reminders</span></span>
+                        <span className="key-line"><Avatar style={{background: "#f6ae47", width: 20, height: 20}}></Avatar><span className="key-line-text">Due soon (-14 days) reminders</span></span>
                         <span className="key-line"><Avatar style={{background: "#c9c9c9", width: 20, height: 20}}></Avatar><span className="key-line-text">Future reminders</span></span>
                       </div>
 
       var advancedFunction = <div>
-                              <div>
+                              {/* <div>
                                 <b><h4>Advanced function</h4></b>
                                 <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all auto reminders? (3m,6m, bday, eoy)')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
                                 {/* Insert here other advanced function buttons */}
-                              </div>
+                            {/* </div> */} */}
                               {legendText}
                             </div>
       return(
@@ -330,7 +336,7 @@ class Reminders extends Component {
               <div>
                 <div className='reminder-key'>
                 <Tooltip title={advancedFunction} interactive>
-                  <Paper square={false}>Advanced functions & Key</Paper>
+                  <Paper square={false}>Key</Paper>
                 </Tooltip>
                 </div>
               </div>
@@ -359,7 +365,7 @@ class Reminders extends Component {
                             color="primary"
                             defaultChecked={true}
                             onClick={event => this.filterStateReminders('soon', event.target.checked)} />} 
-                    label="Soon" />
+                    label="Due Soon" />
                     </MuiThemeProvider><MuiThemeProvider theme={late}>
                     <FormControlLabel 
                     className="remindr-late-switch"
@@ -403,6 +409,7 @@ class Reminder extends Component {
           colorAvatar: "#00984C",
           openSaveNotification: false,
           thingstoSave : false,
+          openDelete: false,
           stat:[]
       }
     }
@@ -586,7 +593,6 @@ class Reminder extends Component {
             }
           }).then(function (response) {
               if(response.status === 200){
-                self.setState({openSaveNotification: true});
               }
           }).catch(function (error) {
           });
@@ -595,6 +601,7 @@ class Reminder extends Component {
       // self.forceUpdate();
       this.setState({reminders:remindersTab});
       this.setState({thingstoSave:false});
+      self.setState({openSaveNotification: true});
       this.forceUpdate();
   }
 
@@ -662,7 +669,7 @@ class Reminder extends Component {
               {(remindValid || !shown) && reminder[2]}
               {autoRemind && reminder[2]==='3m' && '3 Months'}
               {autoRemind && reminder[2]==='6m' && '6 Months'}
-              {autoRemind && reminder[2]==='bday' && 'Birthday'}
+              {autoRemind && reminder[2]==='bday' && 'Website Anniversary'}
               {autoRemind && isEoy && 'EOY soon'}
               </b></span>
               <span className="borderRadiusManager">
@@ -755,11 +762,33 @@ class Reminder extends Component {
                   className="reminder-button"// reminder-delete-button"
                   size="small"
                   color="primary"
-                  onClick={() => { if (window.confirm('Are you sure you wish to delete this reminder?')) this.deleteReminder(reminder[0], reminder[4])}}>
-    
+                  onClick={() => { this.setState({openDelete:true})}}>
                   <DeleteIcon style={{color: "#f44336"}} />
               </Button>
             </Tooltip>}
+            <Dialog
+            open={this.state.openDelete}
+            onClose={this.handleClose}
+            aria-labelledby="form-dialog-title"
+              >
+                <DialogTitle id="new-project-dialog-title">Delete</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Are you really sure you want to delete this reminder ? This operation can't be reverted
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => this.setState({ openDelete: false })} color="primary">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {this.deleteReminder(reminder[0], reminder[4]); this.setState({ openDelete: false })}}
+                    color="secondary"
+                    variant="contained">
+                    Delete
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
           </div>
         )
@@ -795,11 +824,11 @@ class Reminder extends Component {
     return (
       <div hidden={this.props.hidden}>  
       <Card className="reminder-card">
-      {/* <ReminderSaveNotification 
+      <ElementSaveNotification 
                   open={this.state.openSaveNotification} 
                   message={'Reminder saved: ' + this.state.name}
                   handleClose={() => {this.setState({openSaveNotification:false})}}
-              /> */}
+              />
       <div className='reminder-details'>
           <Avatar className='reminder-avatar' style={{background: this.state.colorAvatar}}>{this.state.reminders[0]==='empty' ? 0 : this.state.reminders.length}</Avatar>
           <text className='reminder-name'>

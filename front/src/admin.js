@@ -132,7 +132,8 @@ class AdminDashboard extends Component {
                   <Tab label="Clients"/>
                   <Tab label="Reminders"/>
                   <Tab label="Servers" />
-                  <Tab label="Marketing" />
+                  {/* MARKETING SOON? cf. marketing_idea_doc */}
+                  {/* <Tab label="Marketing" /> */}
                   <Tab label="Manage mail" />
                 </Tabs>
               )}
@@ -142,7 +143,7 @@ class AdminDashboard extends Component {
               {(this.state.tabValue === 2) && <TabContainer>{advanced ? <Testimonials/> : <Servers/>}</TabContainer>}
               {/* MARKETING SOON? cf. marketing_idea_doc */}
               {/* {(this.state.tabValue === 3) && <TabContainer><Marketing/></TabContainer>} */}
-              {(this.state.tabValue === 4) && <TabContainer><MailsManagement/></TabContainer>}
+              {(this.state.tabValue === 3) && <TabContainer><MailsManagement/></TabContainer>}
             <Footer/>
         </div>
     );

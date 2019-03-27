@@ -20,7 +20,7 @@ import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from '@material-ui/core/Paper';
-
+import ElementSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
 
@@ -37,6 +37,7 @@ class MailsManagement extends Component {
           trigger: true,
           open: false,
           newName: null,
+          openSaveNotification:false,
           newContent: null,
           newType: 'custom',
       }
@@ -102,7 +103,7 @@ class MailsManagement extends Component {
               if(response.status === 200){
                 self.setState({ open: false });
                 self.updateMails();
-                console.log(response);
+                self.setState({openSaveNotification: true});
               }
             })
             .catch(function (error) {
@@ -127,6 +128,11 @@ class MailsManagement extends Component {
             </Button>
         return(
             <div>
+              <ElementSaveNotification 
+                        open={this.state.openSaveNotification} 
+                        message={'Template added'}
+                        handleClose={() => {this.setState({openSaveNotification:false})}}
+                    />
                 {button}
                 <Dialog
                     open={this.state.open}
@@ -154,6 +160,7 @@ class MailsManagement extends Component {
                         <MenuItem value='3m'>3 months</MenuItem>
                         <MenuItem value='6m'>6 months</MenuItem>
                         <MenuItem value='bday'>Birthday</MenuItem>
+                        <MenuItem value='eoy'>EOY</MenuItem>
                         <MenuItem value='custom'>Custom template</MenuItem>
                     </Select>
                     <TextField
@@ -187,7 +194,6 @@ class MailsManagement extends Component {
                     </Button>
                     </DialogActions>
                 </Dialog>
-                <Paper  color="primary" className='company-stats' square={false}>💡 You can go <a href="https://unicode-table.com/en/sets/" target="_blank">there</a> to pick emots and symbols for you content!</Paper>
                 <p></p>
                 {mappedMails}
             </div>
@@ -204,7 +210,8 @@ class MailsManagement extends Component {
             name: props.name,
             type: props.type,
             copied: false,
-            openDelete: false
+            openDelete: false,
+            openSaveNotification: false
         }
     }
 
@@ -226,6 +233,7 @@ class MailsManagement extends Component {
             .then(function (response) {
               if(response.status === 200){
                 self.props.updateMails();
+                self.setState({openSaveNotification: true});
               }
             })
             .catch(function (error) {
@@ -245,8 +253,9 @@ class MailsManagement extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                self.setState({ openDelete: false });
                 self.props.updateMails();
+                self.setState({ openDelete: false });
+                this.setState({openSaveNotification: true});
               }
             })
             .catch(function (error) {
@@ -255,7 +264,13 @@ class MailsManagement extends Component {
 
     render() {
         return (
+        
             <Card className='mail-card'>
+            <ElementSaveNotification 
+                        open={this.state.openSaveNotification} 
+                        message={'Company saved: ' + this.state.name}
+                        handleClose={() => {this.setState({openSaveNotification:false})}}
+                    />
         <div>
             <TextField
                 disabled
@@ -276,7 +291,8 @@ class MailsManagement extends Component {
                   >
                   <MenuItem value='3m'>3 months</MenuItem>
                   <MenuItem value='6m'>6 months</MenuItem>
-                  <MenuItem value='bday'>Birthday</MenuItem>
+                  <MenuItem value='bday'>Website Anniversary</MenuItem>
+                  <MenuItem value='eoy'>EOY</MenuItem>
                   <MenuItem value='custom'>Custom template</MenuItem>
               </Select>
             </FormControl>

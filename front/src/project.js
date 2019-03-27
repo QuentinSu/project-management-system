@@ -31,7 +31,7 @@ import {DeleteProjectDialog, NewProjectDialog, NotifyUsersDialog} from './projec
 import {DeleteTicketDialog, NewTicketDialog, DeleteFileDialog, NewTicketMessageDialog} from './ticketDialog.js'
 import {DeleteChecklistDialog, NewChecklistDialog, NewChecklistMessageDialog, DeleteChecklistMessageDialog, NewChecklistItemDialog, DeleteChecklistItemDialog} from './checklistDialog.js'
 import Dropzone from 'react-dropzone';
-import ProjectSaveNotification from './saveNotification.js';
+import ElementSaveNotification from './saveNotification.js';
 import Chip from '@material-ui/core/Chip';
 
 var config = require('./config.json');
@@ -681,7 +681,7 @@ class Project extends Component {
         var color = (activeTickets === 0) ? '#00984C' : '#f44336';
         return (    
                     <ExpansionPanel hidden={this.props.hidden}>
-                    <ProjectSaveNotification 
+                    <ElementSaveNotification 
                         open={this.state.openSaveNotification} 
                         message={'Project saved: ' + this.state.name}
                         handleClose={() => {this.setState({openSaveNotification:false})}}

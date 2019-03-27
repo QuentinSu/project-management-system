@@ -215,8 +215,10 @@ class NewMailReminderDialog extends React.Component {
         var self = this;
         var remindType;
         console.log('reminderType '+self.props.reminderType);
-        if(self.props.reminderType === '3m' || self.props.reminderType === '6m') {
+        if(self.props.reminderType === '3m' || self.props.reminderType === '6m' || self.props.reminderType === 'bday') {
           remindType = self.props.reminderType;
+        } else if (self.props.reminderType.indexOf("eoy_")===0){
+          remindType = 'eoy';
         } else {
           remindType = 'custom';
         }

@@ -30,7 +30,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dropzone from 'react-dropzone';
 import NewCompanyUserLinkDialog from './newCompanyUserLinkDialog.js';
 import Divider from '@material-ui/core/Divider';
-import CompanySaveNotification from './saveNotification.js';
+import ElementSaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
 import { array } from 'prop-types';
 import green from '@material-ui/core/colors/green';
@@ -135,6 +135,7 @@ class Companies extends Component {
           newPhone: null,
           newCreation: created,
           newStatus: true,
+          openSaveNotification: false,
           newTestimonial: false,
           newSocial: false,
           newEoy: null
@@ -217,7 +218,7 @@ class Companies extends Component {
               if(response.status === 200){
                 self.setState({ open: false });
                 self.handleCompaniesChange();
-                this.setState({openSaveNotification: true});
+                self.setState({openSaveNotification: true});
                 nbClients++;
               }
             })
@@ -297,7 +298,6 @@ class Companies extends Component {
     render(){
 
         const classes = this.props;
-        console.log(localStorage.getItem('isAdvanced'));
 
         if (localStorage.getItem('isAdvanced')==='false') {
             window.location.href = '/admin'
@@ -351,6 +351,11 @@ class Companies extends Component {
         </div>
         return(
             <div>
+                 <ElementSaveNotification 
+                        open={this.state.openSaveNotification} 
+                        message={'Company added: ' + this.state.name}
+                        handleClose={() => {this.setState({openSaveNotification:false})}}
+                    />
                 {button}
                 <Dialog
                     open={this.state.open} 
@@ -665,7 +670,7 @@ class Companies extends Component {
             <div>
             <ExpansionPanel className='company-card' hidden={this.props.hidden}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <CompanySaveNotification 
+            <ElementSaveNotification 
                         open={this.state.openSaveNotification} 
                         message={'Company saved: ' + this.state.name}
                         handleClose={() => {this.setState({openSaveNotification:false})}}

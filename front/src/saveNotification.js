@@ -79,67 +79,7 @@ const variantIcon = {
   });
 
 
-export default function ProjectSaveNotification(props) {
-    return (
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={props.open}
-          autoHideDuration={3000}
-          onClose={props.handleClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={props.handleClose}
-            variant="success"
-            message={<span id="message-id">{props.message}</span>}
-          />
-        </Snackbar>
-    )
-}
-
-export function CompanySaveNotification(props) {
-  return (
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={props.open}
-        autoHideDuration={3000}
-        onClose={props.handleClose}
-      >
-        <MySnackbarContentWrapper
-          onClose={props.handleClose}
-          variant="success"
-          message={<span id="message-id">{props.message}</span>}
-        />
-      </Snackbar>
-  )
-}
-
-export function ReminderSaveNotification(props) {
-  return (
-    <Snackbar
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      open={props.open}
-      autoHideDuration={3000}
-      onClose={props.handleClose}
-    >
-      <MySnackbarContentWrapper
-        onClose={props.handleClose}
-        variant="success"
-        message={<span id="message-id">{props.message}</span>}
-      />
-    </Snackbar>
-)
-}
-
-export function ServerSaveNotification(props) {
+export default function ElementSaveNotification(props) {
   return (
       <Snackbar
         anchorOrigin={{

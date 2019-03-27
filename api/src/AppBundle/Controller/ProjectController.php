@@ -189,7 +189,7 @@ class ProjectController extends RestServiceController
     $dataLastbu = new ServerReminder;
     $dataLastbu->setServer($data);
     $dataLastbu->setType('Date last back up');
-    $dataLastbu->setStatus(null);
+    $dataLastbu->setStatus('');
     $em->persist($dataLastbu);
 
     $em->flush();
