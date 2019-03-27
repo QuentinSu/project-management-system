@@ -90,15 +90,15 @@ class AdminDashboard extends Component {
     if (!localStorage.getItem('isAdmin')) {
       window.location.href = '/client'
     }
+
     var buttonPanel;
-    if(localStorage.getItem('isAdvanced')) {
-        console.log(localStorage.getItem('isAdvanced'));
+    if(localStorage.getItem('isAdvanced')==='true') {
         buttonPanel = <Button size="small" className='advanced-but-dashboard' onClick={() => {advanced=!advanced; advanced ? window.location.href = '/admin' : window.location.href = '/admin/advanced' }}>
         {/* if on advanced : button to return classical; else button to go advanced mode */}
         <div id='advanced-but-dashboard-long-text'>
         { advanced
-          ? 'ADMIN PANEL'
-          : 'USER PANEL'
+          ? 'SUPER ADMIN PANEL'
+          : 'ADMIN PANEL'
         }</div>
         <div id='advanced-but-dashboard-short-text' >
         { advanced
@@ -137,11 +137,11 @@ class AdminDashboard extends Component {
                 </Tabs>
               )}
               </AppBar>
-              
               {(this.state.tabValue === 0) && <TabContainer> {advanced ? <Projects/> : <Companies/>}</TabContainer>}
               {(this.state.tabValue === 1) && <TabContainer>{advanced ? <Users/> : <Reminders/>}</TabContainer>}
               {(this.state.tabValue === 2) && <TabContainer>{advanced ? <Testimonials/> : <Servers/>}</TabContainer>}
-              {(this.state.tabValue === 3) && <TabContainer><Marketing/></TabContainer>}
+              {/* MARKETING SOON? cf. marketing_idea_doc */}
+              {/* {(this.state.tabValue === 3) && <TabContainer><Marketing/></TabContainer>} */}
               {(this.state.tabValue === 4) && <TabContainer><MailsManagement/></TabContainer>}
             <Footer/>
         </div>

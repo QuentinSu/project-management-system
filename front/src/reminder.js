@@ -626,6 +626,9 @@ class Reminder extends Component {
 
     render() {
       const classes = this.props;
+      if (localStorage.getItem('isAdvanced')==='false') {
+        window.location.href = '/admin'
+      }
       let nameCard = this.state.name;
       let cardObject = this;
       let projectId = this.state.id;

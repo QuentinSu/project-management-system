@@ -297,8 +297,9 @@ class Companies extends Component {
     render(){
 
         const classes = this.props;
+        console.log(localStorage.getItem('isAdvanced'));
 
-        if (!localStorage.getItem('isAdvanced')) {
+        if (localStorage.getItem('isAdvanced')==='false') {
             window.location.href = '/admin'
         }
         let mappedCompanies = this.state.companies.map((company)=>{

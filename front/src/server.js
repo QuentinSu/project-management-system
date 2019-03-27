@@ -198,6 +198,10 @@ class Servers extends Component {
     }
 
     render(){
+      if (localStorage.getItem('isAdvanced')==='false') {
+        window.location.href = '/admin'
+      }
+
         let mappedServers = this.state.servers.map((server)=>{
           return <Server   key={server.id}
                             id={server.id}

@@ -16,6 +16,9 @@ class Marketing extends Component {
       }
     }
     render() {
+        if (localStorage.getItem('isAdvanced')==='false') {
+            window.location.href = '/admin'
+        }
         return (
             <div>
                 <p>Marketing</p>
