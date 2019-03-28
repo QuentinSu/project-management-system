@@ -656,14 +656,14 @@ class Companies extends Component {
 
         //Live from management
         var dateDifference = dateDiff(this.state.creation);
-        var liveFrom = dateDifference[0]>0 ? dateDifference[0]+" years " : "0 year ";
+        var liveFor = dateDifference[0]>0 ? dateDifference[0]+" years " : "0 year ";
         if(dateDifference[1]>0) {
-            liveFrom += dateDifference[1]+" months ";
+            liveFor += dateDifference[1]+" months ";
         } else {
-            liveFrom += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
+            liveFor += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
         }
 
-        liveFrom = liveFrom + " old";
+        liveFor = liveFor;
 
         return (
             <div>
@@ -744,9 +744,10 @@ class Companies extends Component {
                 </div>
                 <div className="company-actions-buttons">
                 <div className="company-actions-buttons-elem">
-                <span className="chip-text">
-                    <Chip className='company-live' label={liveFrom}/>
-                </span>
+                 <FormControlLabel
+                    labelPlacement='top'
+                    control={<Chip className='company-live' label={liveFor}/>}
+                    label="LIVE FOR" />
                 
                 {this.state.thingstoSave &&
                 <Button

@@ -75,8 +75,8 @@ class Login extends Component {
       <Button size="small" variant="contained" color={advanced ? "secondary" : "primary"} className='advanced-but' onClick={() => {advanced=!advanced; advanced ? this.setState(window.location.href = '?adv') : this.setState(window.location.href = testurl) }}>
                 {/* if on advanced : button to return classical; else button to go advanced mode */}
                 { advanced
-                  ? 'GO TO SUPER ADMIN PANEL'
-                  : 'GO TO ADMIN PANEL'
+                  ? 'GO TO ADMIN PANEL'
+                  : 'GO TO SUPER ADMIN PANEL'
                 }
       </Button>
       <Card className='login-form'>

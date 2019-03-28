@@ -1,7 +1,8 @@
+
 {
-    "apiBaseUrl":"https://api.rhyswelsh.com/",
-    "prodUrl":"https://api.rhyswelsh.com/",
-    "devUrl":"http://192.168.1.160:8000/",
+    "apiBaseUrl":"http://127.0.0.1:8000/",
+    "prodUrl":"localhost:3000",
+    "devUrl":"localhost:3000",
     "localUrl":"http://127.0.0.1:8000/",
     "acceptedFiles": ".gif, .png, .jpg, .bmp, .txt, .doc, .xls, .csv, .pdf, .zip, .psd, .ai, .mp3, .mp4, .indd"
 }

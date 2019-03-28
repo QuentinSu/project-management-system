@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
@@ -10,7 +11,6 @@ import TextField from '@material-ui/core/TextField';
 import SaveIcon from '@material-ui/icons/Save';
 import HighlightOff from '@material-ui/icons/HighlightOff'
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
 import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
@@ -22,7 +22,21 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {activeTab} from './admin.js';
+import ReactPaginate from 'react-paginate';
 import ElementSaveNotification from './saveNotification.js';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
+
 
 var config = require('./config.json');
 
@@ -66,10 +80,18 @@ class Reminders extends Component {
     super(props);
     this.state={
       remindersCard: [],
+      currentpage: 1,
+      remindersPerPage: 5,
       trigger: true
-    }
-  };
-  
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(event) {
+    this.setState({
+      currentPage: Number(event.target.id)
+    });
+  }  
 
   handleRemindersChange() {
       var self = this;
@@ -441,7 +463,9 @@ class Reminders extends Component {
                   /> */}
               </div>
               <br/><p></p>
-              {mappedReminders}
+               <div>
+                {mappedReminders}
+              </div>
           </div>
       );
   }
@@ -662,7 +686,7 @@ class Reminder extends Component {
     formatDateAddOneYear(dateString, reminder) {
       var d = new Date(dateString),
           month = '' + (d.getMonth()+1), //january is 0
-          day = '' + (d.getDate()+1),
+          day = '' + (d.getDate()),
           year = d.getFullYear()+1;
   
       if (month.length < 2) month = '0' + month;
@@ -883,9 +907,9 @@ class Reminder extends Component {
               />
       <div className='reminder-details'>
           <Avatar className='reminder-avatar' style={{background: this.state.colorAvatar}}>{this.state.reminders[0]==='empty' ? 0 : this.state.reminders.length}</Avatar>
-          <text className='reminder-name'>
+          <p className='reminder-name'>
               {this.state.name}
-          </text>
+          </p>
           {/* finally, golivedate can be just set on project tab. Go live date permit calcul of auto reminders (3m/6m/bday) -> we increment these at each website birthday */}
           <TextField className='reminder-golive'
               type='date'
