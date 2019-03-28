@@ -23,7 +23,6 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -328,10 +327,7 @@ export class Ticket extends Component{
             </Card>
         );
     });
-    var creation = new Date(this.props.created);
-    var parsedCreation = creation.toLocaleString('en-GB', { timeZone: 'UTC' });
-    var modified = new Date(this.props.modified);
-    var parsedModify = modified.toLocaleString('en-GB', { timeZone: 'UTC' });
+
     return (
         <div className='ticket'>
         <div>
@@ -541,6 +537,7 @@ class Project extends Component {
                 }
             }).catch(function (error) {
             });
+            return true;
         })
         checklist.items.map((item)=>{
             axios({
@@ -557,6 +554,7 @@ class Project extends Component {
                 }
             }).catch(function (error) {
             });
+            return true;
         })
     }
 
@@ -814,6 +812,7 @@ class Projects extends Component {
             } else {
                 project.hidden = true;
             }
+            return true;
         })
         this.setState({projects: newProjects}); 
     }

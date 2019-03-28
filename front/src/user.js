@@ -27,12 +27,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import axios from 'axios';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ReactSelect from 'react-select';
-import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
-import classNames from 'classnames';
-import { emphasize } from '@material-ui/core/styles/colorManipulator';
 import NewUserProjectLinkDialog from './newUserProjectLinkDialog.js';
 import Cookies from 'universal-cookie';
 
@@ -102,7 +97,7 @@ export class UserMenu extends React.Component {
                 aria-owns={anchorEl ? 'simple-menu' : null}
                 aria-haspopup="true"
             >
-                <img className='user-button' src={process.env.PUBLIC_URL + '/user.png'}/>
+                <img className='user-button' alt='user' src={process.env.PUBLIC_URL + '/user.png'}/>
             </Button>
             <div className='user-username'>{this.props.username}</div> 
             <Menu
@@ -370,30 +365,6 @@ export class NewUserDialog extends React.Component {
     );
 }
 
-function Company(props) {
-    return (
-        <div>
-        <ListItem fullWidth key={props.companyId}> 
-            <ListItemText>
-                <Typography>
-                    {props.name}
-                </Typography>
-            </ListItemText>
-            <ListItemSecondaryAction>
-                <Button className='button-remove-company'
-                    size='small'
-                    onClick={() => props.removeCompanyLink(props.companyId)} 
-                    color="secondary" >
-                        <RemoveIcon />
-                        Company
-                </Button>
-            </ListItemSecondaryAction>
-        </ListItem>
-        <Divider/>
-        </div>
-    );
-}
-
 class User extends Component {
  
     constructor(props){
@@ -416,6 +387,7 @@ class User extends Component {
 
     changeTab = (event, tabValue) => {
         this.setState({ tabValue });
+        return true;
     };
 
     handleUserChange(type, data) {
@@ -537,18 +509,13 @@ class User extends Component {
         var date = new Date(this.state.lastlogin);
         var parsedDate = date.toLocaleString('en-GB', { timeZone: 'UTC' });
         var isAdmin = this.state.roles.length > 1;
-        var isAdvanced = this.state.roles.length > 2;
-        var currentCompanyName;
         var currentCompanyId;
         
-        if(this.state.company != undefined) {
-            currentCompanyName = this.state.company.name;
+        if(this.state.company !== undefined) {
             currentCompanyId = this.state.company.id;
         } else {
             currentCompanyId = -1;
         }
-
-        var listOfCompanies;
         var mappedComp;
 
         if(!this.onceChargeList) {
@@ -557,10 +524,9 @@ class User extends Component {
             this.selectedCompId = currentCompanyId;
 
         }
-        if(this.state.companies != undefined) {
-            listOfCompanies = this.state.companies;
+        if(this.state.companies !== undefined) {
             mappedComp = this.state.companies.map((comp)=>{
-                return <MenuItem value={comp.value}>{comp.label}</MenuItem>
+                return <MenuItem key={comp.value} value={comp.value}>{comp.label}</MenuItem>
             }) 
         }
 
@@ -719,6 +685,7 @@ class Users extends Component {
             } else {
                 user.hidden = true;
             }
+            return true;
         })
         this.setState({users: newUsers}); 
     }

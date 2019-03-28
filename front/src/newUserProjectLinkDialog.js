@@ -277,7 +277,6 @@ class NewUserProjectLinkDialog extends React.Component {
                         onChange={this.handleChange('multi')}
                         placeholder="Select projects"
                         isMulti
-                        classes={classes}
                     />
                 </div>
                 </DialogContent>

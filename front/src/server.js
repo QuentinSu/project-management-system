@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import StarIcon from '@material-ui/icons/Star';
-import { Link, NavLink } from 'react-router-dom';
+import { MuiThemeProvider} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
@@ -37,9 +35,9 @@ function dateDiff(date) {
     var year = today.getFullYear();
     var month = today.getMonth() + 1;
     var day = today.getDate();
-    var yy = parseInt(date[0]);
-    var mm = parseInt(date[1]);
-    var dd = parseInt(date[2]);
+    var yy = parseInt(date[0],10);
+    var mm = parseInt(date[1],10);
+    var dd = parseInt(date[2],10);
     var years, months, days;
     // months
     months = month - mm;
@@ -124,7 +122,7 @@ class Servers extends Component {
         let index = newValue.lastIndexOf('.')+1;
         let nbOfDots = newValue.split('.').length -1;
         let updatedVal='';
-        if(length!==index && nbOfDots<3 && this.state.newAddress.length < length && (length-index)%3==0){
+        if(length!==index && nbOfDots<3 && this.state.newAddress.length < length && (length-index)%3===0){
             updatedVal= newValue + '.';
         }else if(nbOfDots>3 || length-index>3){
             let newString = newValue.substring(0,length-1);
@@ -170,7 +168,7 @@ class Servers extends Component {
       let newServers = this.state.servers.slice();
       newServers.map((server)=>{
           //mandatory because of the first passage here
-          if(server.hidden == undefined) {
+          if(server.hidden === undefined) {
               server.hidden = false;
           }
           var initialState=server.hidden;
@@ -434,7 +432,7 @@ class Servers extends Component {
     render() {
       const classes = this.props;
       let mappedServerReminders;
-        if((this.state.serverReminders === null) || (this.state.serverReminders === undefined) && this.state.thingstoSave) {
+        if((this.state.serverReminders === null) || (this.state.serverReminders === undefined) && (this.state.thingstoSave)) {
             this.getServerReminders();
         }
 
@@ -544,7 +542,7 @@ class Servers extends Component {
                       </span>
                     </MuiThemeProvider>
                       <div className='reminder-action-buttons'>
-                        {reminder[2]=='yes' &&
+                        {reminder[2]==='yes' &&
                         <Tooltip title="Turn reminder on NO" interactive>
                           <Button
                               className="reminder-server-button"
@@ -554,7 +552,7 @@ class Servers extends Component {
                               <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/> Turn NO
                           </Button>
                         </Tooltip>}
-                        {reminder[2]=='no' &&
+                        {reminder[2]==='no' &&
                         <Tooltip title="Turn reminder on YES" interactive>
                           <Button
                               className="reminder-server-button"

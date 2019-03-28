@@ -12,7 +12,7 @@ import Testimonials from './testimonial.js';
 import Companies from './company.js';
 import Reminders from './reminder.js';
 import Servers from './server.js';
-import Marketing from './marketing.js';
+// import Marketing from './marketing.js';
 import MailsManagement from './mailManagement.js';
 import PropTypes from 'prop-types';
 import Users from './user.js';

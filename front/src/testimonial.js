@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
-import Card from '@material-ui/core/Card';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -110,8 +109,9 @@ class Testimonials extends Component {
                             isClient={this.props.isClient}
                 />     
         })
+        var button;
         if (this.props.isClient === true) {
-            var button = 
+            button = 
               <div className='new-testimonial'>
                 <MuiThemeProvider theme={greenTheme}>
                 <Button
@@ -123,7 +123,7 @@ class Testimonials extends Component {
                 </MuiThemeProvider>
               </div>
           } else {
-            var button = 
+            button = 
             <Button onClick={() => this.setState({ open: true })} color="primary" className='new-button'>
                 <AddIcon />
                 Testimonial

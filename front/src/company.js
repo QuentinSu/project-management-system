@@ -13,7 +13,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import RemoveIcon from '@material-ui/icons/Remove';
 import axios from 'axios';
-import purple from '@material-ui/core/colors/purple';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import Chip from '@material-ui/core/Chip';
@@ -32,10 +31,6 @@ import NewCompanyUserLinkDialog from './newCompanyUserLinkDialog.js';
 import Divider from '@material-ui/core/Divider';
 import ElementSaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
-import { array } from 'prop-types';
-import green from '@material-ui/core/colors/green';
-import Checkbox from '@material-ui/core/Checkbox';
-import { withStyles } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -100,9 +95,9 @@ function dateDiff(date) {
     var year = today.getFullYear();
     var month = today.getMonth() + 1;
     var day = today.getDate();
-    var yy = parseInt(date[0]);
-    var mm = parseInt(date[1]);
-    var dd = parseInt(date[2]);
+    var yy = parseInt(date[0],10);
+    var mm = parseInt(date[1],10);
+    var dd = parseInt(date[2],10);
     var years, months, days;
     // months
     months = month - mm;
@@ -230,7 +225,7 @@ class Companies extends Component {
         let newCompanies = this.state.companies.slice();
         newCompanies.map((company)=>{
             //mandatory because of the first passage here
-            if(company.hidden == undefined) {
+            if(company.hidden === undefined) {
                 company.hidden = false;
             }
             var initialState=company.hidden;
@@ -246,6 +241,7 @@ class Companies extends Component {
                         } else {
                             company.hidden = true;
                         }
+                        return true;
                         })
                 } else {
                     company.hidden = true;  
@@ -264,14 +260,16 @@ class Companies extends Component {
                     nbClients--;
                 }
             }
+            return 'filter done';
         })
         this.setState({companies: newCompanies});
+        
     }
 
     filterInactiveCompanies(checkedShowInactive) {
         let newCompanies = this.state.companies.slice();
         newCompanies.map((company)=>{
-            if(company.hidden == undefined) {
+            if(company.hidden === undefined) {
                 company.hidden = false;
             }
             var initialState=company.hidden;
@@ -290,6 +288,7 @@ class Companies extends Component {
                     nbClients--;
                 }
             }
+            return true;
         })
         this.setState({companies: newCompanies}); 
     }
@@ -618,7 +617,7 @@ class Companies extends Component {
         var self = this;
         axios({
             method: 'get', //you can set what request you want to be
-            url: apiBaseUrl+'company/'+this.state.id+'/file/'+path,
+            url: apiBaseUrl+'company/'+self.state.id+'/file/'+path,
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),
               'Content-Type': 'application/json; charset=utf-8'
@@ -639,9 +638,6 @@ class Companies extends Component {
     render() {
         //var dateCreation = new Date(this.state.dateCreation);
         //var parsedCreation = dateCreation.toLocaleString('en-GB', { timeZone: 'UTC' });
-        const classes = this.props;
-
-
        var logoUrl = this.state.name.replace(/\s/g,'');
 
        let mappedUsers = this.state.users.map((user)=>{
@@ -663,8 +659,6 @@ class Companies extends Component {
             liveFor += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
         }
 
-        liveFor = liveFor;
-
         return (
             <div>
             <ExpansionPanel className='company-card' hidden={this.props.hidden}>
@@ -676,7 +670,7 @@ class Companies extends Component {
                     />
             {/* <Card className='company-card' hidden={this.props.hidden}> */}
             <div className="company-logo">
-                <img className='logo-company' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
+                <img className='logo-company' alt='company-logo' src={process.env.PUBLIC_URL + '/company_logo/' + logoUrl} onError={(e)=>{e.target.onerror = null; e.target.src=process.env.PUBLIC_URL + '/company_logo/error.png'}}/>
             </div>
             <div className='company-details'>
                 <TextField className='company-name'
@@ -745,6 +739,7 @@ class Companies extends Component {
                 <div className="company-actions-buttons">
                 <div className="company-actions-buttons-elem">
                  <FormControlLabel
+                    className='company-live-for'
                     labelPlacement='top'
                     control={<Chip className='company-live' label={liveFor}/>}
                     label="LIVE FOR" />

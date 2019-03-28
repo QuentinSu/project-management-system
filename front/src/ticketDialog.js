@@ -180,8 +180,10 @@ export class DeleteTicketDialog extends React.Component {
     }
   
     render() {
+      var button;
+      var status = null;
       if (this.props.buttonStyle === 'client') {
-        var button = 
+         button = 
           <div className='new-ticket'>
             <MuiThemeProvider theme={blueTheme}>
             <Button onClick={this.handleClickOpen} 
@@ -191,13 +193,12 @@ export class DeleteTicketDialog extends React.Component {
             </Button>
             </MuiThemeProvider>
           </div>
-        var status = null
       } else {
-        var button = 
+        button = 
             <Button onClick={this.handleClickOpen} color="primary" className='new-button' size='small'>
                   <AddIcon /> Ticket
             </Button>
-        var status = 
+        status = 
           <TextField
             margin="dense"
             id="status"

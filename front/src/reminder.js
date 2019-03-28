@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
@@ -10,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import SaveIcon from '@material-ui/icons/Save';
 import HighlightOff from '@material-ui/icons/HighlightOff'
-import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
 import NewMailReminderDialog, {NewReminderDialog} from './reminderDialog.js';
@@ -22,27 +20,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {activeTab} from './admin.js';
-import ReactPaginate from 'react-paginate';
 import ElementSaveNotification from './saveNotification.js';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
-
 
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
-
-var remindersState = new Array();
 
 const late = createMuiTheme({
   palette: {
@@ -65,7 +48,6 @@ const active = createMuiTheme({
   },
 });
 
-var reminderNb;
 var reminderLateNb;
 var reminderValidatedNb;
 var reminderSoonNb;
@@ -140,10 +122,12 @@ class Reminders extends Component {
       if(!reminder.hidden) {
         reminder.reminders.map((remind)=>{
           this.changeColorCheckStats(remind[4], 'unknow');
+          return true;
         });
       } else {
         reminder.reminders.map((remind)=>{
           this.changeColorCheckStats('delete', remind[4]);
+          return true;
         });
       } 
     }
@@ -151,7 +135,6 @@ class Reminders extends Component {
 
   filterReminders(label) {
       let newReminders = this.state.remindersCard.slice();
-      reminderNb= 0;
       reminderLateNb=0;
       reminderValidatedNb=0;
       reminderSoonNb=0;
@@ -161,7 +144,6 @@ class Reminders extends Component {
         if(reminder.hidden === undefined) {
           reminder.hidden = false;
         }
-        var initialState=reminder.hidden;
 
         if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
             reminder.hidden = false;
@@ -175,6 +157,7 @@ class Reminders extends Component {
                 } else {
                   reminder.hidden = true;
                 }
+                return true;
                 });
               } else {
                 reminder.hidden = true;
@@ -185,9 +168,10 @@ class Reminders extends Component {
           if(!reminder.hidden) {
             this.changeColorCheckStats(remind[4], 'add');
           }
+          return true;
         });
           //checkedReminder.push(remind[0])
-        
+        return true; 
       });
       this.setState({remindersCard: newReminders});
   }
@@ -215,6 +199,7 @@ class Reminders extends Component {
               }
             }
             other.push(remind[5]);
+            return true;
         });
 
         if(other.indexOf('on')!==-1 || other.indexOf('unknow')!==-1) {
@@ -229,8 +214,10 @@ class Reminders extends Component {
             else {
               this.changeColorCheckStats(remind[4],'delete');
             }
+            return true;
           });
         }
+        return true;
     });
     this.setState({remindersCard: newReminders});
     return 
@@ -239,7 +226,6 @@ class Reminders extends Component {
 
   changeColorCheckStats(newColor, action) {
     if(action==='delete') {
-      reminderNb--;
       switch(newColor) {
         case 'validated':
             reminderValidatedNb--;
@@ -257,7 +243,6 @@ class Reminders extends Component {
             break;
       }
     } else if (action==='add') {
-      reminderNb++;
       switch(newColor) {
         case 'validated':
             reminderValidatedNb++; 
@@ -279,7 +264,6 @@ class Reminders extends Component {
   }
   
   forceRegenAutoReminders() {
-    var self = this;
       axios({
           method: 'put', //you can set what request you want to be
           url: apiBaseUrl+'reminder/autoregen',
@@ -302,10 +286,9 @@ class Reminders extends Component {
     const classes = this.props;
 
     if(activeTab.tabValue !== 1 && firstGlobalRender) {
-      reminderNb= 0,
-      reminderLateNb=0,
-      reminderValidatedNb=0,
-      reminderSoonNb=0,
+      reminderLateNb=0;
+      reminderValidatedNb=0;
+      reminderSoonNb=0;
       reminderActiveNb=0;
       //this.filterReminders('');
       firstGlobalRender=false;
@@ -495,12 +478,12 @@ class Reminder extends Component {
       var self = this;
       if(reminder["reminder"] !== undefined) {
         var remindId = reminder["reminder"][0];
-        var projectId = projectId["projectId"];
+        projectId = projectId["projectId"];
         var remindType = reminder["reminder"][2];
         var remindDeadline = reminder["reminder"][3];
       } else {
         var remindId = reminder[0];
-        var projectId = projectId;
+        projectId = projectId;
         var remindType = reminder[2];
         var remindDeadline = reminder[3];
       }
@@ -535,9 +518,8 @@ class Reminder extends Component {
       if(reminder["reminder"][4] === undefined) {
         reminder["reminder"][4] = 'unknow';
       }
-      var initialColor = reminder["reminder"][4];
       this.props.changeColorCheckStats(reminder["reminder"][4], 'delete');
-      if(reminder["reminder"][1]=='ok') {
+      if(reminder["reminder"][1]==='ok') {
         reminder["reminder"][4] = 'validated';
         this.props.changeColorCheckStats(reminder["reminder"][4], 'add');
           return '#00984C';
@@ -712,8 +694,6 @@ class Reminder extends Component {
       if (localStorage.getItem('isAdvanced')==='false') {
         window.location.href = '/admin'
       }
-      let nameCard = this.state.name;
-      let cardObject = this;
       let projectId = this.state.id;
       let myTab = [...this.state.reminders];
       if(firstRender) {
@@ -737,7 +717,6 @@ class Reminder extends Component {
         var autoRemind = (reminder[2]==='3m'||reminder[2]==='6m'||reminder[2]==='bday'||isEoy);
         var shown = (autoRemind || reminder[1]==='ok');
         var remindValid = (!autoRemind && reminder[1] === 'ok');
-        var date = reminder[3];
         return (
           <div className='reminder-element'>
             <MuiThemeProvider>
@@ -794,9 +773,9 @@ class Reminder extends Component {
               </span>
             </MuiThemeProvider>
             <span>&nbsp;&nbsp;</span>
-            <img className='timeline-reminders' src={process.env.PUBLIC_URL + '/time.png'}></img>
+            <img className='timeline-reminders' alt='timeline-reminders' src={process.env.PUBLIC_URL + '/time.png'}></img>
             <div className='reminder-action-buttons'>
-            {reminder[1]=='notok' &&
+            {reminder[1]==='notok' &&
             <Tooltip title="Force validation" interactive>
               <Button
                   className="reminder-button"
@@ -806,7 +785,7 @@ class Reminder extends Component {
                   <CheckCircleIcon style={{color: "#00984C"}} className="reminder-valid-button"/>
               </Button>
             </Tooltip>}
-            {reminder[1]=='ok' &&
+            {reminder[1]==='ok' &&
             <Tooltip title="Unvalidate reminder" interactive>
               <Button
                   className="reminder-button"
@@ -826,7 +805,7 @@ class Reminder extends Component {
                   <AddIcon/><small>1y</small>
               </Button>
             </Tooltip>}            
-            {reminder[1]=='notok' &&
+            {reminder[1]==='notok' &&
             <React.Fragment>
               <NewMailReminderDialog  projectId={this.props.id}  reminder={reminder} reminders={this.state.reminders} myTab={myTab} changeStatus={this.changeStatus.bind(this)}
                                       reminderType={reminder[2]}/></React.Fragment>

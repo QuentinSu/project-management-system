@@ -11,7 +11,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Checkbox } from '@material-ui/core';
 import Cookies from 'universal-cookie'
-import { array } from 'prop-types';
 
 var config = require('./config.json');
 
@@ -56,7 +55,6 @@ class Login extends Component {
     if(previousSession) {
       this.checkLogs(null);
     }
-    var isAdvanced = localStorage.getItem('isAdvanced');
     return (
       <div className={advanced ? "mainlog" : ""}>
       <Dialog open={this.state.open}>

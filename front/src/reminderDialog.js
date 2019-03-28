@@ -11,18 +11,13 @@ import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import EmailIcon from '@material-ui/icons/Email';
 import axios from 'axios';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import { checkPropTypes } from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
-import classNames from 'classnames';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
@@ -248,13 +243,12 @@ class NewMailReminderDialog extends React.Component {
   templateUpdate(valueSelected) {
     console.log(valueSelected);
     var templateActive = this.state.template;
+    var nameTemplate = '';
+    var contentTemplate = '';
     if(templateActive) {
       if(valueSelected !== '-1') {
-        var nameTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).name;
-        var contentTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).content;
-      } else {
-        var nameTemplate = '';
-        var contentTemplate = '';
+        nameTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).name;
+        contentTemplate = templateActive.find(templateActive => templateActive.id === valueSelected).content;
       }
 
       this.setState({name: nameTemplate});
@@ -291,7 +285,6 @@ class NewMailReminderDialog extends React.Component {
 
     let mappedListOfRecipients = this.state.mailto.map((usermail)=>{
       recipientString += usermail.email+',';
-      var show = true;
       return (
         <Chip
         tabIndex={-1}
