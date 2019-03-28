@@ -24,7 +24,7 @@ import Switch from '@material-ui/core/Switch';
 import HighlightOff from '@material-ui/icons/HighlightOff';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Tooltip from '@material-ui/core/Tooltip';
-import ServerSaveNotification from './saveNotification.js';
+import ElementSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
 var nbServers;
@@ -571,19 +571,19 @@ class Servers extends Component {
             //this.setState({thingstoSave:false});
         }
 
-         //Live from management
+         //Live for management
          var dateDifference = dateDiff(this.state.created);
-         var liveFrom = dateDifference[0]>0 ? dateDifference[0]+" years " : "0 year ";
+         var liveFor = dateDifference[0]>0 ? dateDifference[0]+" years " : "0 year ";
          if(dateDifference[1]>0) {
-             liveFrom += dateDifference[1]+" months ";
+             liveFor += dateDifference[1]+" months ";
          } else {
-             liveFrom += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
+             liveFor += dateDifference[2]>0 ? dateDifference[2]+" days " : "0 day";
          }
-         liveFrom = liveFrom + " old";
+         liveFor = liveFor + " old";
         return (
           <div hidden={this.props.hidden}>  
             <Card className="server-card">
-            <ServerSaveNotification 
+            <ElementSaveNotification 
                         open={this.state.openSaveNotification} 
                         message={'Server saved: ' + this.state.name}
                         handleClose={() => {this.setState({openSaveNotification:false})}}
@@ -601,8 +601,8 @@ class Servers extends Component {
                     defaultValue={this.state.address}
                     label='IP Address'
                 />
-                <div className="serve-livefrom"><b></b>
-                &nbsp;<Chip className='company-live' label={"SITE AGE "+liveFrom} /></div>
+                <div className="serve-liveFor"><b></b>
+                &nbsp;<Chip className='company-live' label={"SITE AGE "+liveFor} /></div>
 
             </div>
             <div className='reminder-server-list'>

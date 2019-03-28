@@ -97,8 +97,8 @@ class AdminDashboard extends Component {
         {/* if on advanced : button to return classical; else button to go advanced mode */}
         <div id='advanced-but-dashboard-long-text'>
         { advanced
-          ? 'SUPER ADMIN PANEL'
-          : 'ADMIN PANEL'
+          ? 'GO TO SUPER ADMIN PANEL'
+          : 'GO TO ADMIN PANEL'
         }</div>
         <div id='advanced-but-dashboard-short-text' >
         { advanced

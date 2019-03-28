@@ -140,19 +140,20 @@ class Reminders extends Component {
           reminder.hidden = false;
         }
         var initialState=reminder.hidden;
+
         if (reminder.name.toUpperCase().includes(label.toUpperCase())) {
             reminder.hidden = false;
         } else {
               // else, we keep visible the reminder only if filter on reminders match /!\ test on presence of reminders on the reminder
               if(reminder.reminders.length > 0) {
-              reminder.reminders.map((remind)=>{
+                reminder.reminders.map((remind)=>{
                 // remind[0] : id, 1 : status, 2 : type, 3 : deadline, 4 : color(validated, soon, late, active)
-                  if(remind[2].toUpperCase().includes(label.toUpperCase())) {
-                    reminder.hidden = false;
-                  } else {
-                    reminder.hidden = true;
-                  }
-                  });
+                if(remind[2].toUpperCase().includes(label.toUpperCase())) {
+                  reminder.hidden = false;
+                } else {
+                  reminder.hidden = true;
+                }
+                });
               } else {
                 reminder.hidden = true;
               }
@@ -192,7 +193,6 @@ class Reminders extends Component {
               }
             }
             other.push(remind[5]);
-            console.log('Other '+reminder.name+' '+other);
         });
 
         if(other.indexOf('on')!==-1 || other.indexOf('unknow')!==-1) {
@@ -380,12 +380,65 @@ class Reminders extends Component {
               <div>
                 <Paper color="primary" className='reminder-stats' square={false} interactive>
                   Stats reminders<br/>
-                  
-                  <Avatar className="reminder-stat-elem-first" style={{background: "#00984C", width: 50, height: 30}}><span className="stats-nb">{reminderValidatedNb}</span></Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#f44336", width: 50, height: 30}}><span className="stats-nb">{reminderLateNb}</span></Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#f6ae47", width: 50, height: 30}}><span className="stats-nb">{reminderSoonNb}</span></Avatar>
-                  <Avatar className="reminder-stat-elem" style={{background: "#c9c9c9", width: 50, height: 30}}><span className="stats-nb">{reminderActiveNb}</span></Avatar>
+                  <div className="borderRadiusStatsManager">
+                  <TextField disabled 
+                      className='reminder-stat-elem' 
+                      style={{background: "#00984C", borderRadius:'20px'}}
+                      InputProps={{
+                        className: classes.textField,
+                      }} 
+                      variant='outlined'
+                      value={reminderValidatedNb} />
+                  </div>
+                  <div className="borderRadiusStatsManager">
+                  <TextField disabled 
+                      className='reminder-stat-elem' 
+                      style={{background: "#f44336", borderRadius:'20px'}}
+                      InputProps={{
+                        className: classes.textField,
+                      }} 
+                      variant='outlined'
+                      value={reminderLateNb} />
+                  </div>
+                  <div className="borderRadiusStatsManager">
+                  <TextField disabled 
+                      className='reminder-stat-elem' 
+                      style={{background: "#f6ae47", borderRadius:'20px'}}
+                      InputProps={{
+                        className: classes.textField,
+                      }} 
+                      variant='outlined'
+                      value={reminderSoonNb} />
+                  </div>
+                  <div className="borderRadiusStatsManager">
+                  <TextField disabled 
+                      className='reminder-stat-elem' 
+                      style={{background: "#c9c9c9", borderRadius:'20px'}}
+                      InputProps={{
+                        className: classes.textField,
+                      }} 
+                      variant='outlined'
+                      value={reminderActiveNb} />
+                  </div>
                 </Paper>
+                {/* <TextField
+                      disabled={shown}
+                      className='reminder-element-theme'
+                      type='date'
+                      style={{
+                        background: cololor,
+                        borderRadius: '20px',
+                      }}
+                      value={reminder[3]}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      InputProps={{
+                        className: classes.textField,
+                      }}
+                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab); this.setState({reminders:myTab});}}
+                      variant='outlined'
+                  /> */}
               </div>
               <br/><p></p>
               {mappedReminders}
@@ -416,7 +469,6 @@ class Reminder extends Component {
 
     changeStatus(reminder, projectId, targetStatus) {
       var self = this;
-      console.log('that one '+reminder["reminder"]);
       if(reminder["reminder"] !== undefined) {
         var remindId = reminder["reminder"][0];
         var projectId = projectId["projectId"];
@@ -552,12 +604,12 @@ class Reminder extends Component {
         }).then(function (response) {
             if(response.status === 200){
               self.handleReminderChange('deleteReminder', self.state.reminders);
-              this.props.filterReminders("");
+              self.props.filterReminders("");
             }
         }).catch(function (error) {
           console.log(error);
       });
-  }
+}
 
     saveReminder(projectid, remindersTab, golive) {
       // project element update : golive (so reminder 3m and 6m date too)
@@ -610,7 +662,7 @@ class Reminder extends Component {
     formatDateAddOneYear(dateString, reminder) {
       var d = new Date(dateString),
           month = '' + (d.getMonth()+1), //january is 0
-          day = '' + (d.getDate()),
+          day = '' + (d.getDate()+1),
           year = d.getFullYear()+1;
   
       if (month.length < 2) month = '0' + month;
@@ -740,23 +792,23 @@ class Reminder extends Component {
                   <HighlightOff style={{color: "#f44336"}} className="reminder-unvalid-button"/>
               </Button>
             </Tooltip>}
-            
-            {reminder[1]=='notok' &&
-            <React.Fragment>
-              <NewMailReminderDialog  projectId={this.props.id}  reminder={reminder} reminders={this.state.reminders} myTab={myTab} changeStatus={this.changeStatus.bind(this)}
-                                      reminderType={reminder[2]}/></React.Fragment>
-            }
-            {!autoRemind && reminder[1]=='notok' &&
+            {!autoRemind &&                                                                         
             <Tooltip title="Add 1 year on reminder date" interactive>
               <Button
                   className="reminder-button" //  reminder-addyear-button"
                   size="small"
                   color="primary"
-                  onClick={(event) => {reminder[3]=this.formatDateAddOneYear(reminder[3], reminder); this.setState({reminders:myTab})}}>
+                  onClick={(event) => {reminder[3]=this.formatDateAddOneYear(reminder[3], reminder); this.setState({reminders:myTab}); this.changeStatus({reminder}, {projectId}, 'notok');}}>
                   <AddIcon/><small>1y</small>
               </Button>
-            </Tooltip>}
+            </Tooltip>}            
+            {reminder[1]=='notok' &&
+            <React.Fragment>
+              <NewMailReminderDialog  projectId={this.props.id}  reminder={reminder} reminders={this.state.reminders} myTab={myTab} changeStatus={this.changeStatus.bind(this)}
+                                      reminderType={reminder[2]}/></React.Fragment>
+            }
             {!autoRemind &&
+            <span>
             <Tooltip title="Delete custom reminder" interactive>
               <Button
                   className="reminder-button"// reminder-delete-button"
@@ -765,12 +817,12 @@ class Reminder extends Component {
                   onClick={() => { this.setState({openDelete:true})}}>
                   <DeleteIcon style={{color: "#f44336"}} />
               </Button>
-            </Tooltip>}
+            </Tooltip>
             <Dialog
-            open={this.state.openDelete}
-            onClose={this.handleClose}
-            aria-labelledby="form-dialog-title"
-              >
+                  open={this.state.openDelete}
+                  onClose={this.handleClose}
+                  aria-labelledby="form-dialog-title"
+                >
                 <DialogTitle id="new-project-dialog-title">Delete</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
@@ -782,13 +834,13 @@ class Reminder extends Component {
                     Cancel
                   </Button>
                   <Button
-                    onClick={() => {this.deleteReminder(reminder[0], reminder[4]); this.setState({ openDelete: false })}}
+                    onClick={() => { this.deleteReminder(reminder[0], reminder[4]);this.setState({ openDelete: false })}}
                     color="secondary"
                     variant="contained">
                     Delete
                   </Button>
                 </DialogActions>
-              </Dialog>
+              </Dialog></span>}
             </div>
           </div>
         )

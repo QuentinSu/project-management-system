@@ -296,12 +296,18 @@ class CompanyController extends Controller
         } 
 
         // Admin restriction for this view
-        if (!$this->getUser()->isAdmin() && $this->getUser() !== $company->getUser()) {
+        if (!$this->getUser()->isAdmin()) {
             return new View("not allowed", Response::HTTP_FORBIDDEN);
         }
         
         // $this->notify('Company ID'.$company->getId().' deleted');
         $dbm = $this->getDoctrine()->getManager();
+
+        //remove company/user link
+        foreach ($company->getUsers() as $user) {
+            $userData = $this->getDoctrine()->getRepository('AppBundle:User')->find($user);
+            $userData->setCompany(null);
+        }
         $dbm->remove($company);
         $dbm->flush();
     

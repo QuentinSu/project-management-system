@@ -10,7 +10,6 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import EmailIcon from '@material-ui/icons/Email';
-import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import MenuItem from '@material-ui/core/MenuItem';
@@ -69,11 +68,11 @@ export class NewReminderDialog extends React.Component {
                 //console.log('plop');
                 var data = {status:self.state.status, type:self.state.type, deadline:self.state.deadline}
                 self.props.handleReminderChange('addRemind', data);
-                self.props.props.filterReminders("");
+                self.props.filterReminders("");
                 //self.props.handleReminderChange('addRemind', data);
             }
         }).catch(function (error) {
-            alert("Bad request : the custom "+this.state.type+" for this project may be already exist");
+            
         });
     }
   

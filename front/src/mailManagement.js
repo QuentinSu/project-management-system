@@ -159,7 +159,7 @@ class MailsManagement extends Component {
                     >
                         <MenuItem value='3m'>3 months</MenuItem>
                         <MenuItem value='6m'>6 months</MenuItem>
-                        <MenuItem value='bday'>Birthday</MenuItem>
+                        <MenuItem value='bday'>Website Anniversary</MenuItem>
                         <MenuItem value='eoy'>EOY</MenuItem>
                         <MenuItem value='custom'>Custom template</MenuItem>
                     </Select>

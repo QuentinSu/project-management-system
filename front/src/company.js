@@ -160,7 +160,7 @@ class Companies extends Component {
           })
             .then(function (response) {
               if(response.status === 200){
-                console.log(JSON.stringify(response.data));
+                console.log('company added');
                 self.setState({companies:response.data});
               }
             })
@@ -195,7 +195,6 @@ class Companies extends Component {
 
     saveNewCompany() {
         var self = this;
-        console.log("Save new company trigger : "+this.state.newCreation);
         axios({
             method: 'post', //you can set what request you want to be
             url: apiBaseUrl+'company',
@@ -745,7 +744,9 @@ class Companies extends Component {
                 </div>
                 <div className="company-actions-buttons">
                 <div className="company-actions-buttons-elem">
-                <Chip className='company-live' label={liveFrom} />
+                <span className="chip-text">
+                    <Chip className='company-live' label={liveFrom}/>
+                </span>
                 
                 {this.state.thingstoSave &&
                 <Button
@@ -774,8 +775,6 @@ class Companies extends Component {
                     className='company-delete-button'>
                     <DeleteIcon /> Delete
                 </Button>
-                </div>
-                </div>
                 <Dialog
                     open={this.state.openDelete}
                     aria-labelledby="form-dialog-title"
@@ -798,6 +797,8 @@ class Companies extends Component {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                </div>
+                </div>
             </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
