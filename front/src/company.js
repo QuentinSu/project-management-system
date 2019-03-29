@@ -347,7 +347,7 @@ class Companies extends Component {
             label="Show inactive" />
             </MuiThemeProvider>
         <Button color="primary" className='data-export' square={false}>
-            <StorageIcon/><CSVLink filename={'rhys_companies_csv_'+created} data={JSON.stringify(this.state.companies)} target="_blank">EXPORT CSV</CSVLink>
+            <StorageIcon/><CSVLink filename={'rhys_companies_csv_'+created+'.csv'} data={JSON.stringify(this.state.companies)} target="_blank">EXPORT CSV</CSVLink>
         </Button>
         </div>
         <br></br>

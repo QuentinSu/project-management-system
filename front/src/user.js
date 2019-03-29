@@ -30,6 +30,7 @@ import axios from 'axios';
 import Chip from '@material-ui/core/Chip';
 import NewUserProjectLinkDialog from './newUserProjectLinkDialog.js';
 import Cookies from 'universal-cookie';
+import ElementSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
 
@@ -382,6 +383,7 @@ class User extends Component {
             roles: props.roles,
             projects: props.projects,
             tabValue: 0,
+            openSaveNotification:false
         }
     }
 
@@ -409,6 +411,7 @@ class User extends Component {
             .catch(function (error) {
             });
         this.props.handleUsersChange();
+        this.setState({openSaveNotification: true});
     }
 
     switchAdminStatus() {
@@ -451,6 +454,7 @@ class User extends Component {
             }
         }).catch(function (error) {
         });
+        this.setState({openSaveNotification: true});
     }
 
     handleChange = name => value => {
@@ -509,6 +513,7 @@ class User extends Component {
         var date = new Date(this.state.lastlogin);
         var parsedDate = date.toLocaleString('en-GB', { timeZone: 'UTC' });
         var isAdmin = this.state.roles.length > 1;
+        var isAdvanced = (localStorage.getItem('isAdvanced')==='true');
         var currentCompanyId;
         
         if(this.state.company !== undefined) {
@@ -541,6 +546,11 @@ class User extends Component {
 
 
         return (<ExpansionPanel hidden={this.props.hidden}>
+                    <ElementSaveNotification 
+                                    open={this.state.openSaveNotification} 
+                                    message={'User saved: ' + this.state.username}
+                                    handleClose={() => {this.setState({openSaveNotification:false})}}
+                                />
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography color="textSecondary">
                         Username: 
@@ -617,6 +627,7 @@ class User extends Component {
                             <ListItemText primary='Advanced' />
                             <ListItemSecondaryAction>
                             <Switch
+                                disabled={!isAdvanced}
                                 checked={this.state.roles.includes('ROLE_ADVANCED')}
                                 onChange = {() => this.switchAdvancedStatus()}
                             />
@@ -710,8 +721,9 @@ class Users extends Component {
             <div>
                 <div className='project-header'>
                     <NewUserDialog handleUsersChange={this.handleUsersChange.bind(this)}/>
-                    <input
+                    <br></br><input
                         placeholder="Search an user"
+                        className='header-search'
                         onChange={event => this.filterUsers(event.target.value)}
                     />
                 </div>

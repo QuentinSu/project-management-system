@@ -392,7 +392,7 @@ class Reminders extends Component {
                   </div>
                   <div className="reminder-export-div">
                     <Button color="primary" className='data-reminder-export' square={false}>
-                       <StorageIcon/><CSVLink filename={'rhys_reminders_csv_'+created} data={JSON.stringify(this.state.remindersCard)} target="_blank">EXPORT CSV</CSVLink>
+                       <StorageIcon/><CSVLink filename={'rhys_reminders_csv_'+created+'.csv'} data={JSON.stringify(this.state.remindersCard)} target="_blank">EXPORT CSV</CSVLink>
                     </Button>
                   </div>
                 </div>

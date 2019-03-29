@@ -838,6 +838,7 @@ class Projects extends Component {
                     <NewProjectDialog handleProjectsChange={this.handleProjectsChange.bind(this)}/>
                     <input
                         placeholder="Search (e.g: name, project type)"
+                        className='header-search'
                         onChange={event => this.filterProjects(event.target.value)}
                     />
                 </div>

@@ -236,7 +236,7 @@ class Servers extends Component {
                       onChange={event =>this.filterServers(event.target.value)}
                   />
                   <Button color="primary" className='data-export' square={false}>
-                      <StorageIcon/><CSVLink filename={'rhys_servers_csv_'+created} data={JSON.stringify(this.state.servers)} target="_blank">EXPORT CSV</CSVLink>
+                      <StorageIcon/><CSVLink filename={'rhys_servers_csv_'+created+'.csv'} data={JSON.stringify(this.state.servers)} target="_blank">EXPORT CSV</CSVLink>
                   </Button>
                   <Paper color="primary" className='server-stats' square={false}>
                       <Typography className='server-stats-nb'>You have <b>{nbServers}</b> servers</Typography>
