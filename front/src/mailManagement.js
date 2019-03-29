@@ -14,7 +14,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import FormControl from '@material-ui/core/FormControl';
 import ElementSaveNotification from './saveNotification.js';
@@ -22,7 +21,6 @@ import ElementSaveNotification from './saveNotification.js';
 var config = require('./config.json');
 
 const apiBaseUrl = config.apiBaseUrl;
-const greenTheme = createMuiTheme({ palette: { primary: {main: '#00984C',contrastText: '#fff'} } })
 
 // CLASS TO RENDER ALL THE TESTIMONIALS
 

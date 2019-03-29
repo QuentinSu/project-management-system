@@ -23,7 +23,7 @@ import HighlightOff from '@material-ui/icons/HighlightOff';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Tooltip from '@material-ui/core/Tooltip';
 import ElementSaveNotification from './saveNotification.js';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import StorageIcon from '@material-ui/icons/Storage';
 
 var config = require('./config.json');

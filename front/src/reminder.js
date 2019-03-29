@@ -22,7 +22,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {activeTab} from './admin.js';
 import ElementSaveNotification from './saveNotification.js';
 import Paper from '@material-ui/core/Paper';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import StorageIcon from '@material-ui/icons/Storage';
 
 var config = require('./config.json');

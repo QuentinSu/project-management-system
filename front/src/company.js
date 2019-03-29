@@ -33,7 +33,7 @@ import ElementSaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import StorageIcon from '@material-ui/icons/Storage';
 
 const theme = createMuiTheme({
@@ -55,12 +55,6 @@ const theme = createMuiTheme({
     //error: will use the default color
   },
 });
-
-const csvData = [
-    ["firstname", "lastname", "email"],
-    ["Ahmed", "Tomi", "ah@smthing.co.com"],
-    ["Raed", "Labes", "afioozofi@zefjf.com"]
-];
 
 var config = require('./config.json');
 var nbClients;

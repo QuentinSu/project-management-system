@@ -259,7 +259,7 @@ class SupportTicket extends Component {
             />
             <div className='ticket-client'>
                 <BackToMenu changeTab={this.props.changeTab}/>
-                <img className='project-progress-button' src={process.env.PUBLIC_URL + '/support.png'}/> 
+                <img className='project-progress-button'alt='project-progress' src={process.env.PUBLIC_URL + '/support.png'}/> 
                 <div className='project-progress-title'>SUPPORT TICKET</div>  
             </div> 
             <div className='ticket-content'>
@@ -284,7 +284,7 @@ class Review extends Component {
             <div>
                 <div className='review-client'>
                     <BackToMenu changeTab={this.props.changeTab}/>
-                    <img className='review-button' src={process.env.PUBLIC_URL + '/testimonial.png'}/> 
+                    <img className='review-button' alt='review-button' src={process.env.PUBLIC_URL + '/testimonial.png'}/> 
                     <div className='review-title'>TESTIMONIALS</div>  
                 </div> 
                 <div className='review-content'>
