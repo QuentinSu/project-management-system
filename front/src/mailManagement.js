@@ -58,6 +58,26 @@ class MailsManagement extends Component {
             });
     }
 
+
+    // filter on name & content
+    filterMails(searchString) {
+      let newMails = this.state.mails.slice();
+      newMails.map((mail)=>{
+          //mandatory because of the first passage here
+          if(mail.hidden === undefined) {
+              mail.hidden = false;
+          }
+          var initialState=mail.hidden;
+          if (mail.name.toUpperCase().includes(searchString.toUpperCase()) || mail.content.toUpperCase().includes(searchString.toUpperCase())) {
+              // if the searchString correspond with company name or phone useless to filter on users
+              mail.hidden = false;
+          } else {
+                mail.hidden = true;  
+          }
+        });
+      this.setState({mails: newMails});
+    }
+
     componentDidMount() {
         var self = this;
         axios({
@@ -112,6 +132,7 @@ class MailsManagement extends Component {
                             name={mail.name}
                             content={mail.content}
                             type={mail.type}
+                            hidden={mail.hidden ? mail.hidden : false}
                             updateMails={this.updateMails.bind(this)}
                 />     
         })
@@ -189,6 +210,11 @@ class MailsManagement extends Component {
                     </Button>
                     </DialogActions>
                 </Dialog>
+                <input
+            placeholder="Search (object, body)"
+            className='header-search'
+            onChange={event =>this.filterMails(event.target.value)}
+        />
                 <p></p>
                 {mappedMails}
             </div>
@@ -259,7 +285,7 @@ class MailsManagement extends Component {
 
     render() {
         return (
-        
+        <div hidden={this.props.hidden}>  
             <Card className='mail-card'>
             <ElementSaveNotification 
                         open={this.state.openSaveNotification} 
@@ -350,6 +376,7 @@ class MailsManagement extends Component {
                 </Dialog>
             </div>
         </Card>
+        </div>
         );
     }
 

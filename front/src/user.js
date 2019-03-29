@@ -263,7 +263,8 @@ export class NewUserDialog extends React.Component {
                 plainPassword: {
                     first: this.state.password,
                     second: this.state.password
-                }
+                },
+                roles: this.state.roles
             },
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('session'),

@@ -171,7 +171,6 @@ class RestProfileController extends RestServiceController implements ClassResour
             }
         }
         $dbm->flush();                                                                                                                                  
-
     }
 
     /**
@@ -263,8 +262,9 @@ class RestProfileController extends RestServiceController implements ClassResour
             return new View("User not found", Response::HTTP_NOT_FOUND);
         } else {
             $initialCompany=$user->getCompany();
-            $initialCompanyId=$initialCompany->getId(); 
-            if($initialCompanyId) {
+            $initialCompanyId=$user->getId();
+            if($initialCompany){
+                $initialCompany = $this->getDoctrine()->getRepository('AppBundle:Company')->find($initialCompanyId);
                 $projects = $user->getProjects();
                 foreach($projects as $project) {
                     $this->deleteEoyReminder($initialCompany, $project);
@@ -277,7 +277,7 @@ class RestProfileController extends RestServiceController implements ClassResour
         
 
         //check case of no company linked
-        if($companyId) {
+        if($companyId!==-1) {
             $company = $this->getDoctrine()->getRepository('AppBundle:Company')->find($companyId);
             $user->setCompany($company);
             //foreach project linked with this user, we call createReminderEoy

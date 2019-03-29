@@ -88,7 +88,7 @@ class AdminDashboard extends Component {
     // If the user is not an admin, access to this page is not granted
     // Note that this is note a securized way of doing it, ofc, but there is also a server side protection
     if (!localStorage.getItem('isAdmin')) {
-      window.location.href = '/client'
+      window.location.href = '/';
     }
 
     var buttonPanel;
