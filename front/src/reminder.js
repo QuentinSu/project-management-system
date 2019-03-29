@@ -22,8 +22,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {activeTab} from './admin.js';
 import ElementSaveNotification from './saveNotification.js';
 import Paper from '@material-ui/core/Paper';
+import { CSVLink, CSVDownload } from "react-csv";
+import StorageIcon from '@material-ui/icons/Storage';
 
 var config = require('./config.json');
+
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth() + 1; //January is 0!
+var yyyy = today.getFullYear();
+var created = dd + '-' + mm + '-' + yyyy;
 
 const apiBaseUrl = config.apiBaseUrl;
 
@@ -325,7 +333,7 @@ class Reminders extends Component {
                                 <b><h4>Advanced function</h4></b>
                                 <Button className="button-advanced-reminder" variant="contained" onClick={() => { if (window.confirm('Are you sure you wish to regen all auto reminders? (3m,6m, bday, eoy)')) this.forceRegenAutoReminders()}} fullWidth>Regenerate Reminders (3m, 6m)</Button>
                                 {/* Insert here other advanced function buttons */}
-                            {/* </div> */} */}
+                            {/* </div> */}
                               {legendText}
                             </div>
       return(
@@ -346,7 +354,8 @@ class Reminders extends Component {
                 </div>
               </div>
               <div>
-                <div className='reminder-filter-type'>
+                <div className='reminder-filter-export'>
+                <div className="reminder-filter-type">
                 <MuiThemeProvider theme={validated}>
                 <FormControlLabel 
                     className="reminder-validated-switch"
@@ -380,6 +389,12 @@ class Reminders extends Component {
                             onClick={event => this.filterStateReminders('late', event.target.checked)} />} 
                     label="Overdue" />
                   </MuiThemeProvider>
+                  </div>
+                  <div className="reminder-export-div">
+                    <Button color="primary" className='data-reminder-export' square={false}>
+                       <StorageIcon/><CSVLink filename={'rhys_reminders_csv_'+created} data={this.state.remindersCard} target="_blank">EXPORT CSV</CSVLink>
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div>
@@ -426,24 +441,6 @@ class Reminders extends Component {
                       value={reminderActiveNb} />
                   </div>
                 </Paper>
-                {/* <TextField
-                      disabled={shown}
-                      className='reminder-element-theme'
-                      type='date'
-                      style={{
-                        background: cololor,
-                        borderRadius: '20px',
-                      }}
-                      value={reminder[3]}
-                      InputLabelProps={{
-                        shrink: true
-                      }}
-                      InputProps={{
-                        className: classes.textField,
-                      }}
-                      onChange={(event) => {(reminder[3]=event.target.value); this.modifyDate(reminder, event.target.value, myTab); this.setState({reminders:myTab});}}
-                      variant='outlined'
-                  /> */}
               </div>
               <br/><p></p>
                <div>

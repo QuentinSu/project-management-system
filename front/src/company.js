@@ -33,6 +33,8 @@ import ElementSaveNotification from './saveNotification.js';
 import List from '@material-ui/core/List';
 import { createMuiTheme } from '@material-ui/core/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { CSVLink, CSVDownload } from "react-csv";
+import StorageIcon from '@material-ui/icons/Storage';
 
 const theme = createMuiTheme({
   palette: {
@@ -53,6 +55,12 @@ const theme = createMuiTheme({
     //error: will use the default color
   },
 });
+
+const csvData = [
+    ["firstname", "lastname", "email"],
+    ["Ahmed", "Tomi", "ah@smthing.co.com"],
+    ["Raed", "Labes", "afioozofi@zefjf.com"]
+];
 
 var config = require('./config.json');
 var nbClients;
@@ -344,6 +352,9 @@ class Companies extends Component {
                     }}        />} 
             label="Show inactive" />
             </MuiThemeProvider>
+        <Button color="primary" className='data-export' square={false}>
+            <StorageIcon/><CSVLink filename={'rhys_companies_csv_'+created} data={this.state.companies} target="_blank">EXPORT CSV</CSVLink>
+        </Button>
         </div>
         <br></br>
         </div>

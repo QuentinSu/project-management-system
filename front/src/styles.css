@@ -81,7 +81,7 @@
 /** reminder element */
 
 .reminder-header {
-	display: block;
+	display: inline-block;
 	flex-wrap: wrap;
 	width:20%;
 }
@@ -92,6 +92,7 @@
 	border-radius:10px;
 	border: 1px solid #c9c9c9 !important;
 	padding-left:10px;
+	display:inline-block;
 }
 
 .reminder-header-search {
@@ -104,6 +105,7 @@
 	width:20%;
 	line-height: 30px;
 	margin-top: 15px;
+	margin-bottom:20px;
 	/* margin-left:260px; */
 	text-align: center;	
 }
@@ -124,18 +126,20 @@
 	margin-top: 4px;
 }
 
-.reminder-filter-type {
+.reminder-filter-export {
 	padding: 10px 10px 10px 10px;
-	min-width: 30%;
-	max-width:35%;
+	min-width: 45%;
+	max-width:50%;
 	margin-left: 22%;
-	margin-top:-72px;
-	border: 1px solid #c9c9c9 !important;
-	border-radius: 15px;
+	margin-top:-100px;
 }
 
-.reminder-card {
-	/* display:block; */
+.reminder-filter-type {
+	width:70%;
+	border: 1px solid #c9c9c9 !important;
+	border-radius: 15px;
+	padding-left:5px;
+	float:left;
 }
 
 .reminder-details, .server-details {
@@ -354,7 +358,7 @@
 	width:27%;
 	text-align: center;
 	float: right;
-	margin-top: -70px;
+	margin-top: -44px;
 	height: 60px;
 	font-size:80% !important;
 }
@@ -790,9 +794,27 @@
 	margin-left:10%;
 }
 
+.data-export {
+	width: 10%;
+}
+
+.reminder-export-div {
+	width:20%;
+	display:inline-block;
+	margin-left:5px;
+}
+
+.data-reminder-export {
+	width: 100%;
+	vertical-align:middle;
+	position: relative;
+	top:20px;
+    transform: translateY(-35%);
+}
+
 .company-stats, .server-stats {
 	width: 15%;
-	float: right;
+	float: right !important;
 	text-align:center;
 	background:#f44336;
 }

@@ -1,4 +1,3 @@
-import { Link, NavLink } from 'react-router-dom';
 import React, {Component} from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -14,12 +13,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import FormControl from '@material-ui/core/FormControl';
-import Paper from '@material-ui/core/Paper';
 import ElementSaveNotification from './saveNotification.js';
 
 var config = require('./config.json');
